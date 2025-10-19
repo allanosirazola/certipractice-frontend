@@ -3,7 +3,7 @@ const config = {
   // API Configuration
   API_URL: import.meta.env?.VITE_API_URL || 
            window.ENV?.API_URL || 
-           'http://localhost:3000/api',
+           'https://certipractice-backend-production.up.railway.app/api',
   
   // Environment
   NODE_ENV: import.meta.env?.MODE || 
