@@ -3,7 +3,7 @@ const config = {
   // API Configuration
   API_URL: import.meta.env?.VITE_API_URL || 
            window.ENV?.API_URL || 
-           'https://certipractice-backend-production.up.railway.app/api',
+           'https://certipractice-backend-production.up.railway.app',
   
   // Environment
   NODE_ENV: import.meta.env?.MODE || 
