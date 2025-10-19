@@ -1,5 +1,5 @@
 // src/services/examService.js
-const API_URL = 'http://localhost:3000/api';
+const API_BASE_URL = config.API_URL;
 
 class ExamService {
   // Crear un nuevo examen
