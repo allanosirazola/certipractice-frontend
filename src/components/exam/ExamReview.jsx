@@ -15,7 +15,25 @@ export default function ExamReview({ examId, examData, onClose }) {
   useEffect(() => {
     loadExamData();
   }, [examId]);
-
+ const loadOptionsWithRetry = async (questionId, retries = 3) => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response = await questionAPI.getQuestion(questionId, true, false);
+      if (response.success && response.data?.options?.length > 0) {
+        return response.data.options;
+      }
+      throw new Error('No options in response');
+    } catch (error) {
+      if (attempt === retries - 1) {
+        console.error(`Failed to load options for ${questionId} after ${retries} attempts`);
+        return null;
+      }
+      // Esperar con backoff exponencial
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 500));
+    }
+  }
+  return null;
+};
   const loadExamData = async () => {
     try {
       setLoading(true);

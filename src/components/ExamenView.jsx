@@ -160,21 +160,26 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   // Timer del examen
   useEffect(() => {
     if (!exam || examCompleted || timeLeft <= 0) return;
+    if (examMode !== 'realistic' && isPaused) return;
     
-    if (examMode === 'realistic' || !isPaused) {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleCompleteExam();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-      return () => clearInterval(timer);
+    return () => clearInterval(timer);
+  }, [exam, examCompleted, isPaused, examMode]);
+
+  // Efecto separado para detectar tiempo agotado
+  useEffect(() => {
+    if (timeLeft === 0 && !examCompleted && exam) {
+      handleCompleteExam();
     }
-  }, [exam, examCompleted, timeLeft, isPaused, examMode]);
+  }, [timeLeft, examCompleted, exam]);
 
   const currentQuestion = exam?.questions[currentQuestionIndex];
 

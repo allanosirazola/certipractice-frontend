@@ -62,7 +62,7 @@ export default function LandingExamenes({ onEmpezar }) {
         const providersResponse = await questionAPI.getProviders();
         console.log('Proveedores recibidos:', providersResponse);
         
-        if (!providersResponse.success === false && providersResponse.data) {
+        if (providersResponse.success && providersResponse.data) {
           const providersList = providersResponse.data.map(provider => parseProviderData(provider));
           setProviders(providersList);
           console.log('Proveedores procesados:', providersList);
@@ -101,7 +101,7 @@ export default function LandingExamenes({ onEmpezar }) {
         console.log(`Cargando certificaciones para ${providerSeleccionado.name}...`);
         const response = await questionAPI.getCertifications(providerSeleccionado.name);
         
-        if (!response.success === false && response.data) {
+        if (response.success && response.data) {
           const certificationsList = response.data.map(cert => formatCertification(cert));
           setCertifications(certificationsList);
           console.log('Certificaciones procesadas:', certificationsList);

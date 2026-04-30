@@ -21,7 +21,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
       setError(null);
 
       const filters = { provider, certification };
-      console.log(certification)
+
       // Cargar estadísticas
       const statsResponse = await userAPI.getFailedQuestionsStats(filters);
       if (statsResponse.success) {

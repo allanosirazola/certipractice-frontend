@@ -1,0 +1,10 @@
+# robots.txt para CertiPractice
+User-agent: *
+Allow: /
+
+# Páginas de examen en progreso no deben indexarse
+Disallow: /exam/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://certipractice.vercel.app/sitemap.xml

@@ -9,7 +9,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
   const [showConfirm, setShowConfirm] = useState(false);
   const [failedQuestionsCount, setFailedQuestionsCount] = useState(0);
   const [loadingFailedQuestions, setLoadingFailedQuestions] = useState(false);
-  console.log(examConfig)
+
   // Cargar cantidad de preguntas fallidas para el usuario autenticado
   useEffect(() => {
     const loadFailedQuestionsCount = async () => {
