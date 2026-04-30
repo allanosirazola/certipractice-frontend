@@ -31,6 +31,10 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   const [isPaused, setIsPaused] = useState(false);
   const [isFailedQuestionsMode, setIsFailedQuestionsMode] = useState(false);
 
+  // Estado para drag & drop
+  const [dragItems, setDragItems] = useState({});
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+
   // Obtener o generar sessionId para usuarios anónimos
   useEffect(() => {
     let storedSessionId = localStorage.getItem('anonymousSessionId');
@@ -254,7 +258,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
               questionText: question.text,
               category: question.category || 'General',
               difficulty: question.difficulty || 'Medium',
-              questionType: question.isMultipleChoice ? 'multiple_answer' : 'single_answer',
+              questionType: question.questionType || (question.isMultipleChoice ? 'multiple_answer' : 'single_answer'),
               expectedAnswers: question.expectedAnswers || 1,
               userAnswer: userAnswer,
               isAnswered: userAnswer !== undefined,
@@ -503,6 +507,88 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     }
   };
 
+  // Handler para fill in the blank
+  const handleFillBlankChange = async (blankIndex, value) => {
+    if (!currentQuestion || examCompleted || isPaused) return;
+    const currentAnswer = Array.isArray(answers[currentQuestion.id])
+      ? [...answers[currentQuestion.id]]
+      : [];
+    currentAnswer[blankIndex] = value;
+    const newAnswers = { ...answers, [currentQuestion.id]: currentAnswer };
+    setAnswers(newAnswers);
+    try {
+      await examAPI.submitAnswer(exam.id, currentQuestion.id, currentAnswer);
+    } catch (err) {
+      console.error('Error guardando respuesta fill-blank:', err);
+    }
+  };
+
+  // Handler para drag & drop: inicializa orden si no existe
+  const initDragItems = (question) => {
+    if (!dragItems[question.id]) {
+      const items = question.options || question.items || [];
+      setDragItems(prev => ({
+        ...prev,
+        [question.id]: items.map((_, i) => i)
+      }));
+    }
+  };
+
+  const handleDragStart = (e, fromIndex) => {
+    e.dataTransfer.setData('fromIndex', fromIndex);
+  };
+
+  const handleDragOver = (e, toIndex) => {
+    e.preventDefault();
+    setDragOverIndex(toIndex);
+  };
+
+  const handleDrop = async (e, toIndex) => {
+    e.preventDefault();
+    const fromIndex = parseInt(e.dataTransfer.getData('fromIndex'));
+    if (fromIndex === toIndex || !currentQuestion || isPaused) return;
+
+    const currentOrder = dragItems[currentQuestion.id]
+      ? [...dragItems[currentQuestion.id]]
+      : (currentQuestion.options || []).map((_, i) => i);
+
+    const newOrder = [...currentOrder];
+    const [moved] = newOrder.splice(fromIndex, 1);
+    newOrder.splice(toIndex, 0, moved);
+
+    setDragItems(prev => ({ ...prev, [currentQuestion.id]: newOrder }));
+    setDragOverIndex(null);
+
+    const newAnswers = { ...answers, [currentQuestion.id]: newOrder };
+    setAnswers(newAnswers);
+    try {
+      await examAPI.submitAnswer(exam.id, currentQuestion.id, newOrder);
+    } catch (err) {
+      console.error('Error guardando drag & drop:', err);
+    }
+  };
+
+  // Handler para checkbox (select all that apply, sin límite fijo)
+  const handleCheckboxToggle = async (optionIndex) => {
+    if (!currentQuestion || examCompleted || isPaused) return;
+    const currentAnswer = Array.isArray(answers[currentQuestion.id])
+      ? [...answers[currentQuestion.id]]
+      : [];
+    let newAnswer;
+    if (currentAnswer.includes(optionIndex)) {
+      newAnswer = currentAnswer.filter(i => i !== optionIndex);
+    } else {
+      newAnswer = [...currentAnswer, optionIndex].sort((a, b) => a - b);
+    }
+    const newAnswers = { ...answers, [currentQuestion.id]: newAnswer };
+    setAnswers(newAnswers);
+    try {
+      await examAPI.submitAnswer(exam.id, currentQuestion.id, newAnswer);
+    } catch (err) {
+      console.error('Error guardando checkbox:', err);
+    }
+  };
+
   const toggleMarkForReview = () => {
     if (isPaused) return;
     
@@ -560,7 +646,12 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
       let normalizedCorrectAnswer = correctAnswer;
 
-      if (currentQuestion.isMultipleChoice) {
+      const qType = currentQuestion.questionType;
+
+      if (qType === 'fill_in_the_blank' || qType === 'fill_in_the_gap' || qType === 'drag_and_drop') {
+        // Keep as-is (array of values or ordered indices)
+        normalizedCorrectAnswer = Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer];
+      } else if (currentQuestion.isMultipleChoice || qType === 'multiple_answer' || qType === 'checkbox') {
         if (!Array.isArray(correctAnswer)) {
           normalizedCorrectAnswer = [correctAnswer];
         }
@@ -695,15 +786,33 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
   const isCurrentQuestionAnswered = () => {
     const currentAnswer = answers[currentQuestion?.id];
-    
     if (!currentQuestion) return false;
-    
-    if (currentQuestion.isMultipleChoice) {
+
+    const qType = currentQuestion.questionType;
+
+    if (qType === 'fill_in_the_blank' || qType === 'fill_in_the_gap') {
+      const blanksCount = currentQuestion.blanks?.length ||
+        (currentQuestion.text.match(/___+/g) || []).length || 1;
+      return Array.isArray(currentAnswer) &&
+        currentAnswer.length === blanksCount &&
+        currentAnswer.every(v => v && v.trim() !== '');
+    }
+
+    if (qType === 'drag_and_drop') {
+      const items = currentQuestion.options || currentQuestion.items || [];
+      return Array.isArray(currentAnswer) && currentAnswer.length === items.length;
+    }
+
+    if (qType === 'checkbox') {
+      return Array.isArray(currentAnswer) && currentAnswer.length > 0;
+    }
+
+    if (currentQuestion.isMultipleChoice || qType === 'multiple_answer') {
       const expectedAnswers = currentQuestion.expectedAnswers || 1;
       return Array.isArray(currentAnswer) && currentAnswer.length === expectedAnswers;
-    } else {
-      return currentAnswer !== undefined;
     }
+
+    return currentAnswer !== undefined;
   };
 
   const getUnansweredQuestions = () => {
@@ -717,7 +826,26 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   const isAnswerCorrect = (questionId) => {
     const explanation = showExplanation[questionId];
     const userAnswer = answers[questionId];
+    const question = exam?.questions.find(q => q.id === questionId);
     if (!explanation || userAnswer === undefined) return null;
+
+    const qType = question?.questionType;
+
+    if (qType === 'fill_in_the_blank' || qType === 'fill_in_the_gap') {
+      const correct = Array.isArray(explanation.correctAnswer)
+        ? explanation.correctAnswer
+        : [explanation.correctAnswer];
+      const user = Array.isArray(userAnswer) ? userAnswer : [userAnswer];
+      return correct.every((c, i) =>
+        (user[i] || '').trim().toLowerCase() === (c || '').trim().toLowerCase()
+      );
+    }
+
+    if (qType === 'drag_and_drop') {
+      const correct = explanation.correctAnswer;
+      return JSON.stringify(userAnswer) === JSON.stringify(correct);
+    }
+
     if (Array.isArray(explanation.correctAnswer)) {
       return JSON.stringify(userAnswer) === JSON.stringify(explanation.correctAnswer);
     } else {
@@ -783,6 +911,262 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       </div>
     );
   };
+
+  // ── Renderizado de inputs según questionType ──────────────────────────────
+  const renderQuestionInput = () => {
+    const qType = currentQuestion.questionType;
+    const explanation = showExplanation[currentQuestion.id];
+    const isChecked = checkedQuestions.has(currentQuestion.id);
+    const isDisabled = isChecked || isPaused;
+
+    // ── FILL IN THE BLANK ────────────────────────────────────────────────────
+    if (qType === 'fill_in_the_blank' || qType === 'fill_in_the_gap') {
+      const blanks = currentQuestion.blanks ||
+        (currentQuestion.text.match(/___+/g) || ['___']).map((_, i) => ({ label: `Espacio ${i + 1}` }));
+      const userAnswers = Array.isArray(answers[currentQuestion.id])
+        ? answers[currentQuestion.id]
+        : [];
+      const correctAnswers = explanation?.correctAnswer;
+
+      return (
+        <div className="space-y-4 mb-8">
+          <p className="text-sm text-gray-500 italic">Escribe la(s) respuesta(s) correcta(s) en los campos.</p>
+          {blanks.map((blank, i) => {
+            const userVal = userAnswers[i] || '';
+            const correctVal = Array.isArray(correctAnswers) ? correctAnswers[i] : correctAnswers;
+            let inputStyle = 'border-gray-300 focus:border-blue-500 focus:ring-blue-500';
+            if (explanation && canShowVerification) {
+              const ok = (userVal || '').trim().toLowerCase() === (correctVal || '').trim().toLowerCase();
+              inputStyle = ok
+                ? 'border-green-500 bg-green-50 text-green-800'
+                : 'border-red-500 bg-red-50 text-red-800';
+            }
+            return (
+              <div key={i} className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  {blank.label || `Espacio ${i + 1}`}
+                </label>
+                <input
+                  type="text"
+                  value={userVal}
+                  onChange={e => handleFillBlankChange(i, e.target.value)}
+                  disabled={isDisabled}
+                  placeholder="Escribe tu respuesta..."
+                  className={`w-full px-4 py-2 border-2 rounded-lg text-gray-800 transition-colors outline-none ${inputStyle} disabled:opacity-60`}
+                />
+                {explanation && canShowVerification && (
+                  <span className="text-xs text-gray-500">Respuesta correcta: <strong>{correctVal}</strong></span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ── DRAG & DROP ──────────────────────────────────────────────────────────
+    if (qType === 'drag_and_drop') {
+      const sourceItems = currentQuestion.options || currentQuestion.items || [];
+      if (!dragItems[currentQuestion.id]) initDragItems(currentQuestion);
+      const order = dragItems[currentQuestion.id] || sourceItems.map((_, i) => i);
+      const correctOrder = explanation?.correctAnswer;
+
+      return (
+        <div className="space-y-3 mb-8">
+          <p className="text-sm text-gray-500 italic flex items-center gap-1">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+            Arrastra los elementos para ordenarlos correctamente.
+          </p>
+          {order.map((originalIndex, position) => {
+            const item = sourceItems[originalIndex];
+            const isCorrectPos = correctOrder && correctOrder[position] === originalIndex;
+            let itemStyle = 'border-gray-300 bg-white hover:border-blue-400 cursor-grab';
+            if (explanation && canShowVerification) {
+              itemStyle = isCorrectPos
+                ? 'border-green-500 bg-green-50 cursor-not-allowed'
+                : 'border-red-400 bg-red-50 cursor-not-allowed';
+            }
+            if (dragOverIndex === position && !isDisabled) {
+              itemStyle = 'border-blue-500 bg-blue-50 cursor-grab';
+            }
+
+            return (
+              <div
+                key={originalIndex}
+                draggable={!isDisabled}
+                onDragStart={e => handleDragStart(e, position)}
+                onDragOver={e => handleDragOver(e, position)}
+                onDrop={e => handleDrop(e, position)}
+                onDragLeave={() => setDragOverIndex(null)}
+                className={`flex items-center gap-3 p-4 border-2 rounded-lg transition-all select-none ${itemStyle} ${isDisabled ? 'opacity-70' : ''}`}
+              >
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-bold">
+                  {position + 1}
+                </span>
+                {!isDisabled && (
+                  <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7 2a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4zM7 8a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4zM7 14a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4z" />
+                  </svg>
+                )}
+                <span className="text-gray-800 flex-1">
+                  {typeof item === 'object' ? (item.text || item.label) : item}
+                </span>
+                {explanation && canShowVerification && (
+                  isCorrectPos
+                    ? <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                    : <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ── CHECKBOX (select all that apply) ────────────────────────────────────
+    if (qType === 'checkbox') {
+      const selectedIndices = Array.isArray(answers[currentQuestion.id])
+        ? answers[currentQuestion.id]
+        : [];
+      const explanation = showExplanation[currentQuestion.id];
+
+      return (
+        <div className="space-y-3 mb-8">
+          <p className="text-sm text-gray-500 italic">Selecciona todas las respuestas correctas.</p>
+          {currentQuestion.options.map((option, index) => {
+            const isSelected = selectedIndices.includes(index);
+            const correctAnswer = explanation?.correctAnswer;
+            const isCorrectOption = correctAnswer && (
+              Array.isArray(correctAnswer) ? correctAnswer.includes(index) : correctAnswer === index
+            );
+            let rowStyle = 'border-gray-200 hover:border-blue-300 hover:bg-blue-25';
+            let checkStyle = 'border-gray-300';
+            if (isSelected) {
+              if (explanation && canShowVerification) {
+                rowStyle = isCorrectOption ? 'border-green-600 bg-green-50' : 'border-red-600 bg-red-50';
+                checkStyle = isCorrectOption ? 'border-green-600 bg-green-600 text-white' : 'border-red-600 bg-red-600 text-white';
+              } else {
+                rowStyle = 'border-blue-600 bg-blue-50';
+                checkStyle = 'border-blue-600 bg-blue-600 text-white';
+              }
+            } else if (isCorrectOption && explanation && canShowVerification) {
+              rowStyle = 'border-green-400 bg-green-25';
+            }
+
+            return (
+              <button
+                key={index}
+                onClick={() => handleCheckboxToggle(index)}
+                disabled={isDisabled}
+                className={`w-full text-left p-4 rounded border-2 transition-all ${isPaused ? 'opacity-50 cursor-not-allowed border-gray-200' : rowStyle}`}
+              >
+                <div className="flex items-start gap-3">
+                  <span className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center text-sm font-medium transition-colors ${isDisabled && !isSelected ? 'border-gray-300' : checkStyle}`}>
+                    {isSelected ? (
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    ) : null}
+                  </span>
+                  <span className="text-gray-800 flex-1">
+                    {typeof option === 'object' ? option.text : option}
+                  </span>
+                  {explanation && canShowVerification && (
+                    <div className="flex-shrink-0">
+                      {isCorrectOption
+                        ? <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                        : isSelected
+                        ? <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                        : null
+                      }
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ── SINGLE / MULTIPLE ANSWER (existing behavior) ─────────────────────────
+    return (
+      <div className="space-y-3 mb-8">
+        {currentQuestion.options.map((option, index) => {
+          const isSelected = isOptionSelected(index);
+          const isMultiple = currentQuestion.isMultipleChoice || qType === 'multiple_answer';
+          const explanation = showExplanation[currentQuestion.id];
+          const isCorrectOption = explanation && (
+            Array.isArray(explanation.correctAnswer)
+              ? explanation.correctAnswer.includes(index)
+              : explanation.correctAnswer === index
+          );
+
+          return (
+            <button
+              key={index}
+              className={`w-full text-left p-4 rounded border-2 transition-all ${
+                isPaused
+                  ? 'opacity-50 cursor-not-allowed border-gray-200'
+                  : isSelected
+                  ? isCorrectOption && canShowVerification
+                    ? 'border-green-600 bg-green-50'
+                    : explanation && canShowVerification
+                    ? 'border-red-600 bg-red-50'
+                    : 'border-blue-600 bg-blue-50'
+                  : isCorrectOption && explanation && canShowVerification
+                  ? 'border-green-400 bg-green-25'
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-25'
+              }`}
+              onClick={() => handleAnswerSelect(index)}
+              disabled={checkedQuestions.has(currentQuestion.id) || isPaused}
+            >
+              <div className="flex items-start gap-3">
+                <span className={`flex-shrink-0 w-6 h-6 rounded ${
+                  isMultiple ? 'rounded' : 'rounded-full'
+                } border-2 flex items-center justify-center text-sm font-medium ${
+                  isSelected
+                    ? isCorrectOption && canShowVerification
+                      ? 'border-green-600 bg-green-600 text-white'
+                      : explanation && canShowVerification
+                      ? 'border-red-600 bg-red-600 text-white'
+                      : 'border-blue-600 bg-blue-600 text-white'
+                    : isCorrectOption && explanation && canShowVerification
+                    ? 'border-green-600 bg-green-600 text-white'
+                    : 'border-gray-300'
+                }`}>
+                  {isMultiple && (isSelected || (isCorrectOption && explanation && canShowVerification)) ? (
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    option.label
+                  )}
+                </span>
+                <span className="text-gray-800 flex-1">{option.text}</span>
+                {explanation && canShowVerification && (
+                  <div className="flex-shrink-0">
+                    {isCorrectOption ? (
+                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    ) : isSelected ? (
+                      <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+  // ─────────────────────────────────────────────────────────────────────────────
 
   const canShowVerification = examMode === 'practice' || examMode === 'failed_questions';
   const canPause = examMode === 'practice' || examMode === 'failed_questions';
@@ -1442,30 +1826,39 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             
             {/* Metadatos de la pregunta (solo en modo práctica) */}
             {canShowQuestionMetadata && (
-              <div className="flex gap-4 text-xs text-gray-500 mb-2">
+              <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">
                   {currentQuestion.category}
                 </span>
                 <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded">
                   {currentQuestion.difficulty}
                 </span>
-                {currentQuestion.isMultipleChoice && (
+                {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
                   <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
                     Selección múltiple ({currentQuestion.expectedAnswers} respuestas)
                   </span>
                 )}
+                {(currentQuestion.questionType === 'fill_in_the_blank' || currentQuestion.questionType === 'fill_in_the_gap') && (
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded">✏️ Completar espacio</span>
+                )}
+                {currentQuestion.questionType === 'drag_and_drop' && (
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded">↕️ Ordenar arrastrando</span>
+                )}
+                {currentQuestion.questionType === 'checkbox' && (
+                  <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded">☑️ Seleccionar todas las correctas</span>
+                )}
               </div>
             )}
 
-            {/* Instrucciones para preguntas múltiples */}
-            {currentQuestion.isMultipleChoice && (
+          {/* Instrucciones según tipo de pregunta */}
+          {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
               <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
                 <div className="flex items-center gap-2 text-yellow-800 text-sm">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>
-                    Selecciona <strong>{currentQuestion.expectedAnswers}</strong> respuestas correctas. 
+                    Selecciona <strong>{currentQuestion.expectedAnswers}</strong> respuestas correctas.
                     Seleccionadas: <strong>{getSelectedCount()}</strong>/{currentQuestion.expectedAnswers}
                   </span>
                 </div>
@@ -1473,80 +1866,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             )}
           </div>
 
-          {/* Opciones */}
-          <div className="space-y-3 mb-8">
-            {currentQuestion.options.map((option, index) => {
-              const isSelected = isOptionSelected(index);
-              const isMultiple = currentQuestion.isMultipleChoice;
-              const explanation = showExplanation[currentQuestion.id];
-              const isCorrectOption = explanation && (
-                Array.isArray(explanation.correctAnswer) 
-                  ? explanation.correctAnswer.includes(index)
-                  : explanation.correctAnswer === index
-              );
-              
-              return (
-                <button
-                  key={index}
-                  className={`w-full text-left p-4 rounded border-2 transition-all ${
-                    isPaused 
-                      ? 'opacity-50 cursor-not-allowed border-gray-200'
-                      : isSelected
-                      ? isCorrectOption && canShowVerification
-                        ? 'border-green-600 bg-green-50'
-                        : explanation && canShowVerification
-                        ? 'border-red-600 bg-red-50'
-                        : 'border-blue-600 bg-blue-50'
-                      : isCorrectOption && explanation && canShowVerification
-                      ? 'border-green-400 bg-green-25'
-                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-25'
-                  }`}
-                  onClick={() => handleAnswerSelect(index)}
-                  disabled={checkedQuestions.has(currentQuestion.id) || isPaused}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className={`flex-shrink-0 w-6 h-6 rounded ${
-                      isMultiple ? 'rounded' : 'rounded-full'
-                    } border-2 flex items-center justify-center text-sm font-medium ${
-                      isSelected
-                        ? isCorrectOption && canShowVerification
-                          ? 'border-green-600 bg-green-600 text-white'
-                          : explanation && canShowVerification
-                          ? 'border-red-600 bg-red-600 text-white'
-                          : 'border-blue-600 bg-blue-600 text-white'
-                        : isCorrectOption && explanation && canShowVerification
-                        ? 'border-green-600 bg-green-600 text-white'
-                        : 'border-gray-300'
-                    }`}>
-                      {isMultiple && (isSelected || (isCorrectOption && explanation && canShowVerification)) ? (
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      ) : (
-                        option.label
-                      )}
-                    </span>
-                    <span className="text-gray-800 flex-1">{option.text}</span>
-                    
-                    {/* Iconos de estado (solo en modo práctica) */}
-                    {explanation && canShowVerification && (
-                      <div className="flex-shrink-0">
-                        {isCorrectOption ? (
-                          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : isSelected ? (
-                          <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          {/* Input de respuesta (varía por questionType) */}
+          {renderQuestionInput()}
 
           {/* Explicación de la respuesta (solo en modo práctica) */}
           {showExplanation[currentQuestion.id] && canShowVerification && (
@@ -1581,7 +1902,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           )}
 
           {/* Indicador de progreso para pregunta múltiple */}
-          {currentQuestion.isMultipleChoice && (
+          {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
             <div className="mb-6">
               <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                 <span>Progreso de respuestas:</span>
@@ -1647,7 +1968,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           </div>
 
           {/* Advertencia para preguntas incompletas */}
-          {currentQuestion.isMultipleChoice && getSelectedCount() < currentQuestion.expectedAnswers && (
+          {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && getSelectedCount() < currentQuestion.expectedAnswers && (
             <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded text-orange-800 text-sm">
               Selecciona {currentQuestion.expectedAnswers - getSelectedCount()} respuesta(s) más para completar esta pregunta.
             </div>
