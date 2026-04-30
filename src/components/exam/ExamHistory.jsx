@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { examAPI, utils } from '../../services/api';
-import ExamReview from './ExamReview'; // AGREGAR ESTE IMPORT
+import ExamReview from './ExamReview';
+import { useTranslation } from 'react-i18next';
 
 export default function ExamHistory({ onClose, onResumeExam }) {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -37,7 +39,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
         setExams(result.data);
         console.log(`${result.data.length} exámenes cargados`);
       } else {
-        setError(result.error || 'Error cargando exámenes');
+        setError(result.error || t('common.loading'));
         console.error('Error en respuesta:', result);
       }
     } catch (err) {
@@ -49,7 +51,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
   };
 
   const handleDeleteExam = async (examId) => {
-    if (!window.confirm('¿Estás seguro de que quieres eliminar este examen?')) {
+    if (!window.confirm(t('examHistory.confirmDelete'))) {
       return;
     }
 

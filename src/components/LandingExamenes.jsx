@@ -15,9 +15,12 @@ import UserProfile from './user/UserProfile';
 import ExamHistory from './exam/ExamHistory';
 import ExamModeSelector from './exam/ExamModeSelector';
 import FailedQuestionsStats from './exam/FailedQuestionsStats';
+import LanguageSwitcher from './common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar }) {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [backendStatus, setBackendStatus] = useState(null);
@@ -52,7 +55,7 @@ export default function LandingExamenes({ onEmpezar }) {
         setBackendStatus(health);
         
         if (!health.available) {
-          setError('Backend no disponible. Asegúrate de que el servidor esté corriendo en puerto 3000.');
+          setError(t('landing.backendError'));
           return;
         }
 
@@ -196,7 +199,7 @@ export default function LandingExamenes({ onEmpezar }) {
     setShowModeSelector(true);
     
     // Pasar directamente el config al iniciador
-    onEmpezar(failedExamConfig, `${providerSeleccionado.name} - ${certificacionSeleccionada.name} (Preguntas Fallidas)`);
+    onEmpezar(failedExamConfig, `${providerSeleccionado.name} - ${certificacionSeleccionada.name} ({t('landing.failedQuestions')})`);
   };
 
   // Crear configuración base del examen usando datos de la certificación
@@ -439,7 +442,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
-                <span>Historial</span>
+                <span>{t('landing.history')}</span>
               </button>
               
               {/* Botón para preguntas fallidas */}
@@ -460,7 +463,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center text-xs font-semibold">
                   {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </div>
-                <span>Mi Perfil</span>
+                <span>Mi {t('landing.profile')}</span>
               </button>
             </div>
           ) : (
@@ -469,13 +472,13 @@ export default function LandingExamenes({ onEmpezar }) {
                 onClick={() => setShowLogin(true)}
                 className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors"
               >
-                Iniciar Sesión
+                {t('landing.login')}
               </button>
               <button
                 onClick={() => setShowRegister(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
               >
-                Registrarse
+                {t('landing.register')}
               </button>
             </div>
           )}
@@ -641,7 +644,7 @@ export default function LandingExamenes({ onEmpezar }) {
                     onClick={handleShowFailedQuestions}
                     className="w-full px-4 py-2 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors text-sm font-medium"
                   >
-                    Ver Preguntas Fallidas
+                    Ver {t('landing.failedQuestions')}
                   </button>
                   <p className="text-xs text-gray-500 mt-1">
                     Practica solo las preguntas que has respondido incorrectamente
@@ -682,7 +685,7 @@ export default function LandingExamenes({ onEmpezar }) {
                   ¿Quieres guardar tu progreso permanentemente? Regístrate aquí
                 </button>
                 <p className="text-xs text-yellow-700">
-                  <strong>Con cuenta:</strong> Accede al modo "Preguntas Fallidas" para practicar solo lo que necesitas mejorar
+                  <strong>Con cuenta:</strong> Accede al modo "{t('landing.failedQuestions')}" para practicar solo lo que necesitas mejorar
                 </p>
               </div>
             </div>
@@ -727,7 +730,7 @@ export default function LandingExamenes({ onEmpezar }) {
                   onClick={() => setShowLogin(true)}
                   className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors text-sm"
                 >
-                  Iniciar Sesión
+                  {t('landing.login')}
                 </button>
               </div>
             </div>
@@ -742,7 +745,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 para familiarizarte con el formato de preguntas. Cuando te sientas preparado, 
                 usa el <strong>Modo Examen Real</strong> para evaluar tu conocimiento.
                 {isAuthenticated && (
-                  <> También puedes usar <strong>Preguntas Fallidas</strong> para mejorar tus debilidades específicas.</>
+                  <> También puedes usar <strong>{t('landing.failedQuestions')}</strong> para mejorar tus debilidades específicas.</>
                 )}
               </p>
               <div className="flex justify-center gap-4 text-xs text-gray-500 flex-wrap">
@@ -752,7 +755,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 {isAuthenticated && (
                   <>
                     <span>•</span>
-                    <span>Preguntas Fallidas: Mejora debilidades</span>
+                    <span>{t('landing.failedQuestions')}: Mejora debilidades</span>
                   </>
                 )}
               </div>

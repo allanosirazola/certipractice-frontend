@@ -1,9 +1,11 @@
 // src/components/user/UserProfile.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function UserProfile({ onClose }) {
   const { user, logout, updateProfile, getUserStats } = useAuth();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('profile');
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,7 @@ export default function UserProfile({ onClose }) {
     const result = await updateProfile(formData);
 
     if (result.success) {
-      setSuccess('Perfil actualizado correctamente');
+      setSuccess(t('profile.saveSuccess'));
       setEditMode(false);
     } else {
       setError(result.error);

@@ -1,64 +1,17 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { reportAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
-const REPORT_TYPES = [
-  {
-    id: 'incorrect_answer',
-    label: 'Respuesta incorrecta',
-    description: 'La respuesta marcada como correcta es incorrecta',
-    icon: '❌',
-    severity: 'high'
-  },
-  {
-    id: 'outdated',
-    label: 'Información desactualizada',
-    description: 'La pregunta o respuesta contiene información obsoleta',
-    icon: '📅',
-    severity: 'medium'
-  },
-  {
-    id: 'unclear',
-    label: 'Pregunta confusa',
-    description: 'El enunciado no es claro o tiene ambigüedades',
-    icon: '❓',
-    severity: 'medium'
-  },
-  {
-    id: 'typo',
-    label: 'Error tipográfico',
-    description: 'Hay errores de ortografía o gramática',
-    icon: '✏️',
-    severity: 'low'
-  },
-  {
-    id: 'wrong_category',
-    label: 'Categoría incorrecta',
-    description: 'La pregunta está en la categoría equivocada',
-    icon: '📁',
-    severity: 'low'
-  },
-  {
-    id: 'duplicate',
-    label: 'Pregunta duplicada',
-    description: 'Esta pregunta ya existe en el sistema',
-    icon: '📋',
-    severity: 'low'
-  },
-  {
-    id: 'explanation_wrong',
-    label: 'Explicación incorrecta',
-    description: 'La explicación de la respuesta es errónea',
-    icon: '📖',
-    severity: 'medium'
-  },
-  {
-    id: 'other',
-    label: 'Otro problema',
-    description: 'Otro tipo de problema no listado',
-    icon: '🔧',
-    severity: 'medium'
-  }
+const REPORT_TYPE_IDS = [
+  { id: 'incorrect_answer', icon: '❌', severity: 'high' },
+  { id: 'outdated', icon: '📅', severity: 'medium' },
+  { id: 'unclear', icon: '❓', severity: 'medium' },
+  { id: 'typo', icon: '✏️', severity: 'low' },
+  { id: 'wrong_category', icon: '📁', severity: 'low' },
+  { id: 'duplicate', icon: '📋', severity: 'low' },
+  { id: 'explanation_wrong', icon: '📖', severity: 'medium' },
+  { id: 'other', icon: '🔧', severity: 'medium' }
 ];
 
 export default function QuestionReportModal({ 

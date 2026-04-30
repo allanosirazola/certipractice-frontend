@@ -1,6 +1,7 @@
 // ExamExitModal.jsx - Modal para confirmar salida del examen
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function ExamExitModal({ 
   exam, 
@@ -12,6 +13,7 @@ export default function ExamExitModal({
   onSaveAndExit 
 }) {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [selectedAction, setSelectedAction] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -56,44 +58,44 @@ export default function ExamExitModal({
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              ¿Salir del examen?
+              {t('exitModal.title')}
             </h3>
             <p className="text-gray-600">
               {isRealisticMode 
-                ? 'En modo examen real, salir significa perder todo el progreso.'
-                : 'Puedes guardar tu progreso y continuar más tarde.'
+                ? t('exitModal.realisticWarning')
+                : t('exitModal.saveAndExitDesc')
               }
             </p>
           </div>
 
-          {/* Estado actual del examen */}
+          {/* {t('exitModal.title')} */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-gray-700 mb-3">Estado actual del examen</h4>
+            <h4 className="font-semibold text-gray-700 mb-3">{t('exitModal.title')}</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Preguntas respondidas:</span>
+                <span className="text-gray-600">{t('exitModal.answered')}</span>
                 <span className="font-semibold">
                   {getAnsweredCount()}/{exam?.questions?.length || 0}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tiempo restante:</span>
+                <span className="text-gray-600">{t('exitModal.timeLeft')}</span>
                 <span className="font-semibold text-orange-600">
                   {formatTime(timeLeft)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Progreso:</span>
+                <span className="text-gray-600">Progress:</span>
                 <span className="font-semibold">
                   {Math.round((getAnsweredCount() / (exam?.questions?.length || 1)) * 100)}%
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Modo:</span>
+                <span className="text-gray-600">{t('exitModal.examMode')}</span>
                 <span className={`font-semibold ${
                   isRealisticMode ? 'text-red-600' : 'text-blue-600'
                 }`}>
-                  {isRealisticMode ? '🎯 Examen Real' : '📚 Práctica'}
+                  {isRealisticMode ? t('examModes.label.realistic') : t('examModes.label.practice')}
                 </span>
               </div>
             </div>
@@ -101,7 +103,7 @@ export default function ExamExitModal({
 
           {/* Opciones disponibles */}
           <div className="space-y-3">
-            {/* Opción 1: Guardar y continuar después (solo si está autenticado y no es modo realista) */}
+            {/* Opción 1: {t('exitModal.saveAndExit')} (solo si está autenticado y no es modo realista) */}
             {canSave && (
               <button
                 onClick={() => setSelectedAction('save')}
@@ -118,18 +120,17 @@ export default function ExamExitModal({
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-gray-800 mb-1">
-                      Guardar y continuar después
+                      {t('exitModal.saveAndExit')}
                     </div>
                     <div className="text-sm text-gray-600">
-                      Guarda tu progreso actual y retoma el examen cuando quieras. 
-                      Tu tiempo y respuestas se conservarán.
+                      {t('exitModal.saveAndExitDesc')}
                     </div>
                   </div>
                 </div>
               </button>
             )}
 
-            {/* Opción 2: Salir sin guardar */}
+            {/* Opción 2: {t('exitModal.exitWithoutSaving')} */}
             <button
               onClick={() => setSelectedAction('exit')}
               disabled={loading}
@@ -145,12 +146,12 @@ export default function ExamExitModal({
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-gray-800 mb-1">
-                    Salir sin guardar
+                    {t('exitModal.exitWithoutSaving')}
                   </div>
                   <div className="text-sm text-gray-600">
                     {isRealisticMode 
-                      ? 'Abandona el examen. En modo real no se puede guardar el progreso.'
-                      : 'Abandona el examen y pierde todo el progreso actual.'
+                      ? t('exitModal.realisticWarning')
+                      : t('exitModal.exitWithoutSavingDesc')
                     }
                   </div>
                 </div>
@@ -167,8 +168,7 @@ export default function ExamExitModal({
                 </svg>
                 <div className="flex-1">
                   <div className="text-sm text-red-800">
-                    <strong>Modo Examen Real:</strong> En las condiciones reales del examen 
-                    no puedes pausar ni guardar. Si sales, perderás todo el progreso.
+                    {t('exitModal.realisticWarning')}
                   </div>
                 </div>
               </div>
@@ -183,8 +183,7 @@ export default function ExamExitModal({
                 </svg>
                 <div className="flex-1">
                   <div className="text-sm text-yellow-800">
-                    <strong>Modo Invitado:</strong> Para poder guardar y continuar exámenes 
-                    más tarde, necesitas crear una cuenta. Sin registro, tu progreso se perderá al salir.
+                    {t('exitModal.guestWarning')}
                   </div>
                 </div>
               </div>
@@ -198,7 +197,7 @@ export default function ExamExitModal({
               disabled={loading}
               className="flex-1 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50"
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
             
             {selectedAction && (
@@ -214,11 +213,11 @@ export default function ExamExitModal({
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Procesando...</span>
+                    <span>{t('exam.processingDots')}</span>
                   </div>
                 ) : (
                   <>
-                    {selectedAction === 'save' ? '💾 Guardar y Salir' : '🚪 Salir sin Guardar'}
+                    {selectedAction === 'save' ? t('exitModal.saveAndExit') : t('exitModal.exitWithoutSaving')}
                   </>
                 )}
               </button>
@@ -228,7 +227,7 @@ export default function ExamExitModal({
           {!selectedAction && (
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-500">
-                Selecciona una opción para continuar
+                {t('exitModal.cancelButton')}
               </p>
             </div>
           )}

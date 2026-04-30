@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { examAPI, questionAPI } from '../services/api';
 import ExamExitModal from './exam/ExamExitModal';
+import { useTranslation } from 'react-i18next';
 import ExamReview from './exam/ExamReview';
 
 export default function ExamenView({ examConfig, nombreCertificacion, onVolver }) {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exam, setExam] = useState(null);
@@ -59,15 +61,15 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         console.log('🔍 Validando configuración del examen:', examConfig);
         
         if (!examConfig) {
-          throw new Error('No se proporcionó configuración del examen');
+          throw new Error(t('exam.errorTitle'));
         }
 
         if (!examConfig.provider || examConfig.provider === '') {
-          throw new Error('El proveedor es requerido pero está vacío');
+          throw new Error(t('exam.errorTitle'));
         }
 
         if (!examConfig.certification || examConfig.certification === '') {
-          throw new Error('La certificación es requerida pero está vacía');
+          throw new Error(t('exam.errorTitle'));
         }
 
         if (examConfig.mode) {
@@ -868,7 +870,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-6">
         <h3 className="font-semibold text-orange-800 mb-4 flex items-center gap-2">
           <span>🔄</span>
-          Progreso en Preguntas Fallidas
+          {t('failedQuestionsResults.title')}
         </h3>
         
         <div className="grid grid-cols-2 gap-6 mb-4">
@@ -876,21 +878,21 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             <div className="text-2xl font-bold text-green-600">
               {improvedQuestions}
             </div>
-            <div className="text-sm text-gray-600">Mejoradas</div>
-            <div className="text-xs text-green-600">¡Bien hecho!</div>
+            <div className="text-sm text-gray-600">{t('failedQuestionsResults.improved')}</div>
+            <div className="text-xs text-green-600">{t('failedQuestionsResults.wellDone')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600">
               {stillStrugglingWith}
             </div>
-            <div className="text-sm text-gray-600">Aún requieren práctica</div>
-            <div className="text-xs text-orange-600">Sigue practicando</div>
+            <div className="text-sm text-gray-600">{t('failedQuestionsResults.stillStruggling')}</div>
+            <div className="text-xs text-orange-600">{t('failedQuestionsResults.keepPracticing')}</div>
           </div>
         </div>
         
         <div className="bg-white rounded p-3">
           <div className="flex justify-between items-center text-sm">
-            <span>Tasa de mejora:</span>
+            <span>{t('failedQuestionsResults.improvementRate')}</span>
             <span className="font-semibold text-green-600">
               {Math.round((improvedQuestions / exam.questions.length) * 100)}%
             </span>
@@ -905,7 +907,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         
         {improvedQuestions > stillStrugglingWith && (
           <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded text-green-800 text-sm">
-            <strong>¡Excelente progreso!</strong> Has mejorado en más preguntas de las que aún necesitas practicar.
+            <strong>{t('failedQuestionsResults.title')}</strong> {t('failedQuestionsResults.greatProgress')}
           </div>
         )}
       </div>
@@ -922,7 +924,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     // ── FILL IN THE BLANK ────────────────────────────────────────────────────
     if (qType === 'fill_in_the_blank' || qType === 'fill_in_the_gap') {
       const blanks = currentQuestion.blanks ||
-        (currentQuestion.text.match(/___+/g) || ['___']).map((_, i) => ({ label: `Espacio ${i + 1}` }));
+        (currentQuestion.text.match(/___+/g) || ['___']).map((_, i) => ({ label: t('exam.fillBlankLabel', { num: i + 1 }) }));
       const userAnswers = Array.isArray(answers[currentQuestion.id])
         ? answers[currentQuestion.id]
         : [];
@@ -930,7 +932,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
       return (
         <div className="space-y-4 mb-8">
-          <p className="text-sm text-gray-500 italic">Escribe la(s) respuesta(s) correcta(s) en los campos.</p>
+          <p className="text-sm text-gray-500 italic">{t('exam.fillBlankHint')}</p>
           {blanks.map((blank, i) => {
             const userVal = userAnswers[i] || '';
             const correctVal = Array.isArray(correctAnswers) ? correctAnswers[i] : correctAnswers;
@@ -944,18 +946,18 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             return (
               <div key={i} className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">
-                  {blank.label || `Espacio ${i + 1}`}
+                  {blank.label || t('exam.fillBlankLabel', { num: i + 1 })}
                 </label>
                 <input
                   type="text"
                   value={userVal}
                   onChange={e => handleFillBlankChange(i, e.target.value)}
                   disabled={isDisabled}
-                  placeholder="Escribe tu respuesta..."
+                  placeholder="{t('exam.fillBlankPlaceholder')}"
                   className={`w-full px-4 py-2 border-2 rounded-lg text-gray-800 transition-colors outline-none ${inputStyle} disabled:opacity-60`}
                 />
                 {explanation && canShowVerification && (
-                  <span className="text-xs text-gray-500">Respuesta correcta: <strong>{correctVal}</strong></span>
+                  <span className="text-xs text-gray-500">{t('exam.fillBlankCorrect')} <strong>{correctVal}</strong></span>
                 )}
               </div>
             );
@@ -977,7 +979,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
             </svg>
-            Arrastra los elementos para ordenarlos correctamente.
+            {t('exam.dragHint')}
           </p>
           {order.map((originalIndex, position) => {
             const item = sourceItems[originalIndex];
@@ -1034,7 +1036,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
       return (
         <div className="space-y-3 mb-8">
-          <p className="text-sm text-gray-500 italic">Selecciona todas las respuestas correctas.</p>
+          <p className="text-sm text-gray-500 italic">{t('exam.checkboxHint')}</p>
           {currentQuestion.options.map((option, index) => {
             const isSelected = selectedIndices.includes(index);
             const correctAnswer = explanation?.correctAnswer;
@@ -1178,11 +1180,11 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-blue-700 font-medium text-lg">
-            {exam ? 'Procesando...' : 'Creando tu examen...'}
+            {exam ? t('exam.processingDots') : t('exam.creatingExam')}
           </p>
           {sessionId && (
             <p className="text-blue-500 text-sm mt-2">
-              Sesión: {sessionId.substring(0, 20)}...
+              {t('exam.session')}: {sessionId.substring(0, 20)}...
             </p>
           )}
         </div>
@@ -1205,7 +1207,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             onClick={onVolver}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
           >
-            Volver al inicio
+            {t('exam.backToStart')}
           </button>
         </div>
       </div>
@@ -1219,18 +1221,18 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         <header className="bg-white shadow p-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-blue-700">Examen Completado</h1>
+              <h1 className="text-2xl font-bold text-blue-700">{t('exam.completed')}</h1>
               <p className="text-gray-600">{nombreCertificacion}</p>
               <p className="text-sm text-gray-500">
-                Modo: {examMode === 'realistic' ? 'Examen Real' : 
-                       examMode === 'failed_questions' ? 'Preguntas Fallidas' : 'Práctica'}
+                {t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
+                       examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}
               </p>
             </div>
             <button 
               onClick={onVolver}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
             >
-              Nuevo Examen
+              {t('exam.newExam')}
             </button>
           </div>
         </header>
@@ -1255,15 +1257,15 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
               <h2 className={`text-3xl font-bold mb-2 ${
                 results.passed ? 'text-green-600' : 'text-red-600'
               }`}>
-                {results.passed ? 'Aprobado!' : 'No Aprobado'}
+                {results.passed ? t('exam.passed') : t('exam.failed')}
               </h2>
               
               <p className="text-xl text-gray-700 mb-4">
-                Puntuación: <span className="font-bold">{results.examSummary.score}%</span>
+                {t('exam.score', { score: results.examSummary.score }).split(':')[0]}: <span className="font-bold">{results.examSummary.score}%</span>
               </p>
               
               <p className="text-gray-600">
-                Necesitabas {exam.passingScore}% para aprobar
+                {t('exam.passingScore', { score: exam.passingScore })}
               </p>
             </div>
 
@@ -1356,30 +1358,30 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-gray-700 mb-2">Estadísticas del Examen</h3>
+              <h3 className="font-semibold text-gray-700 mb-2">{t('exam.statistics')}</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600">Total de preguntas:</span>
+                  <span className="text-gray-600">{t('exam.totalQuestions')}:</span>
                   <span className="font-semibold ml-2">{results.examSummary.statistics.totalQuestions}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Tiempo utilizado:</span>
+                  <span className="text-gray-600">{t('exam.timeUsed')}:</span>
                   <span className="font-semibold ml-2">{formatTime(results.examSummary.timeSpent * 60)}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Preguntas marcadas:</span>
+                  <span className="text-gray-600">{t('exam.markedCount')}:</span>
                   <span className="font-semibold ml-2">{markedForReview.size}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Modo de examen:</span>
+                  <span className="text-gray-600">{t('exam.examMode')}:</span>
                   <span className="font-semibold ml-2">
-                    {examMode === 'realistic' ? 'Examen Real' : 
-                     examMode === 'failed_questions' ? 'Preguntas Fallidas' : 'Práctica'}
+                    {examMode === 'realistic' ? t('examModes.label.realistic') : 
+                     examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}
                   </span>
                 </div>
                 {canShowVerification && (
                   <div>
-                    <span className="text-gray-600">Verificaciones usadas:</span>
+                    <span className="text-gray-600">{t('exam.verificationsUsed')}:</span>
                     <span className="font-semibold ml-2">{checkedQuestions.size}</span>
                   </div>
                 )}
@@ -1391,13 +1393,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 onClick={onVolver}
                 className="flex-1 px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium"
               >
-                Nuevo Examen
+                {t('exam.newExam')}
               </button>
               <button 
                 onClick={handleShowReview}
                 className="flex-1 px-4 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors font-medium"
               >
-                Revisar Respuestas
+                {t('exam.reviewAnswers')}
               </button>
             </div>
           </div>
@@ -1433,26 +1435,26 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              ¿Finalizar Examen?
+              {t('exam.confirmFinish')}
             </h3>
             <p className="text-gray-600 mb-4">
-              ¿Estás seguro de que quieres finalizar el examen?
+              {t('exam.confirmFinishText')}
             </p>
             
             {unansweredCount > 0 && (
               <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4">
                 <p className="text-orange-800 text-sm">
-                  <strong>Atención:</strong> Tienes {unansweredCount} pregunta(s) sin responder.
+                  <strong>{t('common.confirm')}:</strong> {t('exam.unansweredWarning', { count: unansweredCount })}
                 </p>
               </div>
             )}
             
             <div className="text-sm text-gray-600 space-y-1">
-              <p>Respondidas: {Object.keys(answers).length}/{exam.questions.length}</p>
-              <p>Marcadas para revisar: {markedForReview.size}</p>
-              <p>Tiempo restante: {formatTime(timeLeft)}</p>
-              <p>Modo: {examMode === 'realistic' ? 'Examen Real' : 
-                        examMode === 'failed_questions' ? 'Preguntas Fallidas' : 'Práctica'}</p>
+              <p>{t('exam.answered')}: {Object.keys(answers).length}/{exam.questions.length}</p>
+              <p>{t('exam.markedForReview')}: {markedForReview.size}</p>
+              <p>{t('exam.timeLeft')}: {formatTime(timeLeft)}</p>
+              <p>{t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
+                        examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}</p>
             </div>
           </div>
           
@@ -1482,17 +1484,17 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         <header className="bg-white shadow p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold text-blue-700">Resumen del Examen</h1>
+              <h1 className="text-xl font-bold text-blue-700">{t('exam.summaryTitle')}</h1>
               <p className="text-gray-600 text-sm">{nombreCertificacion}</p>
               <p className="text-xs text-gray-500">
-                Modo: {examMode === 'realistic' ? 'Examen Real' : 
-                       examMode === 'failed_questions' ? 'Preguntas Fallidas' : 'Práctica'}
+                {t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
+                       examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}
               </p>
             </div>
             
             <div className="flex items-center gap-4">
               <div className={`text-lg font-bold ${getTimeColor()}`}>
-                {formatTime(timeLeft)} {isPaused && '(Pausado)'}
+                {formatTime(timeLeft)} {isPaused && `(${t('common.paused')})`}
               </div>
               
               {canPause && (
@@ -1504,7 +1506,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                       : 'bg-yellow-600 text-white hover:bg-yellow-700'
                   }`}
                 >
-                  {isPaused ? 'Reanudar' : 'Pausar'}
+                  {isPaused ? t('common.resume') : t('common.pause')}
                 </button>
               )}
               
@@ -1512,7 +1514,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 onClick={() => setShowSummary(false)}
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
               >
-                Volver al Examen
+                {t('exam.continueExam')}
               </button>
             </div>
           </div>
@@ -1526,26 +1528,26 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                   <div className="text-2xl font-bold text-blue-600">
                     {Object.keys(answers).length}
                   </div>
-                  <div className="text-sm text-gray-600">Respondidas</div>
+                  <div className="text-sm text-gray-600">{t('exam.answered')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-orange-600">
                     {getUnansweredQuestions().length}
                   </div>
-                  <div className="text-sm text-gray-600">Sin Responder</div>
+                  <div className="text-sm text-gray-600">{t('common.unanswered')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-yellow-600">
                     {markedForReview.size}
                   </div>
-                  <div className="text-sm text-gray-600">Marcadas</div>
+                  <div className="text-sm text-gray-600">{t('common.marked')}</div>
                 </div>
                 {canShowVerification && (
                   <div>
                     <div className="text-2xl font-bold text-green-600">
                       {checkedQuestions.size}
                     </div>
-                    <div className="text-sm text-gray-600">Verificadas</div>
+                    <div className="text-sm text-gray-600">{t('common.verified')}</div>
                   </div>
                 )}
               </div>
@@ -1628,16 +1630,16 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             </svg>
           </div>
           
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Examen Pausado</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('exam.pausedTitle')}</h2>
           <p className="text-gray-600 mb-6">
-            Tu examen está pausado. El tiempo no está corriendo.
+            {t('exam.pausedText')}
           </p>
           
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="text-sm text-gray-600 space-y-2">
-              <p>Pregunta actual: {currentQuestionIndex + 1}/{exam.questions.length}</p>
-              <p>Tiempo restante: {formatTime(timeLeft)}</p>
-              <p>Respondidas: {Object.keys(answers).length}</p>
+              <p>{t('exam.currentQuestion')}: {currentQuestionIndex + 1}/{exam.questions.length}</p>
+              <p>{t('exam.timeLeft')}: {formatTime(timeLeft)}</p>
+              <p>{t('exam.answered')}: {Object.keys(answers).length}</p>
             </div>
           </div>
 
@@ -1646,7 +1648,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
               onClick={handleExitExam}
               className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
             >
-              Salir del Examen
+              {t('exam.exitExamButton')}
             </button>
             <button
               onClick={handleTogglePause}
@@ -1690,9 +1692,9 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                   ? 'bg-orange-100 text-orange-700'
                   : 'bg-blue-100 text-blue-700'
               }`}>
-                {examMode === 'realistic' ? 'Examen Real' : 
-                 examMode === 'failed_questions' ? 'Preguntas Fallidas' : 
-                 'Práctica'}
+                {examMode === 'realistic' ? t('examModes.label.realistic') : 
+                 examMode === 'failed_questions' ? t('examModes.label.failed_questions') : 
+                 t('examModes.label.practice')}
               </span>
               
               {/* Información adicional para preguntas fallidas */}
@@ -1720,12 +1722,12 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
             {/* Tiempo */}
             <div className={`text-lg font-bold ${getTimeColor()}`}>
-              {formatTime(timeLeft)} {isPaused && '(Pausado)'}
+              {formatTime(timeLeft)} {isPaused && `(${t('common.paused')})`}
             </div>
 
             {/* Respuestas */}
             <div className="text-sm text-gray-600">
-              Respondidas: {Object.keys(answers).length}/{exam.questions.length}
+              {t('exam.answered')}: {Object.keys(answers).length}/{exam.questions.length}
             </div>
 
             {/* Botones de control */}
@@ -1740,7 +1742,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                       : 'bg-yellow-600 text-white hover:bg-yellow-700'
                   }`}
                 >
-                  {isPaused ? 'Reanudar' : 'Pausar'}
+                  {isPaused ? t('common.resume') : t('common.pause')}
                 </button>
               )}
 
@@ -1750,7 +1752,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 disabled={isPaused}
                 className="px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-sm disabled:opacity-50"
               >
-                Ver Resumen
+                {t('exam.viewSummary')}
               </button>
 
               {/* Botón de salir */}
@@ -1771,19 +1773,19 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           {/* Barra de estado de la pregunta actual */}
           <div className="flex justify-between items-center mb-6 p-3 bg-gray-50 rounded">
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">Estado:</span>
+              <span className="text-sm text-gray-600">{t('exam.status')}:</span>
               {answers[currentQuestion.id] !== undefined ? (
-                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">Respondida</span>
+                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">{t('exam.statusAnswered')}</span>
               ) : (
-                <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-sm">Sin responder</span>
+                <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-sm">{t('exam.statusUnanswered')}</span>
               )}
               
               {markedForReview.has(currentQuestion.id) && (
-                <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">Marcada</span>
+                <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">{t('common.marked')}</span>
               )}
               
               {checkedQuestions.has(currentQuestion.id) && canShowVerification && (
-                <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-sm">Verificada</span>
+                <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-sm">{t('common.verified')}</span>
               )}
             </div>
 
@@ -1839,13 +1841,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                   </span>
                 )}
                 {(currentQuestion.questionType === 'fill_in_the_blank' || currentQuestion.questionType === 'fill_in_the_gap') && (
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded">✏️ Completar espacio</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded">{t('exam.questionTypeFill')}</span>
                 )}
                 {currentQuestion.questionType === 'drag_and_drop' && (
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded">↕️ Ordenar arrastrando</span>
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded">{t('exam.questionTypeDrag')}</span>
                 )}
                 {currentQuestion.questionType === 'checkbox' && (
-                  <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded">☑️ Seleccionar todas las correctas</span>
+                  <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded">{t('exam.questionTypeCheckbox')}</span>
                 )}
               </div>
             )}
@@ -1858,8 +1860,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>
-                    Selecciona <strong>{currentQuestion.expectedAnswers}</strong> respuestas correctas.
-                    Seleccionadas: <strong>{getSelectedCount()}</strong>/{currentQuestion.expectedAnswers}
+                    {t('exam.selectMultiple', { count: currentQuestion.expectedAnswers, selected: getSelectedCount() })}
                   </span>
                 </div>
               </div>
@@ -1869,7 +1870,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           {/* Input de respuesta (varía por questionType) */}
           {renderQuestionInput()}
 
-          {/* Explicación de la respuesta (solo en modo práctica) */}
+          {/* {t('exam.explanation')} de la respuesta (solo en modo práctica) */}
           {showExplanation[currentQuestion.id] && canShowVerification && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
               <div className="flex items-start gap-3">
@@ -1879,7 +1880,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-blue-800 mb-2">Explicación</h4>
+                  <h4 className="font-semibold text-blue-800 mb-2">{t('exam.explanation')}</h4>
                   <p className="text-blue-700 text-sm leading-relaxed">
                     {showExplanation[currentQuestion.id].explanation}
                   </p>
@@ -1892,7 +1893,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                       </div>
                     ) : (
                       <div className="text-red-700 bg-red-100 p-2 rounded">
-                        Incorrecto. Tu respuesta no es correcta.
+                        {t('exam.answerIncorrect')}
                       </div>
                     )}
                   </div>
@@ -1905,7 +1906,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
             <div className="mb-6">
               <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                <span>Progreso de respuestas:</span>
+                <span>{t('exam.progressAnswers')}</span>
                 <span>{getSelectedCount()}/{currentQuestion.expectedAnswers}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -1970,30 +1971,28 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           {/* Advertencia para preguntas incompletas */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && getSelectedCount() < currentQuestion.expectedAnswers && (
             <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded text-orange-800 text-sm">
-              Selecciona {currentQuestion.expectedAnswers - getSelectedCount()} respuesta(s) más para completar esta pregunta.
+              {t('exam.selectMore', { count: currentQuestion.expectedAnswers - getSelectedCount() })}
             </div>
           )}
 
           {/* Advertencia de tiempo */}
           {timeLeft < 300 && timeLeft > 0 && !isPaused && (
             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
-              Quedan menos de 5 minutos. El examen se enviará automáticamente cuando se acabe el tiempo.
+              {t('exam.timeLow')}
             </div>
           )}
 
           {/* Advertencia de modo realista */}
           {examMode === 'realistic' && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
-              <strong>Modo Examen Real:</strong> Verificación de respuestas y pausas no disponibles. 
-              Concentración total hasta el final.
+              <strong>{t('examModes.label.realistic')}:</strong> {t('exam.realisticWarning')}
             </div>
           )}
 
           {/* Información adicional para preguntas fallidas */}
           {isFailedQuestionsMode && (
             <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded text-orange-800 text-sm">
-              <strong>Modo Preguntas Fallidas:</strong> Esta pregunta la has respondido incorrectamente antes. 
-              Concéntrate en entender la explicación para mejorar.
+              <strong>{t('examModes.label.failed_questions')}:</strong> {t('exam.failedModeInfo')}
             </div>
           )}
         </div>

@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { communityAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
-const QUESTION_STATUS = {
-  pending: { label: 'Pendiente', color: 'yellow', icon: '⏳' },
-  approved: { label: 'Aprobada', color: 'green', icon: '✅' },
-  rejected: { label: 'Rechazada', color: 'red', icon: '❌' },
-  discussion: { label: 'En Discusión', color: 'blue', icon: '💬' }
+const QUESTION_STATUS_META = {
+  pending: { color: 'yellow', icon: '⏳' },
+  approved: { color: 'green', icon: '✅' },
+  rejected: { color: 'red', icon: '❌' },
+  discussion: { color: 'blue', icon: '💬' }
 };
 
 export default function CommunityForum({ onClose }) {
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+  const QUESTION_STATUS = Object.fromEntries(
+    Object.entries(QUESTION_STATUS_META).map(([k, v]) => [k, { ...v, label: t(`community.status.${k}`) }])
+  );
   const [activeTab, setActiveTab] = useState('browse'); // browse, submit, my-submissions
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +63,7 @@ export default function CommunityForum({ onClose }) {
         setQuestions(response.data);
       }
     } catch (err) {
-      setError('Error cargando preguntas de la comunidad');
+      setError(t('community.loadError'));
     } finally {
       setLoading(false);
     }
@@ -66,7 +71,7 @@ export default function CommunityForum({ onClose }) {
 
   const handleVote = async (questionId, voteType) => {
     if (!isAuthenticated) {
-      alert('Debes iniciar sesión para votar');
+      alert(t('community.loginToVote'));
       return;
     }
     
@@ -92,19 +97,19 @@ export default function CommunityForum({ onClose }) {
     e.preventDefault();
     
     if (!isAuthenticated) {
-      alert('Debes iniciar sesión para proponer preguntas');
+      alert(t('community.loginToSubmit'));
       return;
     }
 
     // Validaciones
     const correctAnswers = newQuestion.options.filter(o => o.isCorrect);
     if (correctAnswers.length === 0) {
-      setError('Debes marcar al menos una respuesta correcta');
+      setError(t('community.validationCorrectRequired'));
       return;
     }
 
     if (newQuestion.options.some(o => o.text.trim() === '')) {
-      setError('Todas las opciones deben tener texto');
+      setError(t('community.validationOptionsRequired'));
       return;
     }
 
@@ -117,7 +122,7 @@ export default function CommunityForum({ onClose }) {
       });
 
       if (response.success) {
-        alert('¡Pregunta enviada! Será revisada por la comunidad.');
+        alert(t('community.submitSuccess'));
         setNewQuestion({
           text: '',
           options: [
@@ -137,7 +142,7 @@ export default function CommunityForum({ onClose }) {
         loadQuestions();
       }
     } catch (err) {
-      setError('Error enviando pregunta');
+      setError(t('community.submitError'));
     } finally {
       setLoading(false);
     }
@@ -169,7 +174,7 @@ export default function CommunityForum({ onClose }) {
       <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
         <input
           type="text"
-          placeholder="Buscar preguntas..."
+          placeholder="{t('community.searchPlaceholder')}"
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg"
@@ -179,19 +184,19 @@ export default function CommunityForum({ onClose }) {
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           className="px-3 py-2 border rounded-lg"
         >
-          <option value="all">Todos los estados</option>
-          <option value="pending">Pendientes</option>
-          <option value="approved">Aprobadas</option>
-          <option value="discussion">En Discusión</option>
+          <option value="all">{t('community.filterAll')}</option>
+          <option value="pending">{t('community.filterPending')}</option>
+          <option value="approved">{t('community.filterApproved')}</option>
+          <option value="discussion">{t('community.filterDiscussion')}</option>
         </select>
         <select
           value={filters.sortBy}
           onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
           className="px-3 py-2 border rounded-lg"
         >
-          <option value="recent">Más recientes</option>
-          <option value="popular">Más votadas</option>
-          <option value="discussed">Más comentadas</option>
+          <option value="recent">{t('community.sortRecent')}</option>
+          <option value="popular">{t('community.sortPopular')}</option>
+          <option value="discussed">{t('community.sortDiscussed')}</option>
         </select>
       </div>
 
@@ -262,10 +267,10 @@ export default function CommunityForum({ onClose }) {
 
   const renderSubmitTab = () => (
     <form onSubmit={handleSubmitQuestion} className="space-y-6">
-      {/* Texto de la pregunta */}
+      {/* {t('community.questionText')}/}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Texto de la pregunta *
+          {t('community.questionText')}
         </label>
         <textarea
           value={newQuestion.text}
@@ -273,14 +278,14 @@ export default function CommunityForum({ onClose }) {
           className="w-full px-3 py-2 border rounded-lg"
           rows={4}
           required
-          placeholder="Escribe aquí el enunciado de la pregunta..."
+          placeholder="{t('community.questionTextPlaceholder')}"
         />
       </div>
 
       {/* Opciones */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Opciones de respuesta *
+          {t('community.answerOptions')}
         </label>
         <div className="space-y-3">
           {newQuestion.options.map((option, index) => (
@@ -297,7 +302,7 @@ export default function CommunityForum({ onClose }) {
                   setNewQuestion({ ...newQuestion, options: newOptions });
                 }}
                 className="flex-1 px-3 py-2 border rounded-lg"
-                placeholder={`Opción ${String.fromCharCode(65 + index)}`}
+                placeholder={t('community.optionPlaceholder', { letter: String.fromCharCode(65 + index) })}
                 required
               />
               <label className="flex items-center gap-2 cursor-pointer">
@@ -311,7 +316,7 @@ export default function CommunityForum({ onClose }) {
                   }}
                   className="w-4 h-4 text-green-600"
                 />
-                <span className="text-sm text-green-600">Correcta</span>
+                <span className="text-sm text-green-600">{t('community.correct')}</span>
               </label>
             </div>
           ))}
@@ -328,14 +333,14 @@ export default function CommunityForum({ onClose }) {
           }}
           className="mt-2 text-sm text-blue-600 hover:underline"
         >
-          + Añadir opción
+          {t('community.addOption')}
         </button>
       </div>
 
       {/* Explicación */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Explicación de la respuesta *
+          {t('community.explanation')}
         </label>
         <textarea
           value={newQuestion.explanation}
@@ -343,7 +348,7 @@ export default function CommunityForum({ onClose }) {
           className="w-full px-3 py-2 border rounded-lg"
           rows={3}
           required
-          placeholder="Explica por qué esta es la respuesta correcta..."
+          placeholder="{t('community.explanationPlaceholder')}"
         />
       </div>
 
@@ -351,7 +356,7 @@ export default function CommunityForum({ onClose }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Proveedor *
+            {t('community.provider')}
           </label>
           <select
             value={newQuestion.provider}
@@ -369,7 +374,7 @@ export default function CommunityForum({ onClose }) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Dificultad *
+            {t('community.difficulty')}
           </label>
           <select
             value={newQuestion.difficulty}
@@ -377,9 +382,9 @@ export default function CommunityForum({ onClose }) {
             className="w-full px-3 py-2 border rounded-lg"
             required
           >
-            <option value="easy">Fácil</option>
-            <option value="medium">Media</option>
-            <option value="hard">Difícil</option>
+            <option value="easy">{t('community.easy')}</option>
+            <option value="medium">{t('community.medium')}</option>
+            <option value="hard">{t('community.hard')}</option>
           </select>
         </div>
       </div>
@@ -387,14 +392,14 @@ export default function CommunityForum({ onClose }) {
       {/* Referencias */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Referencias (opcional)
+          {t('community.references')}
         </label>
         <input
           type="text"
           value={newQuestion.references}
           onChange={(e) => setNewQuestion({ ...newQuestion, references: e.target.value })}
           className="w-full px-3 py-2 border rounded-lg"
-          placeholder="URL de documentación oficial, etc."
+          placeholder="{t('community.referencesPlaceholder')}"
         />
       </div>
 
@@ -407,7 +412,7 @@ export default function CommunityForum({ onClose }) {
         disabled={loading}
         className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
       >
-        {loading ? 'Enviando...' : '📝 Proponer Pregunta'}
+        {loading ? t('community.submitting') : '{t('community.submitQuestion')}'}
       </button>
     </form>
   );
@@ -418,8 +423,8 @@ export default function CommunityForum({ onClose }) {
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b bg-gradient-to-r from-purple-50 to-blue-50">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">🌐 Foro de la Comunidad</h2>
-            <p className="text-gray-600">Propone preguntas y ayuda a mejorar el banco de preguntas</p>
+            <h2 className="text-2xl font-bold text-gray-800">{t('community.title')}</h2>
+            <p className="text-gray-600">{t('community.subtitle')}</p>
           </div>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
         </div>
@@ -427,9 +432,9 @@ export default function CommunityForum({ onClose }) {
         {/* Tabs */}
         <div className="flex border-b">
           {[
-            { id: 'browse', label: '📋 Explorar', count: questions.length },
-            { id: 'submit', label: '✏️ Proponer' },
-            { id: 'my-submissions', label: '📁 Mis Propuestas' }
+            { id: 'browse', label: 't('community.tabBrowse')', count: questions.length },
+            { id: 'submit', label: 't('community.tabSubmit')' },
+            { id: 'my-submissions', label: 't('community.tabMySubmissions')' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -457,8 +462,8 @@ export default function CommunityForum({ onClose }) {
           {activeTab === 'my-submissions' && (
             <div className="text-center py-8 text-gray-500">
               {isAuthenticated 
-                ? 'Cargando tus propuestas...' 
-                : 'Inicia sesión para ver tus propuestas'
+                ? t('community.loadingSubmissions') 
+                : t('community.loginToSeeSubmissions')
               }
             </div>
           )}
@@ -470,7 +475,7 @@ export default function CommunityForum({ onClose }) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden">
             <div className="p-6 border-b">
-              <h3 className="font-semibold text-lg">Discusión</h3>
+              <h3 className="font-semibold text-lg">{t('community.discussion')}</h3>
             </div>
             <div className="p-6 overflow-y-auto max-h-[50vh]">
               {selectedQuestion.comments?.map(comment => (
@@ -491,7 +496,7 @@ export default function CommunityForum({ onClose }) {
                   type="text"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Escribe un comentario..."
+                  placeholder="{t('community.commentPlaceholder')}"
                   className="flex-1 px-3 py-2 border rounded-lg"
                 />
                 <button

@@ -2,9 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { userAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function ExamModeSelector({ examConfig, nombreCertificacion, onStartExam, onVolver }) {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [selectedMode, setSelectedMode] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [failedQuestionsCount, setFailedQuestionsCount] = useState(0);
@@ -39,22 +41,11 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
   const examModes = [
     {
       id: 'realistic',
-      name: 'Prueba de Examen Real',
+      name: t('examModes.realistic.name'),
       icon: '🎯',
-      description: 'Simulación realista del examen oficial',
-      features: [
-        'Tiempo límite estricto',
-        'Sin verificación de respuestas',
-        'Sin pausas durante el examen',
-        'Modo concentración completa',
-        'Resultados al final únicamente'
-      ],
-      restrictions: [
-        'No puedes verificar respuestas',
-        'No puedes pausar el examen',
-        'No se muestran categorías ni dificultad',
-        'Una vez iniciado, debe completarse'
-      ],
+      description: t('examModes.realistic.description'),
+      features: t('examModes.realistic.features', { returnObjects: true }),
+      restrictions: t('examModes.realistic.restrictions', { returnObjects: true }),
       color: 'from-red-500 to-red-600',
       bgColor: 'bg-red-50',
       borderColor: 'border-red-200',
@@ -62,20 +53,11 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
     },
     {
       id: 'practice',
-      name: 'Modo Práctica',
+      name: t('examModes.practice.name'),
       icon: '📚',
-      description: 'Practica con todas las ayudas disponibles',
-      features: [
-        'Verificación de respuestas disponible',
-        'Explicaciones inmediatas',
-        'Pausa cuando quieras',
-        'Marcar preguntas para revisión',
-        'Información detallada de preguntas'
-      ],
-      restrictions: [
-        'Solo para práctica y aprendizaje',
-        'No simula condiciones reales del examen'
-      ],
+      description: t('examModes.practice.description'),
+      features: t('examModes.practice.features', { returnObjects: true }),
+      restrictions: t('examModes.practice.restrictions', { returnObjects: true }),
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
@@ -83,21 +65,11 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
     },
     {
       id: 'failed_questions',
-      name: 'Preguntas Fallidas',
+      name: t('examModes.failed_questions.name'),
       icon: '🔄',
-      description: 'Practica solo con preguntas que has fallado antes',
-      features: [
-        'Solo preguntas respondidas incorrectamente',
-        'Verificación de respuestas disponible',
-        'Explicaciones detalladas',
-        'Enfoque en debilidades identificadas',
-        'Mejora tu tasa de aciertos'
-      ],
-      restrictions: [
-        'Requiere cuenta de usuario',
-        'Necesitas haber fallado preguntas previamente',
-        'Mínimo 5 preguntas fallidas requeridas'
-      ],
+      description: t('examModes.failed_questions.description'),
+      features: t('examModes.failed_questions.features', { returnObjects: true }),
+      restrictions: t('examModes.failed_questions.restrictions', { returnObjects: true }),
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-200',
@@ -140,7 +112,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
               {selectedMode.icon}
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              Confirmar Modo: {selectedMode.name}
+              {t('modeSelector.confirmTitle', { name: selectedMode.name })}
             </h2>
             <p className="text-gray-600 mb-6">
               {selectedMode.description}
@@ -150,32 +122,32 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
           <div className="space-y-6">
             {/* Configuración del examen */}
             <div className={`p-4 rounded-lg border-2 ${selectedMode.borderColor} ${selectedMode.bgColor}`}>
-              <h3 className="font-semibold text-gray-800 mb-3">📋 Configuración del Examen</h3>
+              <h3 className="font-semibold text-gray-800 mb-3">{t('modeSelector.examConfig')}</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600">Certificación:</span>
+                  <span className="text-gray-600">{t('modeSelector.certification')}</span>
                   <div className="font-semibold">{nombreCertificacion}</div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Preguntas:</span>
+                  <span className="text-gray-600">{t('modeSelector.questions')}</span>
                   <div className="font-semibold">
                     {selectedMode.id === 'failed_questions' 
-                      ? `${failedQuestionsCount} (solo fallidas)` 
+                      ? t('modeSelector.failedOnly', { count: failedQuestionsCount }) 
                       : examConfig.questionCount
                     }
                   </div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Tiempo límite:</span>
+                  <span className="text-gray-600">{t('modeSelector.timeLimit')}</span>
                   <div className="font-semibold">
                     {selectedMode.id === 'failed_questions' 
-                      ? `${Math.ceil(failedQuestionsCount * 1.5)} minutos` 
-                      : `${examConfig.timeLimit} minutos`
+                      ? t('modeSelector.failedMinutes', { minutes: Math.ceil(failedQuestionsCount * 1.5) }) 
+                      : t('modeSelector.regularMinutes', { minutes: examConfig.timeLimit })
                     }
                   </div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Puntuación mínima:</span>
+                  <span className="text-gray-600">{t('modeSelector.passingScore')}</span>
                   <div className="font-semibold">{examConfig.passingScore}%</div>
                 </div>
               </div>
@@ -191,14 +163,14 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-orange-800 mb-2">🔄 Modo Preguntas Fallidas</h4>
+                    <h4 className="font-semibold text-orange-800 mb-2">{t('modeSelector.failedModeNote')}</h4>
                     <p className="text-orange-700 text-sm mb-2">
-                      Este examen incluirá solo las {failedQuestionsCount} preguntas que has respondido incorrectamente al menos una vez.
+                      {t('modeSelector.failedModeDesc', { count: failedQuestionsCount })}
                     </p>
                     <ul className="text-sm text-orange-700 space-y-1">
-                      <li>• Enfócate en tus áreas de mejora</li>
-                      <li>• Revisa explicaciones detalladas</li>
-                      <li>• Convierte tus debilidades en fortalezas</li>
+                      <li>• {t('modeSelector.failedModeTips.0', { returnObjects: true })}</li>
+                      <li>• {t('modeSelector.failedModeTips.1', { returnObjects: true })}</li>
+                      <li>• {t('modeSelector.failedModeTips.2', { returnObjects: true })}</li>
                     </ul>
                   </div>
                 </div>
@@ -212,7 +184,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Características Incluidas
+                  {t('modeSelector.featuresTitle')}
                 </h4>
                 <ul className="text-sm text-green-700 space-y-1">
                   {selectedMode.features.map((feature, index) => (
@@ -229,7 +201,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                  Restricciones
+                  {t('modeSelector.restrictionsTitle')}
                 </h4>
                 <ul className="text-sm text-orange-700 space-y-1">
                   {selectedMode.restrictions.map((restriction, index) => (
@@ -250,12 +222,11 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-yellow-800 mb-1">Modo Invitado</h4>
+                    <h4 className="font-semibold text-yellow-800 mb-1">{t('modeSelector.guestNote')}</h4>
                     <p className="text-yellow-700 text-sm">
-                      Sin una cuenta, tu progreso se guardará solo durante esta sesión. 
-                      Para guardar permanentemente y poder retomar exámenes, 
+                      {t('modeSelector.guestDesc')} 
                       <button className="underline font-semibold hover:text-yellow-900" onClick={() => {}}>
-                        regístrate aquí
+                        {t('modeSelector.registerHere')}
                       </button>.
                     </p>
                   </div>
@@ -272,7 +243,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
               }}
               className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
-              Cambiar Modo
+              {t('modeSelector.changeMode')}
             </button>
             <button
               onClick={handleConfirmStart}
@@ -291,14 +262,14 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
       <header className="bg-white shadow p-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-blue-700">Seleccionar Modo de Examen</h1>
+            <h1 className="text-2xl font-bold text-blue-700">{t('modeSelector.pageTitle')}</h1>
             <p className="text-gray-600">{nombreCertificacion}</p>
           </div>
           <button 
             onClick={onVolver}
             className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
           >
-            ← Volver
+            {t('common.back')}
           </button>
         </div>
       </header>
@@ -307,11 +278,10 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
         <div className="max-w-6xl w-full">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              ¿Cómo quieres realizar tu examen?
+              {t('modeSelector.heading')}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Elige el modo que mejor se adapte a tus objetivos. Puedes practicar con ayudas, 
-              hacer una simulación realista del examen oficial, o enfocarte en preguntas que has fallado.
+              {t('modeSelector.subheading')}
             </p>
           </div>
 
@@ -329,7 +299,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                 {/* Badge de disponibilidad */}
                 {!mode.available && mode.requiresAuth && (
                   <div className="absolute -top-2 -right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    {!isAuthenticated ? 'Requiere cuenta' : 'Sin preguntas'}
+                    {!isAuthenticated ? t('modeSelector.requiresAccount') : t('modeSelector.noQuestions')}
                   </div>
                 )}
                 
@@ -356,7 +326,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                   {mode.id === 'failed_questions' && loadingFailedQuestions && (
                     <div className="text-center mb-4">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-600 mx-auto mb-2"></div>
-                      <p className="text-sm text-gray-600">Cargando preguntas fallidas...</p>
+                      <p className="text-sm text-gray-600">{t('modeSelector.loadingFailed')}</p>
                     </div>
                   )}
 
@@ -366,7 +336,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                         <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
-                        Características:
+                        {t('modeSelector.features')}
                       </h4>
                       <ul className="text-sm text-gray-600 space-y-1">
                         {mode.features.slice(0, 3).map((feature, index) => (
@@ -389,7 +359,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                           <svg className="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
-                          Restricciones:
+                          {t('modeSelector.restrictionsTitle')}:
                         </h4>
                         <ul className="text-sm text-gray-600 space-y-1">
                           {mode.restrictions.slice(0, 2).map((restriction, index) => (
@@ -412,10 +382,10 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                     }`}
                   >
                     {mode.available 
-                      ? `Seleccionar ${mode.name}`
+                      ? t('modeSelector.selectMode', { name: mode.name })
                       : (mode.requiresAuth && !isAuthenticated 
-                          ? 'Requiere Registro'
-                          : 'No Disponible'
+                          ? t('modeSelector.requiresRegister')
+                          : t('modeSelector.notAvailable')
                         )
                     }
                   </button>
@@ -428,13 +398,13 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
           {isAuthenticated && failedQuestionsCount < 5 && (
             <div className="text-center mt-10">
               <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto">
-                <h3 className="font-semibold text-gray-800 mb-2">🔄 ¿Quieres usar Preguntas Fallidas?</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">{t('modeSelector.needMoreFailed')}</h3>
                 <p className="text-gray-600 text-sm mb-4">
-                  Necesitas al menos 5 preguntas respondidas incorrectamente para usar este modo. 
-                  Actualmente tienes <strong>{failedQuestionsCount}</strong> preguntas fallidas.
+                  
+                  {t('modeSelector.needMoreFailedDesc', { count: failedQuestionsCount })}
                 </p>
                 <p className="text-gray-500 text-xs">
-                  Completa algunos exámenes en modo práctica para generar tu banco de preguntas fallidas.
+                  {t('modeSelector.needMoreFailedHint')}
                 </p>
               </div>
             </div>
@@ -443,18 +413,18 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
           {!isAuthenticated && (
             <div className="text-center mt-10">
               <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto">
-                <h3 className="font-semibold text-gray-800 mb-2">💡 ¿No estás seguro?</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">{t('modeSelector.tipTitle')}</h3>
                 <p className="text-gray-600 text-sm mb-4">
                   Si es tu primera vez, te recomendamos empezar con el <strong>Modo Práctica</strong> 
                   para familiarizarte con el formato de preguntas. 
                   <strong>Regístrate</strong> para desbloquear el modo de preguntas fallidas.
                 </p>
                 <div className="flex justify-center gap-4 text-xs text-gray-500">
-                  <span>📚 Modo Práctica: Ideal para aprender</span>
+                  <span>{t('modeSelector.tipPractice')}</span>
                   <span>•</span>
-                  <span>🎯 Modo Real: Ideal para evaluarse</span>
+                  <span>{t('modeSelector.tipRealistic')}</span>
                   <span>•</span>
-                  <span>🔄 Preguntas Fallidas: Mejora debilidades</span>
+                  <span>{t('modeSelector.tipFailed')}</span>
                 </div>
               </div>
             </div>

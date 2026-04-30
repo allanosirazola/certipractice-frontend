@@ -1,8 +1,10 @@
 // ExamReview.jsx - Componente para revisar preguntas del examen completado
 import { useState, useEffect } from 'react';
 import { examAPI, questionAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function ExamReview({ examId, examData, onClose }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exam, setExam] = useState(null);
