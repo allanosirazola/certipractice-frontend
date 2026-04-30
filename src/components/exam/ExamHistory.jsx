@@ -136,7 +136,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
       });
     } catch (error) {
       console.warn('Error formatting date:', dateString);
-      return 'Fecha inválida';
+      return t('examHistory.invalidDate');
     }
   };
 
@@ -186,9 +186,9 @@ export default function ExamHistory({ onClose, onResumeExam }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Acceso restringido</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">{t('examHistory.restricted')}</h2>
           <p className="text-gray-600 mb-6">
-            Necesitas iniciar sesión para ver tu historial de exámenes.
+            {t('examHistory.loginRequired')}
           </p>
           <button
             onClick={onClose}
@@ -207,9 +207,9 @@ export default function ExamHistory({ onClose, onResumeExam }) {
         <div className="bg-white rounded-lg max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden">
           <div className="flex justify-between items-center p-6 border-b">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">Historial de Exámenes</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('examHistory.title')}</h2>
               <p className="text-gray-600 text-sm">
-                Gestiona tus exámenes y revisa tus resultados
+                {t('examHistory.subtitle')}
               </p>
             </div>
             <button
@@ -264,7 +264,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
               {loading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Cargando exámenes...</p>
+                  <p className="text-gray-600">{t('examHistory.loadingExams')}</p>
                 </div>
               ) : exams?.length > 0 ? (
                 <div className="space-y-4">
@@ -295,20 +295,20 @@ export default function ExamHistory({ onClose, onResumeExam }) {
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                               <div>
-                                <span className="block font-medium text-gray-800">Preguntas:</span>
+                                <span className="block font-medium text-gray-800">{t('examHistory.questionsLabel')}</span>
                                 {exam.answeredQuestions || 0}/{exam.questions?.length || exam.totalQuestions || 0}
                               </div>
                               <div>
-                                <span className="block font-medium text-gray-800">Tiempo límite:</span>
+                                <span className="block font-medium text-gray-800">{t('examHistory.timeLimitLabel')}</span>
                                 {formatDuration(exam.timeLimit)}
                               </div>
                               <div>
-                                <span className="block font-medium text-gray-800">Creado:</span>
+                                <span className="block font-medium text-gray-800">{t('examHistory.createdAt')}</span>
                                 {formatDate(exam.createdAt)}
                               </div>
                               {exam.completedAt && (
                                 <div>
-                                  <span className="block font-medium text-gray-800">Completado:</span>
+                                  <span className="block font-medium text-gray-800">{t('examHistory.completedAt')}</span>
                                   {formatDate(exam.completedAt)}
                                 </div>
                               )}
@@ -320,7 +320,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
                         {exam.status !== 'completed' && exam.questions?.length > 0 && (
                           <div className="mb-4">
                             <div className="flex justify-between items-center mb-1">
-                              <span className="text-sm font-medium text-gray-700">Progreso</span>
+                              <span className="text-sm font-medium text-gray-700">{t('examHistory.progress')}</span>
                               <span className="text-sm text-gray-600">{examProgress}%</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -338,15 +338,15 @@ export default function ExamHistory({ onClose, onResumeExam }) {
                             <div className="grid grid-cols-3 gap-4 text-sm">
                               <div className="text-center">
                                 <div className="font-semibold text-green-600">{exam.correctAnswers || 0}</div>
-                                <div className="text-gray-600">Correctas</div>
+                                <div className="text-gray-600">{t('examHistory.correct')}</div>
                               </div>
                               <div className="text-center">
                                 <div className="font-semibold text-red-600">{exam.incorrectAnswers || 0}</div>
-                                <div className="text-gray-600">Incorrectas</div>
+                                <div className="text-gray-600">{t('examHistory.incorrect')}</div>
                               </div>
                               <div className="text-center">
                                 <div className="font-semibold text-blue-600">{formatDuration(exam.timeSpent)}</div>
-                                <div className="text-gray-600">Tiempo usado</div>
+                                <div className="text-gray-600">{t('examHistory.timeUsed')}</div>
                               </div>
                             </div>
                           </div>
@@ -407,10 +407,10 @@ export default function ExamHistory({ onClose, onResumeExam }) {
                     </svg>
                   </div>
                   <p className="text-gray-600 text-lg mb-2">
-                    No tienes exámenes {filter !== 'all' ? filter.replace('_', ' ') : 'registrados'}
+                    {t('examHistory.noExamsFilter', { filter: filter !== 'all' ? filter.replace('_',' ') : '' })}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Comienza tu primer examen desde la página principal
+                    {t('examHistory.startFirst')}
                   </p>
                 </div>
               )}

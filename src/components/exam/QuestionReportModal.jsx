@@ -37,7 +37,7 @@ export default function QuestionReportModal({
     }
 
     if (description.trim().length < 10) {
-      setError('Por favor proporciona una descripción más detallada (mínimo 10 caracteres)');
+      setError(t('questionReport.descTooShort'));
       return;
     }
 
@@ -95,9 +95,9 @@ export default function QuestionReportModal({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">¡Gracias por tu reporte!</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('questionReport.thanksTitle')}</h3>
           <p className="text-gray-600">
-            Tu reporte ha sido enviado correctamente. Nuestro equipo lo revisará pronto.
+            {t('questionReport.thanksText')}
           </p>
         </div>
       </div>
@@ -112,13 +112,13 @@ export default function QuestionReportModal({
           <div>
             <h2 className="text-xl font-bold text-red-800">🚩 Reportar Pregunta</h2>
             <p className="text-red-600 text-sm mt-1">
-              Ayúdanos a mejorar reportando problemas con las preguntas
+              {t('questionReport.helpUs')}
             </p>
           </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl transition-colors"
-            aria-label="Cerrar"
+            aria-label={t('common.close')}
           >
             ✕
           </button>
@@ -127,7 +127,7 @@ export default function QuestionReportModal({
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           {/* Pregunta reportada */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h4 className="font-medium text-gray-700 mb-2 text-sm">Pregunta reportada:</h4>
+            <h4 className="font-medium text-gray-700 mb-2 text-sm">{t('questionReport.questionReported')}</h4>
             <p className="text-gray-800 text-sm leading-relaxed">
               {question.text.length > 200 
                 ? `${question.text.substring(0, 200)}...` 
@@ -147,7 +147,7 @@ export default function QuestionReportModal({
           {/* Tipo de reporte */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              ¿Qué tipo de problema has encontrado? *
+              {t('questionReport.whatProblem')}
             </label>
             <div className="grid grid-cols-2 gap-3">
               {REPORT_TYPES.map(type => (
@@ -179,26 +179,26 @@ export default function QuestionReportModal({
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Por favor explica qué está mal con esta pregunta..."
+              placeholder={t('questionReport.descriptionPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               rows={4}
               required
               minLength={10}
             />
             <p className="text-xs text-gray-500 mt-1">
-              {description.length}/500 caracteres (mínimo 10)
+              {t('questionReport.charCount', { count: description.length })}
             </p>
           </div>
 
           {/* Corrección sugerida */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              ¿Tienes una corrección sugerida? (opcional)
+              {t('questionReport.suggestedFix')}
             </label>
             <textarea
               value={suggestedCorrection}
               onChange={(e) => setSuggestedCorrection(e.target.value)}
-              placeholder="Si sabes cuál debería ser la respuesta correcta o cómo mejorar la pregunta..."
+              placeholder={t('questionReport.suggestedFixPlaceholder')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               rows={3}
             />
@@ -214,8 +214,8 @@ export default function QuestionReportModal({
           {/* Nota de privacidad */}
           {!isAuthenticated && (
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-sm">
-              <strong>Nota:</strong> Estás reportando como usuario anónimo. 
-              <a href="#" className="underline ml-1">Inicia sesión</a> para recibir actualizaciones sobre tu reporte.
+              <strong>{t('common.confirm')}:</strong> {t('questionReport.anonymousNote')} 
+              <a href="#" className="underline ml-1">{t('questionReport.loginForUpdates')}</a> {t('questionReport.loginForUpdatesText')}
             </div>
           )}
         </form>

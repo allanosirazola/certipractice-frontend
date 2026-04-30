@@ -62,15 +62,15 @@ export default function ExamExitModal({
             </h3>
             <p className="text-gray-600">
               {isRealisticMode 
-                ? t('exitModal.realisticWarning')
-                : t('exitModal.saveAndExitDesc')
+                ? t('exitModal.exitRealisticDesc')
+                : t('exitModal.exitOptionDesc')
               }
             </p>
           </div>
 
           {/* {t('exitModal.title')} */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-gray-700 mb-3">{t('exitModal.title')}</h4>
+            <h4 className="font-semibold text-gray-700 mb-3">{t('exitModal.currentState')}</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">{t('exitModal.answered')}</span>
@@ -85,7 +85,7 @@ export default function ExamExitModal({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Progress:</span>
+                <span className="text-gray-600">{t('exitModal.progress')}</span>
                 <span className="font-semibold">
                   {Math.round((getAnsweredCount() / (exam?.questions?.length || 1)) * 100)}%
                 </span>

@@ -169,7 +169,7 @@ export default function ExamReview({ examId, examData, onClose }) {
         ...prev,
         [questionId]: {
           correctAnswers: currentQuestion.correctAnswers,
-          explanation: currentQuestion.explanation || 'No hay explicación disponible'
+          explanation: currentQuestion.explanation || t('examReview.noExplanation')
         }
       }));
       return;
@@ -210,7 +210,7 @@ export default function ExamReview({ examId, examData, onClose }) {
         [questionId]: {
           ...questionData,
           correctAnswers: questionData.correctAnswer || questionData.correctAnswers,
-          explanation: questionData.explanation || 'No hay explicación disponible'
+          explanation: questionData.explanation || t('examReview.noExplanation')
         }
       }));
       
@@ -226,14 +226,14 @@ export default function ExamReview({ examId, examData, onClose }) {
       // Crear opciones placeholder si no existen
       const placeholderOptions = Array.from({ length: 4 }, (_, i) => ({
         label: String.fromCharCode(65 + i),
-        text: `Opción ${String.fromCharCode(65 + i)}`
+        text: t('common.select') + ` ${String.fromCharCode(65 + i)}`
       }));
       
       setQuestionDetails(prev => ({
         ...prev,
         [questionId]: {
           correctAnswers: currentQuestion.correctAnswers || [],
-          explanation: currentQuestion.explanation || 'No se pudo cargar la explicación',
+          explanation: currentQuestion.explanation || t('examReview.noExplanation'),
           options: placeholderOptions
         }
       }));
@@ -339,7 +339,7 @@ export default function ExamReview({ examId, examData, onClose }) {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando revisión del examen...</p>
+          <p className="text-gray-600">{t('examReview.loading')}</p>
         </div>
       </div>
     );
@@ -354,7 +354,7 @@ export default function ExamReview({ examId, examData, onClose }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-red-800 mb-4">Error</h3>
+          <h3 className="text-xl font-semibold text-red-800 mb-4">{t('common.error')}</h3>
           <p className="text-red-700 mb-6">{error}</p>
           <button
             onClick={onClose}
@@ -390,13 +390,13 @@ export default function ExamReview({ examId, examData, onClose }) {
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b bg-gray-50">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Revisión del Examen</h2>
+            <h2 className="text-2xl font-bold text-gray-800">{t('examReview.title2')}</h2>
             <p className="text-gray-600">{exam.certification} - {exam.provider}</p>
             <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-              <span>Modo: {exam.examMode === 'realistic' ? '🎯 Examen Real' : '📚 Práctica'}</span>
+              <span>{t('examReview.modeLabel')} {exam.examMode === 'realistic' ? t('exam.modeRealLabel') : t('exam.modePracticeLabel')}</span>
               {results && (
                 <>
-                  <span>Puntuación: {results.examSummary.score}%</span>
+                  <span>{t('examReview.scoreLabel')} {results.examSummary.score}%</span>
                   <span className={results.passed ? 'text-green-600' : 'text-red-600'}>
                     {results.passed ? '✅ Aprobado' : '❌ No Aprobado'}
                   </span>
@@ -500,7 +500,7 @@ export default function ExamReview({ examId, examData, onClose }) {
                 </span>
                 {currentQuestion.isMultipleChoice && (
                   <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
-                    Selección múltiple
+                    {t('examReview.multipleChoice')}
                   </span>
                 )}
               </div>
@@ -573,7 +573,7 @@ export default function ExamReview({ examId, examData, onClose }) {
                       ? 'bg-green-100 text-green-700' 
                       : 'bg-red-100 text-red-700'
                   }`}>
-                    {isCorrectOption ? 'Tu elección (correcta)' : 'Tu elección (incorrecta)'}
+                    {isCorrectOption ? t('examReview.yourChoiceCorrect') : t('examReview.yourChoiceWrong')}
                   </span>
                 )}
               </div>
@@ -618,7 +618,7 @@ export default function ExamReview({ examId, examData, onClose }) {
               }
             </p>
             <p>
-              <strong>Estado:</strong> {
+              <strong>{t('examReview.statusLabel')}</strong> {
                 getAnswerStatus(currentQuestion.id) === 'correct' ? '✅ Correcta' : 
                 getAnswerStatus(currentQuestion.id) === 'incorrect' ? '❌ Incorrecta' : 
                 '⭕ Sin responder'
@@ -626,7 +626,7 @@ export default function ExamReview({ examId, examData, onClose }) {
             </p>
             {questionDetails[currentQuestion.id]?.correctAnswers && (
               <p>
-                <strong>Respuesta(s) correcta(s):</strong> {
+                <strong>{t('examReview.correctAnswers')}</strong> {
                   Array.isArray(questionDetails[currentQuestion.id].correctAnswers)
                     ? questionDetails[currentQuestion.id].correctAnswers.map(i => String.fromCharCode(65 + i)).join(', ')
                     : String.fromCharCode(65 + questionDetails[currentQuestion.id].correctAnswers)
@@ -658,9 +658,9 @@ export default function ExamReview({ examId, examData, onClose }) {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-blue-800 mb-3">Explicación</h4>
+                    <h4 className="font-semibold text-blue-800 mb-3">{t('exam.explanation')}</h4>
                     <p className="text-blue-700 leading-relaxed">
-                      {questionDetails[currentQuestion.id].explanation || 'No hay explicación disponible para esta pregunta.'}
+                      {questionDetails[currentQuestion.id].explanation || t('examReview.noExplanation2')}
                     </p>
                   </div>
                 </div>
@@ -670,7 +670,7 @@ export default function ExamReview({ examId, examData, onClose }) {
             {loadingDetails && (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                <p className="text-gray-600 text-sm">Cargando explicación...</p>
+                <p className="text-gray-600 text-sm">{t('examReview.loadingExplanation')}</p>
               </div>
             )}
           </div>
@@ -688,7 +688,7 @@ export default function ExamReview({ examId, examData, onClose }) {
                 onClick={onClose}
                 className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
               >
-                Cerrar Revisión
+                {t('examReview.close')}
               </button>
             </div>
           </div>

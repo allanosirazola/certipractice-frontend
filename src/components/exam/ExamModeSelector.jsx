@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { userAPI } from '../../services/api';
 import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 export default function ExamModeSelector({ examConfig, nombreCertificacion, onStartExam, onVolver }) {
   const { isAuthenticated } = useAuth();
@@ -265,12 +266,15 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
             <h1 className="text-2xl font-bold text-blue-700">{t('modeSelector.pageTitle')}</h1>
             <p className="text-gray-600">{nombreCertificacion}</p>
           </div>
-          <button 
-            onClick={onVolver}
-            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-          >
-            {t('common.back')}
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <button 
+              onClick={onVolver}
+              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+            >
+              {t('common.back')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -347,7 +351,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                         ))}
                         {mode.features.length > 3 && (
                           <li className="text-gray-500 text-xs">
-                            +{mode.features.length - 3} características más
+                            {t('modeSelector.moreFeatures', { count: mode.features.length - 3 })}
                           </li>
                         )}
                       </ul>
@@ -415,9 +419,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
               <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto">
                 <h3 className="font-semibold text-gray-800 mb-2">{t('modeSelector.tipTitle')}</h3>
                 <p className="text-gray-600 text-sm mb-4">
-                  Si es tu primera vez, te recomendamos empezar con el <strong>Modo Práctica</strong> 
-                  para familiarizarte con el formato de preguntas. 
-                  <strong>Regístrate</strong> para desbloquear el modo de preguntas fallidas.
+                  {t('modeSelector.tipDesc2')}
                 </p>
                 <div className="flex justify-center gap-4 text-xs text-gray-500">
                   <span>{t('modeSelector.tipPractice')}</span>

@@ -94,7 +94,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando estadísticas de preguntas fallidas...</p>
+          <p className="text-gray-600">{t('failedStats.loadingStats')}</p>
         </div>
       </div>
     );
@@ -109,7 +109,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-red-800 mb-4">Error</h3>
+          <h3 className="text-xl font-semibold text-red-800 mb-4">{t('common.error')}</h3>
           <p className="text-red-700 mb-6">{error}</p>
           <button
             onClick={onClose}
@@ -131,10 +131,10 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b bg-orange-50">
           <div>
-            <h2 className="text-2xl font-bold text-orange-800">Preguntas Fallidas</h2>
+            <h2 className="text-2xl font-bold text-orange-800">{t('failedStats.title')}</h2>
             <p className="text-orange-600">{provider} - {certification}</p>
             <p className="text-sm text-gray-600 mt-1">
-              Analiza tus debilidades y conviértelas en fortalezas
+              {t('failedStats.analyzeWeaknesses')}
             </p>
           </div>
           
@@ -152,21 +152,21 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-red-600">{stats.totalFailed}</div>
-                <div className="text-sm text-red-700">Total Fallidas</div>
+                <div className="text-sm text-red-700">{t('failedStats.total')}</div>
               </div>
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-orange-600">{stats.recentlyFailed || 0}</div>
-                <div className="text-sm text-orange-700">Esta Semana</div>
+                <div className="text-sm text-orange-700">{t('failedStats.thisWeek')}</div>
               </div>
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-green-600">{stats.improved || 0}</div>
-                <div className="text-sm text-green-700">Mejoradas</div>
+                <div className="text-sm text-green-700">{t('failedStats.improved')}</div>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-blue-600">
                   {stats.improvementRate ? `${Math.round(stats.improvementRate)}%` : '0%'}
                 </div>
-                <div className="text-sm text-blue-700">Tasa de Mejora</div>
+                <div className="text-sm text-blue-700">{t('failedStats.improvementRate')}</div>
               </div>
             </div>
           )}
@@ -192,7 +192,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Por Categoría
+                {t('failedStats.byCategory')}
               </button>
               <button
                 onClick={() => setFilter('difficulty')}
@@ -213,7 +213,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                 onChange={(e) => setSelectedCategory(e.target.value || null)}
                 className="px-3 py-2 border border-gray-300 rounded text-sm"
               >
-                <option value="">Todas las categorías</option>
+                <option value="">{t('failedStats.allCategories')}</option>
                 {getUniqueCategories().map(category => (
                   <option key={category} value={category}>
                     {getCategoryIcon(category)} {category}
@@ -228,7 +228,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                 onChange={(e) => setSelectedDifficulty(e.target.value || null)}
                 className="px-3 py-2 border border-gray-300 rounded text-sm"
               >
-                <option value="">Todas las dificultades</option>
+                <option value="">{t('failedStats.allDifficulties')}</option>
                 {getUniqueDifficulties().map(difficulty => (
                   <option key={difficulty} value={difficulty}>
                     {difficulty}
@@ -271,7 +271,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                     </p>
                     {question.lastFailedAt && (
                       <div className="text-xs text-gray-500 mt-2">
-                        Última vez fallada: {new Date(question.lastFailedAt).toLocaleDateString('es-ES')}
+                        {t('failedStats.lastFailed')} {new Date(question.lastFailedAt).toLocaleDateString()}
                       </div>
                     )}
                   </div>
@@ -331,10 +331,9 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-blue-800 mb-2">Consejo de Estudio</h4>
+                  <h4 className="font-semibold text-blue-800 mb-2">{t('failedStats.studyTip')}</h4>
                   <p className="text-blue-700 text-sm">
-                    Las preguntas fallidas son oportunidades de aprendizaje. Cada error te acerca más al éxito. 
-                    Revisa las explicaciones cuidadosamente y practica regularmente para mejorar tu comprensión.
+                    {t('failedStats.studyTipText')}
                   </p>
                 </div>
               </div>

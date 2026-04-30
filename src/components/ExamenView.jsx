@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { examAPI, questionAPI } from '../services/api';
 import ExamExitModal from './exam/ExamExitModal';
 import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './common/LanguageSwitcher';
 import ExamReview from './exam/ExamReview';
 
 export default function ExamenView({ examConfig, nombreCertificacion, onVolver }) {
@@ -107,7 +108,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         
         // Validar que tenemos preguntas para modo de preguntas fallidas
         if (examConfig.mode === 'failed_questions' && (!createdExam.questions || createdExam.questions.length === 0)) {
-          throw new Error('No tienes preguntas fallidas disponibles para esta certificación. Completa algunos exámenes primero.');
+          throw new Error(t('landing.noFailedQuestions'));
         }
         
         if (examResponse.sessionId) {
@@ -144,9 +145,9 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         if (err.message.includes('preguntas fallidas')) {
           errorMessage = err.message;
         } else if (err.message.includes('provider')) {
-          errorMessage = 'Error de configuración: El proveedor es requerido';
+          errorMessage = t('exam.errorTitle');
         } else if (err.message.includes('certification')) {
-          errorMessage = 'Error de configuración: La certificación es requerida';
+          errorMessage = t('exam.errorTitle');
         } else if (err.response?.data?.error) {
           errorMessage = `Error del servidor: ${err.response.data.error}`;
         } else if (err.message) {
@@ -376,7 +377,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       
       if (!preparedData) {
         console.error('⚠️ No se pudieron preparar los datos de revisión');
-        setError('No se pueden mostrar los resultados. Datos incompletos.');
+        setError(t('common.error'));
         return;
       }
       
@@ -414,7 +415,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       
     } catch (error) {
       console.error('⚠️ Error al abrir revisión:', error);
-      setError('Error al abrir la revisión de respuestas.');
+      setError(t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -612,7 +613,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       console.log('📝 Respuesta completa del backend:', questionDetails);
 
       let correctAnswer = null;
-      let explanation = 'No hay explicación disponible';
+      let explanation = t('examReview.noExplanation');
       
       if (questionDetails.success && questionDetails.data) {
         const data = questionDetails.data;
@@ -693,7 +694,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         ...prev,
         [currentQuestion.id]: {
           correctAnswer: currentQuestion.isMultipleChoice ? [0, 1] : 0,
-          explanation: 'No se pudo cargar la explicación'
+          explanation: t('examReview.noExplanation')
         }
       }));
       setCheckedQuestions(prev => new Set([...prev, currentQuestion.id]));
@@ -1201,7 +1202,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-red-800 mb-4">Error</h3>
+          <h3 className="text-xl font-semibold text-red-800 mb-4">{t('common.error')}</h3>
           <p className="text-red-700 mb-6">{error}</p>
           <button 
             onClick={onVolver}
@@ -1274,13 +1275,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 <div className="text-2xl font-bold text-green-600">
                   {results.examSummary.statistics.correctAnswers}
                 </div>
-                <div className="text-sm text-gray-600">Correctas</div>
+                <div className="text-sm text-gray-600">{t('exam.correct')}</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">
                   {results.examSummary.statistics.incorrectAnswers}
                 </div>
-                <div className="text-sm text-gray-600">Incorrectas</div>
+                <div className="text-sm text-gray-600">{t('exam.incorrect')}</div>
               </div>
             </div>
 
@@ -1289,7 +1290,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
             {/* Resumen de todas las preguntas */}
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h3 className="font-semibold text-gray-700 mb-4">Resumen de Respuestas</h3>
+              <h3 className="font-semibold text-gray-700 mb-4">{t('exam.answerSummary')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {exam.questions.map((question, index) => {
                   const questionId = question.id;
@@ -1667,7 +1668,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-blue-700 font-medium">Cargando pregunta...</p>
+          <p className="text-blue-700 font-medium">{t('exam.loadingQuestion')}</p>
         </div>
       </div>
     );
@@ -1700,7 +1701,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
               {/* Información adicional para preguntas fallidas */}
               {isFailedQuestionsMode && (
                 <span className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
-                  Enfócate en mejorar
+                  {t('exam.focusImprove')}
                 </span>
               )}
             </div>
@@ -1746,6 +1747,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 </button>
               )}
 
+              <LanguageSwitcher />
               {/* Botón de resumen */}
               <button
                 onClick={handleShowSummary}
@@ -1837,7 +1839,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 </span>
                 {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
                   <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                    Selección múltiple ({currentQuestion.expectedAnswers} respuestas)
+                    {t('exam.questionTypeMultiple', { count: currentQuestion.expectedAnswers })}
                   </span>
                 )}
                 {(currentQuestion.questionType === 'fill_in_the_blank' || currentQuestion.questionType === 'fill_in_the_gap') && (

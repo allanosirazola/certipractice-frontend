@@ -370,7 +370,7 @@ export default function LandingExamenes({ onEmpezar }) {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-blue-700 font-medium">
-            {authLoading ? 'Verificando autenticación...' : 'Cargando datos del backend...'}
+            {authLoading ? t('landing.verifyingAuth') : t('landing.loadingBackend')}
           </p>
         </div>
       </div>
@@ -386,14 +386,14 @@ export default function LandingExamenes({ onEmpezar }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-red-800 mb-4">Error de Conexión</h3>
+          <h3 className="text-xl font-semibold text-red-800 mb-4">{t('landing.connectionError')}</h3>
           <p className="text-red-700 mb-6">{error}</p>
           <div className="bg-red-50 rounded p-4 text-left text-sm text-red-700">
-            <p className="font-semibold mb-2">Soluciones:</p>
+            <p className="font-semibold mb-2">{t('landing.solutions')}</p>
             <ul className="list-disc list-inside space-y-1">
-              <li>Verifica que el backend esté corriendo</li>
-              <li>Inicia el backend: <code className="bg-red-100 px-1 rounded">npm run dev</code></li>
-              <li>Verifica el puerto 3000 esté libre</li>
+              <li>{t('landing.solutionCheck')}</li>
+              <li>{t('landing.solutionStart')}</li>
+              <li>{t('landing.solutionPort')}</li>
               <li>Ejecuta datos de ejemplo: <code className="bg-red-100 px-1 rounded">POST /api/v1/questions/admin/sample-data</code></li>
             </ul>
           </div>
@@ -418,18 +418,19 @@ export default function LandingExamenes({ onEmpezar }) {
           <h1 className="text-3xl font-bold text-blue-700 mb-2">CertiPractice</h1>
           <p className="text-gray-600 text-lg">
             {isAuthenticated ? (
-              <>Hola {user?.firstName}! - {providers.length} proveedores disponibles</>
+              <>{t('landing.welcomeUser', { name: user?.firstName, count: providers.length })}</>
             ) : (
-              <>Práctica gratuita - {providers.length} proveedores disponibles</>
+              <>{t('landing.freeGuest', { count: providers.length })}</>
             )}
           </p>
         </div>
         
         <div className="flex items-center space-x-4 mt-4 md:mt-0">
+          <LanguageSwitcher />
           {backendStatus?.available && (
             <div className="flex items-center text-green-600 text-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              PostgreSQL conectado
+              {t('landing.postgresConnected')}
             </div>
           )}
           
@@ -453,7 +454,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Fallos</span>
+                <span>{t('landing.failedButton')}</span>
               </button>
               
               <button
@@ -463,7 +464,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center text-xs font-semibold">
                   {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </div>
-                <span>Mi {t('landing.profile')}</span>
+                <span>{t('landing.myProfile')}</span>
               </button>
             </div>
           ) : (
@@ -490,10 +491,10 @@ export default function LandingExamenes({ onEmpezar }) {
           <div className="bg-gradient-to-r from-blue-100 to-green-100 border border-blue-200 rounded-lg p-6 mb-8 max-w-2xl text-center">
             <h3 className="font-semibold text-blue-800 mb-2">Practica gratis sin registro!</h3>
             <p className="text-blue-700 mb-3">
-              Puedes hacer exámenes completos sin necesidad de crear una cuenta.
+              {t('landing.freeDesc')}
             </p>
             <p className="text-sm text-green-700 mb-4">
-              <strong>¿Quieres más?</strong> Regístrate para guardar tu progreso, ver estadísticas detalladas e historial completo.
+              {t('landing.registerCTA')}
             </p>
             <div className="flex justify-center space-x-4">
               <button
@@ -513,11 +514,11 @@ export default function LandingExamenes({ onEmpezar }) {
         )}
 
         <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6 text-blue-800">
-          Practica con preguntas reales de certificación
+          {t('landing.practiceForCerts')}
         </h2>
         <p className="text-center text-gray-700 mb-10 max-w-2xl">
-          Elige el proveedor y certificación. Las preguntas vienen directamente de la base de datos PostgreSQL.
-          {isAuthenticated && ' Tu progreso se guardará automáticamente.'}
+          {t('landing.chooseProvider')}
+          {isAuthenticated && t('landing.progressAutoSaved')}
         </p>
         
         {/* Selección de Proveedor */}
@@ -598,38 +599,38 @@ export default function LandingExamenes({ onEmpezar }) {
           </div>
         )}
 
-        {/* Configuración del Examen usando datos de la certificación */}
+        {/* {t('landing.examConfig')} usando datos de la certificación */}
         {certificacionSeleccionada && (
           <div className="w-full max-w-md mb-10 animate-fade-in">
             <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-600">
               <h4 className="font-semibold text-blue-700 mb-4 text-center">
-                Configuración del Examen
+                {t('landing.examConfig')}
               </h4>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span>Preguntas:</span>
+                  <span>{t('landing.questions')}</span>
                   <span className="font-semibold text-blue-600">{examDefaults.questionCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Tiempo límite:</span>
+                  <span>{t('landing.timeLimit')}</span>
                   <span className="font-semibold text-blue-600">
                     {certificacionSeleccionada.duration || examDefaults.timeLimit} min
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Puntuación mínima:</span>
+                  <span>{t('landing.passingScoreLabel')}</span>
                   <span className="font-semibold text-blue-600">
                     {certificacionSeleccionada.passingScore || examDefaults.passingScore}%
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Dificultad:</span>
+                  <span>{t('landing.difficulty')}</span>
                   <span className="font-semibold text-purple-600">
                     {certificacionSeleccionada.difficulty || 'Medium'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Guardar progreso:</span>
+                  <span>{t('landing.saveProgress')}</span>
                   <span className="font-semibold text-green-600">
                     {isAuthenticated ? 'Si' : 'No (sin registro)'}
                   </span>
@@ -639,7 +640,7 @@ export default function LandingExamenes({ onEmpezar }) {
               {/* Sección de preguntas fallidas */}
               {isAuthenticated && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h5 className="font-medium text-gray-700 mb-2">Opciones Avanzadas</h5>
+                  <h5 className="font-medium text-gray-700 mb-2">{t('landing.advancedOptions')}</h5>
                   <button
                     onClick={handleShowFailedQuestions}
                     className="w-full px-4 py-2 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors text-sm font-medium"
@@ -667,7 +668,7 @@ export default function LandingExamenes({ onEmpezar }) {
         >
           {certificacionSeleccionada 
             ? 'Seleccionar Modo de Examen'
-            : 'Selecciona una certificación'
+            : t('landing.selectCertFirst')
           }
         </button>
 
@@ -675,14 +676,14 @@ export default function LandingExamenes({ onEmpezar }) {
           <div className="mt-6 text-center max-w-md">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-sm text-yellow-800 mb-2">
-                <strong>Modo Invitado:</strong> Tu examen se guardará temporalmente en esta sesión.
+                <strong>t('common.guestMode'):</strong> {t('landing.guestModeInfo')}
               </p>
               <div className="space-y-2">
                 <button
                   onClick={() => setShowRegister(true)}
                   className="block w-full text-blue-600 hover:text-blue-700 font-medium text-sm underline"
                 >
-                  ¿Quieres guardar tu progreso permanentemente? Regístrate aquí
+                  {t('landing.registerForProgress')}
                 </button>
                 <p className="text-xs text-yellow-700">
                   <strong>Con cuenta:</strong> Accede al modo "{t('landing.failedQuestions')}" para practicar solo lo que necesitas mejorar
@@ -713,12 +714,12 @@ export default function LandingExamenes({ onEmpezar }) {
           )}
           {isAuthenticated && (
             <p className="text-blue-600">
-              Sesión activa: {user?.username}
+              {t('landing.activeSession')} {user?.username}
             </p>
           )}
           {!isAuthenticated && (
             <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-gray-600 mb-3">¿No tienes cuenta? Únete a la comunidad</p>
+              <p className="text-gray-600 mb-3">{t('landing.joinCommunity')}</p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={() => setShowRegister(true)}
@@ -739,19 +740,19 @@ export default function LandingExamenes({ onEmpezar }) {
           {/* Consejos adicionales */}
           <div className="text-center mt-10">
             <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto">
-              <h3 className="font-semibold text-gray-800 mb-2">¿No estás seguro?</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">{t('landing.unsureTitle')}</h3>
               <p className="text-gray-600 text-sm mb-4">
                 Si es tu primera vez, te recomendamos empezar con el <strong>Modo Práctica</strong> 
                 para familiarizarte con el formato de preguntas. Cuando te sientas preparado, 
                 usa el <strong>Modo Examen Real</strong> para evaluar tu conocimiento.
                 {isAuthenticated && (
-                  <> También puedes usar <strong>{t('landing.failedQuestions')}</strong> para mejorar tus debilidades específicas.</>
+                  <>{t('landing.alsoFailedMode')}</>
                 )}
               </p>
               <div className="flex justify-center gap-4 text-xs text-gray-500 flex-wrap">
-                <span>Modo Práctica: Ideal para aprender</span>
+                <span>{t('landing.tipPractice')}</span>
                 <span>•</span>
-                <span>Modo Real: Ideal para evaluarse</span>
+                <span>{t('landing.tipRealistic')}</span>
                 {isAuthenticated && (
                   <>
                     <span>•</span>

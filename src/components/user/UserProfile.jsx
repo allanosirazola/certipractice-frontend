@@ -176,17 +176,17 @@ export default function UserProfile({ onClose }) {
                   <div>
                     <div className="space-y-3 mb-6">
                       <div>
-                        <span className="text-sm text-gray-500">Email:</span>
+                        <span className="text-sm text-gray-500">{t('profile.emailLabel')}</span>
                         <p className="font-medium">{user?.email}</p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-500">Miembro desde:</span>
+                        <span className="text-sm text-gray-500">{t('profile.memberSinceLabel')}</span>
                         <p className="font-medium">
                           {new Date(user?.createdAt).toLocaleDateString('es-ES')}
                         </p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-500">Último acceso:</span>
+                        <span className="text-sm text-gray-500">{t('profile.lastLogin')}</span>
                         <p className="font-medium">
                           {user?.lastLogin 
                             ? new Date(user.lastLogin).toLocaleDateString('es-ES')
@@ -213,25 +213,25 @@ export default function UserProfile({ onClose }) {
               {loading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Cargando estadísticas...</p>
+                  <p className="mt-4 text-gray-600">{t('profile.loadingStats')}</p>
                 </div>
               ) : stats ? (
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-blue-800">Exámenes Totales</h4>
+                      <h4 className="font-semibold text-blue-800">{t('profile.totalExamsLabel')}</h4>
                       <p className="text-2xl font-bold text-blue-600">{stats.totalExams}</p>
                     </div>
                     <div className="bg-green-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-green-800">Exámenes Aprobados</h4>
+                      <h4 className="font-semibold text-green-800">{t('profile.passedLabel')}</h4>
                       <p className="text-2xl font-bold text-green-600">{stats.passedExams}</p>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-purple-800">Promedio</h4>
+                      <h4 className="font-semibold text-purple-800">{t('profile.avgScoreLabel')}</h4>
                       <p className="text-2xl font-bold text-purple-600">{stats.averageScore}%</p>
                     </div>
                     <div className="bg-orange-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-orange-800">Precisión</h4>
+                      <h4 className="font-semibold text-orange-800">{t('profile.accuracyLabel')}</h4>
                       <p className="text-2xl font-bold text-orange-600">
                         {stats.totalQuestions > 0 
                           ? Math.round((stats.correctAnswers / stats.totalQuestions) * 100)
@@ -242,17 +242,17 @@ export default function UserProfile({ onClose }) {
                   </div>
 
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-gray-800 mb-2">Resumen</h4>
+                    <h4 className="font-semibold text-gray-800 mb-2">{t('profile.summaryTitle')}</h4>
                     <div className="text-sm text-gray-600 space-y-1">
-                      <p>Total de preguntas respondidas: {stats.totalQuestions}</p>
-                      <p>Respuestas correctas: {stats.correctAnswers}</p>
-                      <p>Tasa de éxito: {stats.totalExams > 0 ? Math.round((stats.passedExams / stats.totalExams) * 100) : 0}%</p>
+                      <p>{t('profile.totalQuestions')} {stats.totalQuestions}</p>
+                      <p>{t('profile.correctAnswers')} {stats.correctAnswers}</p>
+                      <p>{t('profile.successRate')} {stats.totalExams > 0 ? Math.round((stats.passedExams / stats.totalExams) * 100) : 0}%</p>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-600">No hay estadísticas disponibles</p>
+                  <p className="text-gray-600">{t('profile.noStatsAvailable')}</p>
                 </div>
               )}
             </div>
