@@ -1,99 +1,163 @@
 // src/tests/components/SettingsPanel.test.jsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { ThemeProvider } from '../../context/ThemeContext';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SettingsPanel from '../../components/common/SettingsPanel';
+import { ThemeProvider } from '../../context/ThemeContext';
 
-const renderWithProviders = (ui) => render(<ThemeProvider>{ui}</ThemeProvider>);
+const renderPanel = (props = {}) =>
+  render(
+    <ThemeProvider>
+      <SettingsPanel {...props} />
+    </ThemeProvider>
+  );
 
 describe('SettingsPanel', () => {
   beforeEach(() => {
     document.documentElement.classList.remove('dark');
-    localStorage.clear();
+    window.localStorage.getItem = vi.fn(() => null);
+    window.localStorage.setItem = vi.fn();
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn()
+    });
   });
 
-  it('renders trigger button', () => {
-    renderWithProviders(<SettingsPanel />);
-    expect(screen.getByRole('button', { name: /settings|ajustes/i })).toBeInTheDocument();
+  describe('trigger button', () => {
+    it('renders the gear button', () => {
+      renderPanel();
+      expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+    });
+
+    it('shows current language code (EN by default)', () => {
+      renderPanel();
+      expect(screen.getByText('EN')).toBeInTheDocument();
+    });
+
+    it('does not show dropdown initially', () => {
+      renderPanel();
+      expect(screen.queryByText(/^Language$/i)).not.toBeInTheDocument();
+    });
   });
 
-  it('opens dropdown on trigger click', () => {
-    renderWithProviders(<SettingsPanel />);
-    expect(screen.queryByText(/theme|tema/i)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    expect(screen.getByText(/theme|tema/i)).toBeInTheDocument();
+  describe('opening the dropdown', () => {
+    it('opens the dropdown when trigger is clicked', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.getByText(/^Language$/i)).toBeInTheDocument();
+    });
+
+    it('shows both language options', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      const langButtons = screen.getAllByRole('button').filter(b =>
+        b.textContent === 'EN' || b.textContent === 'ES'
+      );
+      // At least 2 language pills (could include trigger)
+      expect(langButtons.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('shows the theme toggle as a switch', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.getByRole('switch')).toBeInTheDocument();
+    });
+
+    it('closes the dropdown when clicking outside', async () => {
+      const user = userEvent.setup();
+      render(
+        <ThemeProvider>
+          <div>
+            <SettingsPanel />
+            <div data-testid="outside">outside</div>
+          </div>
+        </ThemeProvider>
+      );
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.getByText(/^Language$/i)).toBeInTheDocument();
+      await user.click(screen.getByTestId('outside'));
+      expect(screen.queryByText(/^Language$/i)).not.toBeInTheDocument();
+    });
   });
 
-  it('renders both language options when open', () => {
-    renderWithProviders(<SettingsPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    const buttons = screen.getAllByRole('button');
-    const labels = buttons.map(b => b.textContent || '');
-    expect(labels.some(l => l.includes('EN'))).toBe(true);
-    expect(labels.some(l => l.includes('ES'))).toBe(true);
+  describe('theme toggle', () => {
+    it('switches to dark mode when toggled', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('switch'));
+      expect(document.documentElement.classList.contains('dark')).toBe(true);
+    });
+
+    it('switch reflects aria-checked state', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      const sw = screen.getByRole('switch');
+      expect(sw).toHaveAttribute('aria-checked', 'false');
+      await user.click(sw);
+      expect(sw).toHaveAttribute('aria-checked', 'true');
+    });
   });
 
-  it('shows light mode label by default', () => {
-    renderWithProviders(<SettingsPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    expect(screen.getByText(/light mode|modo claro/i)).toBeInTheDocument();
-  });
+  describe('navigation actions', () => {
+    it('does NOT render community item when onOpenCommunity is missing', async () => {
+      const user = userEvent.setup();
+      renderPanel();
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.queryByText(/Community forum/i)).not.toBeInTheDocument();
+    });
 
-  it('toggles dark mode', () => {
-    renderWithProviders(<SettingsPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    const themeToggle = screen.getByRole('switch');
-    expect(themeToggle).toHaveAttribute('aria-checked', 'false');
-    fireEvent.click(themeToggle);
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-  });
+    it('renders community item when onOpenCommunity is provided', async () => {
+      const user = userEvent.setup();
+      renderPanel({ onOpenCommunity: vi.fn() });
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.getByText(/Community forum/i)).toBeInTheDocument();
+    });
 
-  it('shows community button when callback provided', () => {
-    renderWithProviders(<SettingsPanel onOpenCommunity={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    expect(screen.getByText(/community|comunidad/i)).toBeInTheDocument();
-  });
+    it('calls onOpenCommunity when community item clicked', async () => {
+      const user = userEvent.setup();
+      const onOpenCommunity = vi.fn();
+      renderPanel({ onOpenCommunity });
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByText(/Community forum/i));
+      expect(onOpenCommunity).toHaveBeenCalledTimes(1);
+    });
 
-  it('hides community button when no callback', () => {
-    renderWithProviders(<SettingsPanel />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    expect(screen.queryByText(/community forum|foro de la comunidad/i)).not.toBeInTheDocument();
-  });
+    it('calls onOpenCookies when cookie preferences clicked', async () => {
+      const user = userEvent.setup();
+      const onOpenCookies = vi.fn();
+      renderPanel({ onOpenCookies });
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByText(/Cookie preferences/i));
+      expect(onOpenCookies).toHaveBeenCalledTimes(1);
+    });
 
-  it('calls onOpenCommunity when community button is clicked', () => {
-    const onOpenCommunity = vi.fn();
-    renderWithProviders(<SettingsPanel onOpenCommunity={onOpenCommunity} />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    fireEvent.click(screen.getByText(/community|comunidad/i));
-    expect(onOpenCommunity).toHaveBeenCalled();
-  });
+    it('renders privacy item when onOpenPrivacy is provided', async () => {
+      const user = userEvent.setup();
+      renderPanel({ onOpenPrivacy: vi.fn() });
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.getByText(/Privacy policy/i)).toBeInTheDocument();
+    });
 
-  it('calls onOpenCookies when cookies button is clicked', () => {
-    const onOpenCookies = vi.fn();
-    renderWithProviders(<SettingsPanel onOpenCookies={onOpenCookies} />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    fireEvent.click(screen.getByText(/cookie/i));
-    expect(onOpenCookies).toHaveBeenCalled();
-  });
+    it('calls onOpenPrivacy when privacy item clicked', async () => {
+      const user = userEvent.setup();
+      const onOpenPrivacy = vi.fn();
+      renderPanel({ onOpenPrivacy });
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByText(/Privacy policy/i));
+      expect(onOpenPrivacy).toHaveBeenCalledTimes(1);
+    });
 
-  it('calls onOpenPrivacy when privacy button is clicked', () => {
-    const onOpenPrivacy = vi.fn();
-    renderWithProviders(<SettingsPanel onOpenPrivacy={onOpenPrivacy} />);
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    fireEvent.click(screen.getByText(/privacy/i));
-    expect(onOpenPrivacy).toHaveBeenCalled();
-  });
-
-  it('closes dropdown on outside click', () => {
-    renderWithProviders(
-      <div>
-        <SettingsPanel />
-        <div data-testid="outside">outside</div>
-      </div>
-    );
-    fireEvent.click(screen.getByRole('button', { name: /settings|ajustes/i }));
-    expect(screen.getByText(/theme|tema/i)).toBeInTheDocument();
-    fireEvent.mouseDown(screen.getByTestId('outside'));
-    expect(screen.queryByText(/theme|tema/i)).not.toBeInTheDocument();
+    it('closes dropdown after navigation action', async () => {
+      const user = userEvent.setup();
+      renderPanel({ onOpenCookies: vi.fn() });
+      await user.click(screen.getByRole('button', { name: /settings/i }));
+      expect(screen.getByText(/^Language$/i)).toBeInTheDocument();
+      await user.click(screen.getByText(/Cookie preferences/i));
+      expect(screen.queryByText(/^Language$/i)).not.toBeInTheDocument();
+    });
   });
 });

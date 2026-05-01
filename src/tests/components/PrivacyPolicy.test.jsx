@@ -1,62 +1,118 @@
 // src/tests/components/PrivacyPolicy.test.jsx
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { ThemeProvider } from '../../context/ThemeContext';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import PrivacyPolicy from '../../components/privacy/PrivacyPolicy';
+import { ThemeProvider } from '../../context/ThemeContext';
 
-const renderWithProviders = (ui) => render(<ThemeProvider>{ui}</ThemeProvider>);
+// SEOHead writes to document.head — mock it
+vi.mock('../../components/seo/SEOHead', () => ({ default: () => null }));
+
+const renderPage = (props = {}) =>
+  render(
+    <ThemeProvider>
+      <PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} {...props} />
+    </ThemeProvider>
+  );
 
 describe('PrivacyPolicy', () => {
-  it('renders the page title', () => {
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} />);
-    // Title is rendered in the language detected (English by default in tests)
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  beforeEach(() => {
+    document.documentElement.classList.remove('dark');
+    window.localStorage.getItem = vi.fn(() => null);
+    window.localStorage.setItem = vi.fn();
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn()
+    });
   });
 
-  it('renders 9 numbered sections', () => {
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} />);
-    const sections = screen.getAllByRole('heading', { level: 2 });
-    expect(sections.length).toBe(9);
+  describe('content rendering', () => {
+    it('renders the page title', () => {
+      renderPage();
+      expect(screen.getByRole('heading', { level: 1, name: /Privacy Policy/i })).toBeInTheDocument();
+    });
+
+    it('renders the last-updated date', () => {
+      renderPage();
+      expect(screen.getByText(/Last updated/i)).toBeInTheDocument();
+    });
+
+    it('renders all 9 numbered sections', () => {
+      renderPage();
+      const headings = screen.getAllByRole('heading', { level: 2 });
+      expect(headings.length).toBe(9);
+    });
+
+    it('renders the introduction paragraph', () => {
+      renderPage();
+      expect(screen.getByText(/we take your privacy seriously/i)).toBeInTheDocument();
+    });
+
+    it('mentions Google AdSense in cookies section', () => {
+      renderPage();
+      const adsenseRefs = screen.getAllByText(/Google AdSense/i);
+      expect(adsenseRefs.length).toBeGreaterThan(0);
+    });
+
+    it('lists GDPR rights (access, rectification, deletion, portability)', () => {
+      renderPage();
+      expect(screen.getByText(/Access:/i)).toBeInTheDocument();
+      expect(screen.getByText(/Rectification:/i)).toBeInTheDocument();
+      expect(screen.getByText(/Deletion:/i)).toBeInTheDocument();
+      expect(screen.getByText(/Portability:/i)).toBeInTheDocument();
+    });
+
+    it('contains contact email at least once', () => {
+      renderPage();
+      const matches = screen.getAllByText(/privacy@certipractice\.app/i);
+      expect(matches.length).toBeGreaterThan(0);
+    });
   });
 
-  it('shows last updated date', () => {
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} />);
-    // Matches "Last updated:" or "Última actualización:"
-    expect(
-      screen.getByText(/last updated|última actualización/i)
-    ).toBeInTheDocument();
+  describe('navigation', () => {
+    it('renders back button', () => {
+      renderPage();
+      expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
+    });
+
+    it('calls onBack when back button is clicked', async () => {
+      const user = userEvent.setup();
+      const onBack = vi.fn();
+      renderPage({ onBack });
+      await user.click(screen.getByRole('button', { name: /back/i }));
+      expect(onBack).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders Manage cookie preferences CTA', () => {
+      renderPage();
+      expect(screen.getByRole('button', { name: /Manage cookie preferences/i })).toBeInTheDocument();
+    });
+
+    it('calls onOpenCookies when CTA clicked', async () => {
+      const user = userEvent.setup();
+      const onOpenCookies = vi.fn();
+      renderPage({ onOpenCookies });
+      await user.click(screen.getByRole('button', { name: /Manage cookie preferences/i }));
+      expect(onOpenCookies).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it('calls onBack when back button is clicked', () => {
-    const onBack = vi.fn();
-    renderWithProviders(<PrivacyPolicy onBack={onBack} onOpenCookies={vi.fn()} />);
-    const backBtn = screen.getByRole('button', { name: /back|volver/i });
-    fireEvent.click(backBtn);
-    expect(onBack).toHaveBeenCalled();
+  describe('settings panel', () => {
+    it('includes the SettingsPanel button in the header', () => {
+      renderPage();
+      expect(screen.getByRole('button', { name: /Settings/i })).toBeInTheDocument();
+    });
   });
 
-  it('calls onOpenCookies when cookie management CTA is clicked', () => {
-    const onOpenCookies = vi.fn();
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={onOpenCookies} />);
-    // The CTA button at the bottom
-    const ctaButtons = screen.getAllByRole('button', { name: /cookie/i });
-    // Last one should be the CTA, click it
-    fireEvent.click(ctaButtons[ctaButtons.length - 1]);
-    expect(onOpenCookies).toHaveBeenCalled();
-  });
+  describe('semantics', () => {
+    it('uses landmark elements (header, main)', () => {
+      const { container } = renderPage();
+      expect(container.querySelector('header')).toBeInTheDocument();
+      expect(container.querySelector('main')).toBeInTheDocument();
+    });
 
-  it('mentions GDPR rights', () => {
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} />);
-    expect(screen.getByText(/GDPR/i)).toBeInTheDocument();
-  });
-
-  it('mentions Google AdSense', () => {
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} />);
-    expect(screen.getAllByText(/AdSense/i).length).toBeGreaterThan(0);
-  });
-
-  it('contains contact email', () => {
-    renderWithProviders(<PrivacyPolicy onBack={vi.fn()} onOpenCookies={vi.fn()} />);
-    expect(screen.getAllByText(/privacy@certipractice/i).length).toBeGreaterThan(0);
+    it('has exactly one h1', () => {
+      renderPage();
+      expect(screen.getAllByRole('heading', { level: 1 }).length).toBe(1);
+    });
   });
 });

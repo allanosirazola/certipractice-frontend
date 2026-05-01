@@ -63,15 +63,17 @@ describe('CookieConsentBanner – actions', () => {
 
   it('opens detailed view on Customise', async () => {
     render(<CookieConsentBanner />);
-    await userEvent.click(screen.getByText(/customise/i));
-    expect(screen.getByRole('switch', { hidden: false })).toBeInTheDocument();
+    const customiseButtons = screen.getAllByRole('button', { name: /customise/i });
+    await userEvent.click(customiseButtons[customiseButtons.length - 1]);
+    // Detailed view shows multiple switches (one per category except necessary)
+    expect(screen.getAllByRole('switch').length).toBeGreaterThan(0);
   });
 
   it('can toggle advertising switch in detailed view', async () => {
     render(<CookieConsentBanner />);
-    await userEvent.click(screen.getByText(/customise/i));
+    const customiseButtons = screen.getAllByRole('button', { name: /customise/i });
+    await userEvent.click(customiseButtons[customiseButtons.length - 1]);
     const switches = screen.getAllByRole('switch');
-    // advertising toggle (last switch, necessary is fixed)
     const advSwitch = switches[switches.length - 1];
     expect(advSwitch).toHaveAttribute('aria-checked', 'false');
     await userEvent.click(advSwitch);
@@ -87,7 +89,8 @@ describe('CookieConsentBanner – actions', () => {
 
   it('saves preferences from detailed view', async () => {
     render(<CookieConsentBanner />);
-    await userEvent.click(screen.getByText(/customise/i));
+    const customiseButtons = screen.getAllByRole('button', { name: /customise/i });
+    await userEvent.click(customiseButtons[customiseButtons.length - 1]);
     await userEvent.click(screen.getByText(/save preferences/i));
     expect(localStorage.setItem).toHaveBeenCalledWith(CONSENT_KEY, expect.any(String));
   });
