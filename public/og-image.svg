@@ -84,5 +84,5 @@
   <rect x="785" y="404" width="140" height="10" rx="5" fill="white" opacity="0.3"/>
 
   <!-- URL watermark -->
-  <text x="1140" y="590" font-family="Arial,sans-serif" font-size="18" fill="white" opacity="0.4" text-anchor="end">certipractice.app</text>
+  <text x="1140" y="590" font-family="Arial,sans-serif" font-size="18" fill="white" opacity="0.4" text-anchor="end">certipractice.vercel.app</text>
 </svg>

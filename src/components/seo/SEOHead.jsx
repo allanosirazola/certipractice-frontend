@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const SITE_URL = 'https://certipractice.app';
+export const SITE_URL = 'https://certipractice.vercel.app';
 export const SITE_NAME = 'CertiPractice';
 const OG_IMAGE = `${SITE_URL}/og-image.svg`;
 

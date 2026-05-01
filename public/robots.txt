@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://certipractice.app/sitemap.xml
+Sitemap: https://certipractice.vercel.app/sitemap.xml
 
 # Block common non-content paths
 Disallow: /api/
