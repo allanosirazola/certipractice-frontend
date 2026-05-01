@@ -131,7 +131,7 @@ describe('ExamHistory', () => {
     it('muestra mensaje de login requerido', () => {
       render(<ExamHistory {...defaultProps} />);
       
-      expect(screen.getByText(/iniciar sesión/i)).toBeInTheDocument();
+      expect(screen.getByText(/log in/i)).toBeInTheDocument();
     });
 
     it('muestra botón de cerrar', () => {
@@ -160,7 +160,7 @@ describe('ExamHistory', () => {
       
       render(<ExamHistory {...defaultProps} />);
       
-      expect(screen.getByText(/Cargando exámenes/i)).toBeInTheDocument();
+      expect(screen.getByText(/Loading exams/i)).toBeInTheDocument();
     });
   });
 
@@ -171,7 +171,7 @@ describe('ExamHistory', () => {
     it('muestra título del modal', async () => {
       render(<ExamHistory {...defaultProps} />);
       
-      expect(screen.getByText('Historial de Exámenes')).toBeInTheDocument();
+      expect(screen.getByText('Exam History')).toBeInTheDocument();
     });
 
     it('muestra lista de exámenes', async () => {
@@ -201,7 +201,7 @@ describe('ExamHistory', () => {
       render(<ExamHistory {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getAllByText(/Práctica/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Practice/i).length).toBeGreaterThan(0);
       });
     });
 
@@ -391,7 +391,7 @@ describe('ExamHistory', () => {
       render(<ExamHistory {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/No tienes exámenes/i)).toBeInTheDocument();
+        expect(screen.getByText(/No exams/i)).toBeInTheDocument();
       });
     });
   });
@@ -518,7 +518,7 @@ describe('ExamHistory', () => {
       render(<ExamHistory {...defaultProps} onClose={onClose} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Historial de Exámenes')).toBeInTheDocument();
+        expect(screen.getByText('Exam History')).toBeInTheDocument();
       });
 
       // El botón X (✕) está en el header

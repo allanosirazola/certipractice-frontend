@@ -16,10 +16,11 @@ import ExamHistory from './exam/ExamHistory';
 import ExamModeSelector from './exam/ExamModeSelector';
 import FailedQuestionsStats from './exam/FailedQuestionsStats';
 import SettingsPanel from './common/SettingsPanel';
+import CertificationLogo from './common/CertificationLogo';
 import SEOHead, { SEO_CONFIGS, SITE_URL } from './seo/SEOHead';
 import { useTranslation } from 'react-i18next';
 
-export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
+export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -264,7 +265,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
     }
 
     return (
-      <div className={`w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden bg-white shadow-sm border ${className}`}>
+      <div className={`w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden bg-white dark:bg-gray-800 shadow-sm border ${className}`}>
         <img 
           src={logoUrl}
           alt={`${provider.name} logo`}
@@ -274,48 +275,8 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
           style={{ display: imageLoaded ? 'block' : 'none' }}
         />
         {!imageLoaded && !imageError && (
-          <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
         )}
-      </div>
-    );
-  };
-
-  // Componente para renderizar logo de certificación
-  const CertificationLogo = ({ certification, className = "" }) => {
-    const [imageError, setImageError] = useState(false);
-    const [imageLoaded, setImageLoaded] = useState(false);
-    
-    const handleImageError = (e) => {
-      setImageError(true);
-    };
-
-    const handleImageLoad = () => {
-      setImageLoaded(true);
-    };
-
-    // Usar iconos como fallback en lugar de URLs inexistentes
-    const getCertificationIcon = (certification) => {
-      const code = certification.code || certification.name;
-      const provider = certification.provider || providerSeleccionado?.name;
-      
-      // Mapeo básico de iconos por proveedor
-      const iconMap = {
-        'AWS': '🧡',
-        'Google Cloud': '🔵',
-        'Microsoft Azure': '🔷',
-        'Databricks': '🔴',
-        'Snowflake': '❄️',
-        'HashiCorp': '🟣',
-        'Salesforce': '🔷',
-      };
-      
-      return iconMap[provider] || '📜';
-    };
-
-    // Siempre mostrar fallback con icono
-    return (
-      <div className={`w-10 h-10 rounded flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-xl shadow-sm ${className}`}>
-        {getCertificationIcon(certification)}
       </div>
     );
   };
@@ -336,10 +297,10 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-blue-700 font-medium">
+          <p className="text-blue-700 dark:text-blue-400 font-medium">
             {authLoading ? t('landing.verifyingAuth') : t('landing.loadingBackend')}
           </p>
         </div>
@@ -349,22 +310,22 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-200 flex items-center justify-center px-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center px-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <div className="text-red-600 mb-4">
             <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-red-800 mb-4">{t('landing.connectionError')}</h3>
-          <p className="text-red-700 mb-6">{error}</p>
-          <div className="bg-red-50 rounded p-4 text-left text-sm text-red-700">
+          <p className="text-red-700 dark:text-red-400 mb-6">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 rounded p-4 text-left text-sm text-red-700 dark:text-red-400">
             <p className="font-semibold mb-2">{t('landing.solutions')}</p>
             <ul className="list-disc list-inside space-y-1">
               <li>{t('landing.solutionCheck')}</li>
               <li>{t('landing.solutionStart')}</li>
               <li>{t('landing.solutionPort')}</li>
-              <li>Ejecuta datos de ejemplo: <code className="bg-red-100 px-1 rounded">POST /api/v1/questions/admin/sample-data</code></li>
+              <li>Ejecuta datos de ejemplo: <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">POST /api/v1/questions/admin/sample-data</code></li>
             </ul>
           </div>
           <button 
@@ -404,12 +365,12 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
     : SEO_CONFIGS.home;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex flex-col">
       <SEOHead {...seoProps} />
-      <header className="bg-white shadow p-6 flex flex-col md:flex-row items-center justify-between">
+      <header className="bg-white dark:bg-gray-800 shadow p-6 flex flex-col md:flex-row items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-blue-700 mb-2">CertiPractice</h1>
-          <p className="text-gray-600 text-lg">
+          <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-2">CertiPractice</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-lg">
             {isAuthenticated ? (
               <>{t('landing.welcomeUser', { name: user?.firstName, count: providers.length })}</>
             ) : (
@@ -419,14 +380,14 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
         </div>
         
         <div className="flex items-center space-x-4 mt-4 md:mt-0">
-          <SettingsPanel onOpenCookies={onOpenCookies} />
+          <SettingsPanel onOpenCookies={onOpenCookies} onOpenPrivacy={onOpenPrivacy} onOpenCommunity={onOpenCommunity} />
 
           
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setShowHistory(true)}
-                className="flex items-center space-x-2 px-3 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 dark:bg-blue-950/30 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -437,7 +398,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
               {/* Botón para preguntas fallidas */}
               <button
                 onClick={handleShowFailedQuestions}
-                className="flex items-center space-x-2 px-3 py-2 text-orange-600 border border-orange-600 rounded hover:bg-orange-50 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 text-orange-600 border border-orange-600 rounded hover:bg-orange-50 dark:bg-orange-900/20 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -459,7 +420,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
             <div className="flex space-x-4">
               <button
                 onClick={() => setShowLogin(true)}
-                className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 transition-colors"
+                className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 dark:bg-blue-950/30 transition-colors"
               >
                 {t('landing.login')}
               </button>
@@ -476,12 +437,12 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
         {!isAuthenticated && (
-          <div className="bg-gradient-to-r from-blue-100 to-green-100 border border-blue-200 rounded-lg p-6 mb-8 max-w-2xl text-center">
-            <h3 className="font-semibold text-blue-800 mb-2">{t('landing.freeTitle')}</h3>
-            <p className="text-blue-700 mb-3">
+          <div className="bg-gradient-to-r from-blue-100 to-green-100 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8 max-w-2xl text-center">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">{t('landing.freeTitle')}</h3>
+            <p className="text-blue-700 dark:text-blue-400 mb-3">
               {t('landing.freeDesc')}
             </p>
-            <p className="text-sm text-green-700 mb-4">
+            <p className="text-sm text-green-700 dark:text-green-400 mb-4">
               {t('landing.registerCTA')}
             </p>
             <div className="flex justify-center space-x-4">
@@ -501,10 +462,10 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
           </div>
         )}
 
-        <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6 text-blue-800">
+        <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6 text-blue-800 dark:text-blue-300">
           {t('landing.practiceForCerts')}
         </h2>
-        <p className="text-center text-gray-700 mb-10 max-w-2xl">
+        <p className="text-center text-gray-700 dark:text-gray-200 mb-10 max-w-2xl">
           {t('landing.chooseProvider')}
           {isAuthenticated && t('landing.progressAutoSaved')}
         </p>
@@ -514,25 +475,25 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
           {providers.map(provider => (
             <div
               key={provider.name}
-              className={`bg-white rounded-lg shadow p-6 flex flex-col items-center border-2 transition-all cursor-pointer ${
+              className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center border-2 transition-all cursor-pointer ${
                 providerSeleccionado?.name === provider.name 
-                  ? 'border-blue-600 bg-blue-50 shadow-lg transform scale-105' 
+                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/30 shadow-lg transform scale-105' 
                   : 'border-transparent hover:border-blue-300 hover:shadow-md hover:scale-102'
               }`}
               onClick={() => handleProviderSelection(provider)}
             >
               <ProviderLogo provider={provider} className="mb-4" />
-              <h3 className="text-lg font-bold mb-2 text-blue-700 text-center">
+              <h3 className="text-lg font-bold mb-2 text-blue-700 dark:text-blue-400 text-center">
                 {provider.name}
               </h3>
-              <p className="text-gray-600 text-center mb-2 text-sm">
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-2 text-sm">
                 {provider.description}
               </p>
               <div className="text-center">
                 <span className="text-2xl font-bold text-blue-600">
                   {(provider.question_count || 0).toLocaleString()}
                 </span>
-                <p className="text-xs text-gray-500">preguntas</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">preguntas</p>
               </div>
               {provider.certificationCount > 0 && (
                 <div className="text-center mt-1">
@@ -542,7 +503,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
                 </div>
               )}
               {providerSeleccionado?.name === provider.name && (
-                <span className="mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold animate-pulse">
+                <span className="mt-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 rounded-full text-xs font-semibold animate-pulse">
                   {t('landing.selectedBadge')}
                 </span>
               )}
@@ -553,7 +514,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
         {/* Selección de Certificación */}
         {providerSeleccionado && certifications.length > 0 && (
           <div className="w-full max-w-4xl mb-10 animate-fade-in">
-            <h3 className="text-lg font-semibold mb-4 text-blue-700 text-center">
+            <h3 className="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-400 text-center">
               {t('landing.certsAvailable', { provider: providerSeleccionado.name })}
             </h3>            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -563,12 +524,17 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
                   className={`w-full px-4 py-3 rounded border text-left font-medium transition-all ${
                     certificacionSeleccionada?.code === cert.code || certificacionSeleccionada?.name === cert.name
                       ? 'bg-blue-600 text-white border-blue-700 shadow-md transform scale-105' 
-                      : 'bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                      : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:bg-blue-950/30 hover:border-blue-300'
                   }`}
                   onClick={() => setCertificacionSeleccionada(cert)}
                 >
                   <div className="flex items-center space-x-3">
-                    <CertificationLogo certification={cert} />
+                    <CertificationLogo
+                      code={cert.code}
+                      name={cert.name}
+                      provider={cert.provider || providerSeleccionado?.name}
+                      size="md"
+                    />
                     <div className="flex-1">
                       <div className="font-semibold">{cert.code || cert.name}</div>
                       <div className="text-sm opacity-75">
@@ -590,8 +556,8 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
         {/* {t('landing.examConfig')} usando datos de la certificación */}
         {certificacionSeleccionada && (
           <div className="w-full max-w-md mb-10 animate-fade-in">
-            <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-600">
-              <h4 className="font-semibold text-blue-700 mb-4 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-blue-600">
+              <h4 className="font-semibold text-blue-700 dark:text-blue-400 mb-4 text-center">
                 {t('landing.examConfig')}
               </h4>
               <div className="space-y-3 text-sm">
@@ -627,15 +593,15 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
               
               {/* Sección de preguntas fallidas */}
               {isAuthenticated && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h5 className="font-medium text-gray-700 mb-2">{t('landing.advancedOptions')}</h5>
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h5 className="font-medium text-gray-700 dark:text-gray-200 mb-2">{t('landing.advancedOptions')}</h5>
                   <button
                     onClick={handleShowFailedQuestions}
-                    className="w-full px-4 py-2 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors text-sm font-medium"
+                    className="w-full px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded hover:bg-orange-200 transition-colors text-sm font-medium"
                   >
                     {t('landing.viewFailed')}
                   </button>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {t('landing.failedHint')}
                   </p>
                 </div>
@@ -662,14 +628,14 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
 
         {!isAuthenticated && certificacionSeleccionada && (
           <div className="mt-6 text-center max-w-md">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="text-sm text-yellow-800 mb-2">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
                 <strong>{t('landing.guestModeLabel')}</strong> {t('landing.guestModeInfo')}
               </p>
               <div className="space-y-2">
                 <button
                   onClick={() => setShowRegister(true)}
-                  className="block w-full text-blue-600 hover:text-blue-700 font-medium text-sm underline"
+                  className="block w-full text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium text-sm underline"
                 >
                   {t('landing.registerForProgress')}
                 </button>
@@ -683,14 +649,14 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
 
         {/* Estado de la conexión */}
         {providers.length === 0 && !loading && (
-          <div className="mt-8 text-center text-gray-600">
+          <div className="mt-8 text-center text-gray-600 dark:text-gray-300">
             <p>{t('landing.noProviders')}</p>
             <p className="text-sm mt-2">{t('landing.runSampleData')}</p>
           </div>
         )}
       </main>
       
-      <footer className="bg-white text-center py-6 text-gray-500 text-sm border-t">
+      <footer className="bg-white dark:bg-gray-800 text-center py-6 text-gray-500 dark:text-gray-400 text-sm border-t">
         <div className="max-w-4xl mx-auto px-4">
           <p className="mb-2">
             {t('landing.copyright', { year: new Date().getFullYear() })} • {t('landing.totalQuestions', { count: totalQuestions.toLocaleString() })}
@@ -702,8 +668,8 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
             </p>
           )}
           {!isAuthenticated && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-gray-600 mb-3">{t('landing.joinCommunity')}</p>
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-gray-600 dark:text-gray-300 mb-3">{t('landing.joinCommunity')}</p>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={() => setShowRegister(true)}
@@ -713,7 +679,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
                 </button>
                 <button
                   onClick={() => setShowLogin(true)}
-                  className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors text-sm"
+                  className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 dark:bg-blue-950/30 transition-colors text-sm"
                 >
                   {t('landing.login')}
                 </button>
@@ -723,9 +689,9 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
           
           {/* Consejos adicionales */}
           <div className="text-center mt-10">
-            <div className="bg-white rounded-lg shadow p-6 max-w-2xl mx-auto">
-              <h3 className="font-semibold text-gray-800 mb-2">{t('landing.unsureTitle')}</h3>
-              <p className="text-gray-600 text-sm mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 max-w-2xl mx-auto">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{t('landing.unsureTitle')}</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                 Si es tu primera vez, te recomendamos empezar con el <strong>Modo Práctica</strong> 
                 para familiarizarte con el formato de preguntas. Cuando te sientas preparado, 
                 usa el <strong>Modo Examen Real</strong> para evaluar tu conocimiento.
@@ -733,7 +699,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
                   <>{t('landing.alsoFailedMode')}</>
                 )}
               </p>
-              <div className="flex justify-center gap-4 text-xs text-gray-500 flex-wrap">
+              <div className="flex justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
                 <span>{t('landing.tipPractice')}</span>
                 <span>•</span>
                 <span>{t('landing.tipRealistic')}</span>

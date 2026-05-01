@@ -1,4 +1,10 @@
 // LandingExamenes.test.jsx - Tests para Vitest
+
+// Mock AdBreak to skip countdown in these tests
+vi.mock('../../components/ads/AdBreak', () => ({
+  default: ({ onComplete }) => { onComplete(); return null; },
+}));
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -127,7 +133,7 @@ describe('LandingExamenes', () => {
       render(<LandingExamenes {...defaultProps} />);
       
       // El componente muestra "Verificando autenticación..." cuando authLoading es true
-      expect(screen.getByText(/Verificando autenticación/i)).toBeInTheDocument();
+      expect(screen.getByText(/Verifying authentication/i)).toBeInTheDocument();
     });
 
     it('muestra carga del backend', () => {
@@ -148,7 +154,7 @@ describe('LandingExamenes', () => {
       render(<LandingExamenes {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Error de Conexión/i)).toBeInTheDocument();
+        expect(screen.getByText(/Connection Error/i)).toBeInTheDocument();
       });
     });
 
@@ -205,7 +211,7 @@ describe('LandingExamenes', () => {
       
       // Ahora verificar que hay botones de login/registro
       // Puede haber varios en diferentes partes de la página
-      const loginButtons = screen.getAllByText(/Iniciar Sesión/i);
+      const loginButtons = screen.getAllByText(/Log In/i);
       expect(loginButtons.length).toBeGreaterThan(0);
     });
 
@@ -447,7 +453,7 @@ describe('LandingExamenes', () => {
       });
       
       // Verificar que hay texto de login en la página
-      expect(screen.getAllByText(/Iniciar Sesión/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Log In/i).length).toBeGreaterThan(0);
     });
 
     it('abre modal login', async () => {
@@ -459,7 +465,7 @@ describe('LandingExamenes', () => {
       });
 
       // Verificar que hay botones de login
-      const loginButtons = screen.getAllByText(/Iniciar Sesión/i);
+      const loginButtons = screen.getAllByText(/Log In/i);
       expect(loginButtons.length).toBeGreaterThan(0);
     });
 
@@ -472,7 +478,7 @@ describe('LandingExamenes', () => {
       });
 
       // Verificar que hay botones de registro
-      const registerButtons = screen.getAllByText(/Crear Cuenta|Registrarse|Regístrate/i);
+      const registerButtons = screen.getAllByText(/Create Account|Sign Up|Register/i);
       expect(registerButtons.length).toBeGreaterThan(0);
     });
 
@@ -484,8 +490,8 @@ describe('LandingExamenes', () => {
       });
 
       // Verificar que ambas opciones están presentes
-      expect(screen.getAllByText(/Iniciar Sesión/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/Crear Cuenta|Registrarse|Regístrate/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Log In/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Create Account|Sign Up|Register/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -658,7 +664,7 @@ describe('LandingExamenes', () => {
       
       await waitFor(() => {
         // El componente muestra "Sesión activa: {username}"
-        expect(screen.getByText(/Sesión activa: testuser/i)).toBeInTheDocument();
+        expect(screen.getByText(/Active session: testuser/i)).toBeInTheDocument();
       });
     });
   });

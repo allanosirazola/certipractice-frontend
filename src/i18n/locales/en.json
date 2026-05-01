@@ -578,7 +578,8 @@
       "approved": "Approved",
       "rejected": "Rejected",
       "discussion": "In Discussion"
-    }
+    },
+    "backToHome": "← Back to home"
   },
   "profile": {
     "title": "My Profile",
@@ -639,7 +640,8 @@
   },
   "privacy": {
     "title": "Privacy Control",
-    "subtitle": "Manage your privacy preferences"
+    "subtitle": "Manage your privacy preferences",
+    "backToHome": "← Back to home"
   },
   "ads": {
     "startTitle": "Your exam is ready!",
@@ -654,6 +656,10 @@
     "title": "Settings",
     "language": "Language",
     "cookies": "Cookie preferences",
-    "privacy": "Privacy policy"
+    "privacy": "Privacy policy",
+    "theme": "Theme",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "community": "Community forum"
   }
 }

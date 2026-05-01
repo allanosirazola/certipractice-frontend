@@ -8,7 +8,7 @@ import SEOHead, { SITE_URL } from './seo/SEOHead';
 import AdBreak from './ads/AdBreak';
 import ExamReview from './exam/ExamReview';
 
-export default function ExamenView({ examConfig, nombreCertificacion, onVolver, onOpenCookies }) {
+export default function ExamenView({ examConfig, nombreCertificacion, onVolver, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -779,7 +779,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     const stillStrugglingWith = exam.questions.length - improvedQuestions;
     
     return (
-      <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-6">
+      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded-lg p-6 mb-6">
         <h3 className="font-semibold text-orange-800 mb-4 flex items-center gap-2">
           <span>🔄</span>
           {t('failedQuestionsResults.title')}
@@ -790,26 +790,26 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             <div className="text-2xl font-bold text-green-600">
               {improvedQuestions}
             </div>
-            <div className="text-sm text-gray-600">{t('failedQuestionsResults.improved')}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">{t('failedQuestionsResults.improved')}</div>
             <div className="text-xs text-green-600">{t('failedQuestionsResults.wellDone')}</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600">
               {stillStrugglingWith}
             </div>
-            <div className="text-sm text-gray-600">{t('failedQuestionsResults.stillStruggling')}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">{t('failedQuestionsResults.stillStruggling')}</div>
             <div className="text-xs text-orange-600">{t('failedQuestionsResults.keepPracticing')}</div>
           </div>
         </div>
         
-        <div className="bg-white rounded p-3">
+        <div className="bg-white dark:bg-gray-800 rounded p-3">
           <div className="flex justify-between items-center text-sm">
             <span>{t('failedQuestionsResults.improvementRate')}</span>
             <span className="font-semibold text-green-600">
               {Math.round((improvedQuestions / exam.questions.length) * 100)}%
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
             <div 
               className="bg-green-500 h-2 rounded-full transition-all"
               style={{ width: `${(improvedQuestions / exam.questions.length) * 100}%` }}
@@ -818,7 +818,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         </div>
         
         {improvedQuestions > stillStrugglingWith && (
-          <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded text-green-800 text-sm">
+          <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 rounded text-green-800 text-sm">
             <strong>{t('failedQuestionsResults.title')}</strong> {t('failedQuestionsResults.greatProgress')}
           </div>
         )}
@@ -844,20 +844,20 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
       return (
         <div className="space-y-4 mb-8">
-          <p className="text-sm text-gray-500 italic">{t('exam.fillBlankHint')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('exam.fillBlankHint')}</p>
           {blanks.map((blank, i) => {
             const userVal = userAnswers[i] || '';
             const correctVal = Array.isArray(correctAnswers) ? correctAnswers[i] : correctAnswers;
-            let inputStyle = 'border-gray-300 focus:border-blue-500 focus:ring-blue-500';
+            let inputStyle = 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500';
             if (explanation && canShowVerification) {
               const ok = (userVal || '').trim().toLowerCase() === (correctVal || '').trim().toLowerCase();
               inputStyle = ok
-                ? 'border-green-500 bg-green-50 text-green-800'
-                : 'border-red-500 bg-red-50 text-red-800';
+                ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800'
+                : 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800';
             }
             return (
               <div key={i} className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   {blank.label || t('exam.fillBlankLabel', { num: i + 1 })}
                 </label>
                 <input
@@ -866,10 +866,10 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                   onChange={e => handleFillBlankChange(i, e.target.value)}
                   disabled={isDisabled}
                   placeholder="{t('exam.fillBlankPlaceholder')}"
-                  className={`w-full px-4 py-2 border-2 rounded-lg text-gray-800 transition-colors outline-none ${inputStyle} disabled:opacity-60`}
+                  className={`w-full px-4 py-2 border-2 rounded-lg text-gray-800 dark:text-gray-100 transition-colors outline-none ${inputStyle} disabled:opacity-60`}
                 />
                 {explanation && canShowVerification && (
-                  <span className="text-xs text-gray-500">{t('exam.fillBlankCorrect')} <strong>{correctVal}</strong></span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t('exam.fillBlankCorrect')} <strong>{correctVal}</strong></span>
                 )}
               </div>
             );
@@ -887,7 +887,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
       return (
         <div className="space-y-3 mb-8">
-          <p className="text-sm text-gray-500 italic flex items-center gap-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 italic flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
             </svg>
@@ -896,14 +896,14 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
           {order.map((originalIndex, position) => {
             const item = sourceItems[originalIndex];
             const isCorrectPos = correctOrder && correctOrder[position] === originalIndex;
-            let itemStyle = 'border-gray-300 bg-white hover:border-blue-400 cursor-grab';
+            let itemStyle = 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-blue-400 cursor-grab';
             if (explanation && canShowVerification) {
               itemStyle = isCorrectPos
-                ? 'border-green-500 bg-green-50 cursor-not-allowed'
-                : 'border-red-400 bg-red-50 cursor-not-allowed';
+                ? 'border-green-500 bg-green-50 dark:bg-green-900/20 cursor-not-allowed'
+                : 'border-red-400 bg-red-50 dark:bg-red-900/20 cursor-not-allowed';
             }
             if (dragOverIndex === position && !isDisabled) {
-              itemStyle = 'border-blue-500 bg-blue-50 cursor-grab';
+              itemStyle = 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 cursor-grab';
             }
 
             return (
@@ -916,7 +916,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 onDragLeave={() => setDragOverIndex(null)}
                 className={`flex items-center gap-3 p-4 border-2 rounded-lg transition-all select-none ${itemStyle} ${isDisabled ? 'opacity-70' : ''}`}
               >
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-bold">
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 flex items-center justify-center text-sm font-bold">
                   {position + 1}
                 </span>
                 {!isDisabled && (
@@ -924,7 +924,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                     <path d="M7 2a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4zM7 8a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4zM7 14a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4z" />
                   </svg>
                 )}
-                <span className="text-gray-800 flex-1">
+                <span className="text-gray-800 dark:text-gray-100 flex-1">
                   {typeof item === 'object' ? (item.text || item.label) : item}
                 </span>
                 {explanation && canShowVerification && (
@@ -948,21 +948,21 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
       return (
         <div className="space-y-3 mb-8">
-          <p className="text-sm text-gray-500 italic">{t('exam.checkboxHint')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('exam.checkboxHint')}</p>
           {currentQuestion.options.map((option, index) => {
             const isSelected = selectedIndices.includes(index);
             const correctAnswer = explanation?.correctAnswer;
             const isCorrectOption = correctAnswer && (
               Array.isArray(correctAnswer) ? correctAnswer.includes(index) : correctAnswer === index
             );
-            let rowStyle = 'border-gray-200 hover:border-blue-300 hover:bg-blue-25';
-            let checkStyle = 'border-gray-300';
+            let rowStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-25';
+            let checkStyle = 'border-gray-300 dark:border-gray-600';
             if (isSelected) {
               if (explanation && canShowVerification) {
-                rowStyle = isCorrectOption ? 'border-green-600 bg-green-50' : 'border-red-600 bg-red-50';
+                rowStyle = isCorrectOption ? 'border-green-600 bg-green-50 dark:bg-green-900/20' : 'border-red-600 bg-red-50 dark:bg-red-900/20';
                 checkStyle = isCorrectOption ? 'border-green-600 bg-green-600 text-white' : 'border-red-600 bg-red-600 text-white';
               } else {
-                rowStyle = 'border-blue-600 bg-blue-50';
+                rowStyle = 'border-blue-600 bg-blue-50 dark:bg-blue-950/30';
                 checkStyle = 'border-blue-600 bg-blue-600 text-white';
               }
             } else if (isCorrectOption && explanation && canShowVerification) {
@@ -974,17 +974,17 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 key={index}
                 onClick={() => handleCheckboxToggle(index)}
                 disabled={isDisabled}
-                className={`w-full text-left p-4 rounded border-2 transition-all ${isPaused ? 'opacity-50 cursor-not-allowed border-gray-200' : rowStyle}`}
+                className={`w-full text-left p-4 rounded border-2 transition-all ${isPaused ? 'opacity-50 cursor-not-allowed border-gray-200 dark:border-gray-700' : rowStyle}`}
               >
                 <div className="flex items-start gap-3">
-                  <span className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center text-sm font-medium transition-colors ${isDisabled && !isSelected ? 'border-gray-300' : checkStyle}`}>
+                  <span className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center text-sm font-medium transition-colors ${isDisabled && !isSelected ? 'border-gray-300 dark:border-gray-600' : checkStyle}`}>
                     {isSelected ? (
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     ) : null}
                   </span>
-                  <span className="text-gray-800 flex-1">
+                  <span className="text-gray-800 dark:text-gray-100 flex-1">
                     {typeof option === 'object' ? option.text : option}
                   </span>
                   {explanation && canShowVerification && (
@@ -1023,16 +1023,16 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               key={index}
               className={`w-full text-left p-4 rounded border-2 transition-all ${
                 isPaused
-                  ? 'opacity-50 cursor-not-allowed border-gray-200'
+                  ? 'opacity-50 cursor-not-allowed border-gray-200 dark:border-gray-700'
                   : isSelected
                   ? isCorrectOption && canShowVerification
-                    ? 'border-green-600 bg-green-50'
+                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
                     : explanation && canShowVerification
-                    ? 'border-red-600 bg-red-50'
-                    : 'border-blue-600 bg-blue-50'
+                    ? 'border-red-600 bg-red-50 dark:bg-red-900/20'
+                    : 'border-blue-600 bg-blue-50 dark:bg-blue-950/30'
                   : isCorrectOption && explanation && canShowVerification
                   ? 'border-green-400 bg-green-25'
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-25'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-25'
               }`}
               onClick={() => handleAnswerSelect(index)}
               disabled={checkedQuestions.has(currentQuestion.id) || isPaused}
@@ -1049,7 +1049,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                       : 'border-blue-600 bg-blue-600 text-white'
                     : isCorrectOption && explanation && canShowVerification
                     ? 'border-green-600 bg-green-600 text-white'
-                    : 'border-gray-300'
+                    : 'border-gray-300 dark:border-gray-600'
                 }`}>
                   {isMultiple && (isSelected || (isCorrectOption && explanation && canShowVerification)) ? (
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -1059,7 +1059,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                     option.label
                   )}
                 </span>
-                <span className="text-gray-800 flex-1">{option.text}</span>
+                <span className="text-gray-800 dark:text-gray-100 flex-1">{option.text}</span>
                 {explanation && canShowVerification && (
                   <div className="flex-shrink-0">
                     {isCorrectOption ? (
@@ -1104,10 +1104,10 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-blue-700 font-medium text-lg">
+          <p className="text-blue-700 dark:text-blue-400 font-medium text-lg">
             {exam ? t('exam.processingDots') : t('exam.creatingExam')}
           </p>
           {sessionId && (
@@ -1122,15 +1122,15 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-200 flex items-center justify-center px-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center px-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <div className="text-red-600 mb-4">
             <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-red-800 mb-4">{t('common.error')}</h3>
-          <p className="text-red-700 mb-6">{error}</p>
+          <p className="text-red-700 dark:text-red-400 mb-6">{error}</p>
           <button 
             onClick={onVolver}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
@@ -1155,13 +1155,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         certificationCode={examCertCode}
         noIndex={true}
       />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
-        <header className="bg-white shadow p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex flex-col">
+        <header className="bg-white dark:bg-gray-800 shadow p-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-blue-700">{t('exam.completed')}</h1>
-              <p className="text-gray-600">{nombreCertificacion}</p>
-              <p className="text-sm text-gray-500">
+              <h1 className="text-2xl font-bold text-blue-700 dark:text-blue-400">{t('exam.completed')}</h1>
+              <p className="text-gray-600 dark:text-gray-300">{nombreCertificacion}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
                        examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}
               </p>
@@ -1176,10 +1176,10 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         </header>
 
         <main className="flex-1 flex justify-center items-start px-4 py-8">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-4xl w-full">
             <div className="text-center mb-8">
               <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                results.passed ? 'bg-green-100' : 'bg-red-100'
+                results.passed ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
               }`}>
                 {results.passed ? (
                   <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1198,11 +1198,11 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 {results.passed ? t('exam.passed') : t('exam.failed')}
               </h2>
               
-              <p className="text-xl text-gray-700 mb-4">
+              <p className="text-xl text-gray-700 dark:text-gray-200 mb-4">
                 {t('exam.score', { score: results.examSummary.score }).split(':')[0]}: <span className="font-bold">{results.examSummary.score}%</span>
               </p>
               
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 {t('exam.passingScore', { score: exam.passingScore })}
               </p>
             </div>
@@ -1212,13 +1212,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 <div className="text-2xl font-bold text-green-600">
                   {results.examSummary.statistics.correctAnswers}
                 </div>
-                <div className="text-sm text-gray-600">{t('exam.correct')}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{t('exam.correct')}</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">
                   {results.examSummary.statistics.incorrectAnswers}
                 </div>
-                <div className="text-sm text-gray-600">{t('exam.incorrect')}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{t('exam.incorrect')}</div>
               </div>
             </div>
 
@@ -1226,8 +1226,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             {renderFailedQuestionsResults()}
 
             {/* Resumen de todas las preguntas */}
-            <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h3 className="font-semibold text-gray-700 mb-4">{t('exam.answerSummary')}</h3>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 mb-6">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-4">{t('exam.answerSummary')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {exam.questions.map((question, index) => {
                   const questionId = question.id;
@@ -1241,12 +1241,12 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                       key={questionId}
                       className={`p-3 rounded border-2 text-sm ${
                         !isAnswered 
-                          ? 'border-orange-300 bg-orange-50'
+                          ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
                           : isCorrect === true
-                          ? 'border-green-300 bg-green-50'
+                          ? 'border-green-300 bg-green-50 dark:bg-green-900/20'
                           : isCorrect === false
-                          ? 'border-red-300 bg-red-50'
-                          : 'border-gray-300 bg-white'
+                          ? 'border-red-300 bg-red-50 dark:bg-red-900/20'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -1273,7 +1273,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                           )}
                         </div>
                       </div>
-                      <p className="text-gray-600 mt-1 truncate">
+                      <p className="text-gray-600 dark:text-gray-300 mt-1 truncate">
                         {question.text.substring(0, 60)}...
                       </p>
                     </div>
@@ -1282,7 +1282,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               </div>
               
               {getUnansweredQuestions().length > 0 && (
-                <div className="mt-4 p-3 bg-orange-100 border border-orange-300 rounded">
+                <div className="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 border border-orange-300 rounded">
                   <div className="flex items-center gap-2 text-orange-800">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -1295,23 +1295,23 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               )}
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-gray-700 mb-2">{t('exam.statistics')}</h3>
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('exam.statistics')}</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600">{t('exam.totalQuestions')}:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{t('exam.totalQuestions')}:</span>
                   <span className="font-semibold ml-2">{results.examSummary.statistics.totalQuestions}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600">{t('exam.timeUsed')}:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{t('exam.timeUsed')}:</span>
                   <span className="font-semibold ml-2">{formatTime(results.examSummary.timeSpent * 60)}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600">{t('exam.markedCount')}:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{t('exam.markedCount')}:</span>
                   <span className="font-semibold ml-2">{markedForReview.size}</span>
                 </div>
                 <div>
-                  <span className="text-gray-600">{t('exam.examMode')}:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{t('exam.examMode')}:</span>
                   <span className="font-semibold ml-2">
                     {examMode === 'realistic' ? t('examModes.label.realistic') : 
                      examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}
@@ -1319,7 +1319,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 </div>
                 {canShowVerification && (
                   <div>
-                    <span className="text-gray-600">{t('exam.verificationsUsed')}:</span>
+                    <span className="text-gray-600 dark:text-gray-300">{t('exam.verificationsUsed')}:</span>
                     <span className="font-semibold ml-2">{checkedQuestions.size}</span>
                   </div>
                 )}
@@ -1365,29 +1365,29 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
               {t('exam.confirmFinish')}
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               {t('exam.confirmFinishText')}
             </p>
             
             {unansweredCount > 0 && (
-              <div className="bg-orange-50 border border-orange-200 rounded p-3 mb-4">
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded p-3 mb-4">
                 <p className="text-orange-800 text-sm">
                   <strong>{t('common.confirm')}:</strong> {t('exam.unansweredWarning', { count: unansweredCount })}
                 </p>
               </div>
             )}
             
-            <div className="text-sm text-gray-600 space-y-1">
+            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
               <p>{t('exam.answered')}: {Object.keys(answers).length}/{exam.questions.length}</p>
               <p>{t('exam.markedForReview')}: {markedForReview.size}</p>
               <p>{t('exam.timeLeft')}: {formatTime(timeLeft)}</p>
@@ -1418,13 +1418,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
   // Vista de resumen de preguntas
   if (showSummary) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
-        <header className="bg-white shadow p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex flex-col">
+        <header className="bg-white dark:bg-gray-800 shadow p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold text-blue-700">{t('exam.summaryTitle')}</h1>
-              <p className="text-gray-600 text-sm">{nombreCertificacion}</p>
-              <p className="text-xs text-gray-500">
+              <h1 className="text-xl font-bold text-blue-700 dark:text-blue-400">{t('exam.summaryTitle')}</h1>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">{nombreCertificacion}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
                        examMode === 'failed_questions' ? t('examModes.label.failed_questions') : t('examModes.label.practice')}
               </p>
@@ -1460,32 +1460,32 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
         <main className="flex-1 px-4 py-8">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
               <div className="grid grid-cols-4 gap-4 text-center mb-6">
                 <div>
                   <div className="text-2xl font-bold text-blue-600">
                     {Object.keys(answers).length}
                   </div>
-                  <div className="text-sm text-gray-600">{t('exam.answered')}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">{t('exam.answered')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-orange-600">
                     {getUnansweredQuestions().length}
                   </div>
-                  <div className="text-sm text-gray-600">{t('common.unanswered')}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">{t('common.unanswered')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-yellow-600">
                     {markedForReview.size}
                   </div>
-                  <div className="text-sm text-gray-600">{t('common.marked')}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">{t('common.marked')}</div>
                 </div>
                 {canShowVerification && (
                   <div>
                     <div className="text-2xl font-bold text-green-600">
                       {checkedQuestions.size}
                     </div>
-                    <div className="text-sm text-gray-600">{t('common.verified')}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">{t('common.verified')}</div>
                   </div>
                 )}
               </div>
@@ -1507,12 +1507,12 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                         isPaused 
                           ? 'opacity-50 cursor-not-allowed'
                           : isCurrent
-                          ? 'border-blue-600 bg-blue-100 text-blue-800'
+                          ? 'border-blue-600 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'
                           : !isAnswered
-                          ? 'border-orange-300 bg-orange-50 hover:bg-orange-100'
+                          ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:bg-orange-900/30'
                           : isMarked
-                          ? 'border-yellow-300 bg-yellow-50 hover:bg-yellow-100'
-                          : 'border-green-300 bg-green-50 hover:bg-green-100'
+                          ? 'border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:bg-yellow-900/30'
+                          : 'border-green-300 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:bg-green-900/30'
                       }`}
                     >
                       <div className="font-semibold">
@@ -1560,21 +1560,21 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
   // Modal de pausa (solo en modo práctica)
   if (isPaused && canPause) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zM9 8a1 1 0 012 0v4a1 1 0 11-2 0V8z" clipRule="evenodd" />
             </svg>
           </div>
           
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('exam.pausedTitle')}</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">{t('exam.pausedTitle')}</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             {t('exam.pausedText')}
           </p>
           
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="text-sm text-gray-600 space-y-2">
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+            <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
               <p>{t('exam.currentQuestion')}: {currentQuestionIndex + 1}/{exam.questions.length}</p>
               <p>{t('exam.timeLeft')}: {formatTime(timeLeft)}</p>
               <p>{t('exam.answered')}: {Object.keys(answers).length}</p>
@@ -1603,9 +1603,9 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
   // Vista del examen en progreso
   if (!exam || !currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-blue-700 font-medium">{t('exam.loadingQuestion')}</p>
+          <p className="text-blue-700 dark:text-blue-400 font-medium">{t('exam.loadingQuestion')}</p>
         </div>
       </div>
     );
@@ -1622,23 +1622,23 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       certificationCode={examCertCode}
       noIndex={true}
     />
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       
       {/* Header con información del examen */}
-      <header className="bg-white shadow p-4">
+      <header className="bg-white dark:bg-gray-800 shadow p-4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold text-blue-700">{nombreCertificacion}</h1>
+            <h1 className="text-xl font-bold text-blue-700 dark:text-blue-400">{nombreCertificacion}</h1>
             <div className="flex items-center gap-4 text-sm">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Pregunta {currentQuestionIndex + 1} de {exam.questions.length}
               </p>
               <span className={`px-2 py-1 rounded text-xs font-semibold ${
                 examMode === 'realistic' 
-                  ? 'bg-red-100 text-red-700' 
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' 
                   : examMode === 'failed_questions'
-                  ? 'bg-orange-100 text-orange-700'
-                  : 'bg-blue-100 text-blue-700'
+                  ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                  : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'
               }`}>
                 {examMode === 'realistic' ? t('examModes.label.realistic') : 
                  examMode === 'failed_questions' ? t('examModes.label.failed_questions') : 
@@ -1647,7 +1647,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               
               {/* Información adicional para preguntas fallidas */}
               {isFailedQuestionsMode && (
-                <span className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                <span className="text-xs text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">
                   {t('exam.focusImprove')}
                 </span>
               )}
@@ -1657,13 +1657,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
           <div className="flex items-center gap-6">
             {/* Progreso */}
             <div className="flex items-center gap-2">
-              <div className="w-32 bg-gray-200 rounded-full h-2">
+              <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full transition-all"
                   style={{ width: `${((currentQuestionIndex + 1) / exam.questions.length) * 100}%` }}
                 ></div>
               </div>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
                 {Math.round(((currentQuestionIndex + 1) / exam.questions.length) * 100)}%
               </span>
             </div>
@@ -1674,7 +1674,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             </div>
 
             {/* Respuestas */}
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
               {t('exam.answered')}: {Object.keys(answers).length}/{exam.questions.length}
             </div>
 
@@ -1694,7 +1694,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 </button>
               )}
 
-              <SettingsPanel onOpenCookies={onOpenCookies} />
+              <SettingsPanel onOpenCookies={onOpenCookies} onOpenPrivacy={onOpenPrivacy} onOpenCommunity={onOpenCommunity} />
               {/* Botón de resumen */}
               <button
                 onClick={handleShowSummary}
@@ -1718,23 +1718,23 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
       {/* Contenido principal */}
       <main className="flex-1 flex justify-center items-start px-4 py-8">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-4xl w-full">
           {/* Barra de estado de la pregunta actual */}
-          <div className="flex justify-between items-center mb-6 p-3 bg-gray-50 rounded">
+          <div className="flex justify-between items-center mb-6 p-3 bg-gray-50 dark:bg-gray-900 rounded">
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{t('exam.status')}:</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300">{t('exam.status')}:</span>
               {answers[currentQuestion.id] !== undefined ? (
-                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">{t('exam.statusAnswered')}</span>
+                <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded text-sm">{t('exam.statusAnswered')}</span>
               ) : (
-                <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-sm">{t('exam.statusUnanswered')}</span>
+                <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-1 rounded text-sm">{t('exam.statusUnanswered')}</span>
               )}
               
               {markedForReview.has(currentQuestion.id) && (
-                <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">{t('common.marked')}</span>
+                <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 px-2 py-1 rounded text-sm">{t('common.marked')}</span>
               )}
               
               {checkedQuestions.has(currentQuestion.id) && canShowVerification && (
-                <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-sm">{t('common.verified')}</span>
+                <span className="bg-purple-100 text-purple-700 dark:text-purple-400 px-2 py-1 rounded text-sm">{t('common.verified')}</span>
               )}
             </div>
 
@@ -1746,7 +1746,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                 className={`px-3 py-1 rounded text-sm transition-colors disabled:opacity-50 ${
                   markedForReview.has(currentQuestion.id)
                     ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300'
                 }`}
               >
                 {markedForReview.has(currentQuestion.id) ? 'Desmarca' : 'Marcar'}
@@ -1759,7 +1759,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                   disabled={checkedQuestions.has(currentQuestion.id) || isPaused}
                   className={`px-3 py-1 rounded text-sm transition-colors ${
                     checkedQuestions.has(currentQuestion.id) || isPaused
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      ? 'bg-gray-400 text-gray-600 dark:text-gray-300 cursor-not-allowed'
                       : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
                 >
@@ -1771,29 +1771,29 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* Pregunta */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 leading-relaxed">
               {currentQuestion.text}
             </h2>
             
             {/* Metadatos de la pregunta (solo en modo práctica) */}
             {canShowQuestionMetadata && (
-              <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
-                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded">
+              <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">
                   {currentQuestion.category}
                 </span>
-                <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
                   {currentQuestion.difficulty}
                 </span>
                 {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
-                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
+                  <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 px-2 py-1 rounded">
                     {t('exam.questionTypeMultiple', { count: currentQuestion.expectedAnswers })}
                   </span>
                 )}
                 {(currentQuestion.questionType === 'fill_in_the_blank' || currentQuestion.questionType === 'fill_in_the_gap') && (
-                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded">{t('exam.questionTypeFill')}</span>
+                  <span className="bg-purple-100 text-purple-700 dark:text-purple-400 px-2 py-1 rounded">{t('exam.questionTypeFill')}</span>
                 )}
                 {currentQuestion.questionType === 'drag_and_drop' && (
-                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded">{t('exam.questionTypeDrag')}</span>
+                  <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-1 rounded">{t('exam.questionTypeDrag')}</span>
                 )}
                 {currentQuestion.questionType === 'checkbox' && (
                   <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded">{t('exam.questionTypeCheckbox')}</span>
@@ -1803,8 +1803,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* Instrucciones según tipo de pregunta */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
-                <div className="flex items-center gap-2 text-yellow-800 text-sm">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded p-3 mb-4">
+                <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200 text-sm">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -1821,7 +1821,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* {t('exam.explanation')} de la respuesta (solo en modo práctica) */}
           {showExplanation[currentQuestion.id] && canShowVerification && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -1829,19 +1829,19 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-blue-800 mb-2">{t('exam.explanation')}</h4>
-                  <p className="text-blue-700 text-sm leading-relaxed">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">{t('exam.explanation')}</h4>
+                  <p className="text-blue-700 dark:text-blue-400 text-sm leading-relaxed">
                     {showExplanation[currentQuestion.id].explanation}
                   </p>
                   
                   {/* Estado de la respuesta del usuario */}
                   <div className="mt-3 p-2 rounded text-sm">
                     {isAnswerCorrect(currentQuestion.id) ? (
-                      <div className="text-green-700 bg-green-100 p-2 rounded">
+                      <div className="text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 p-2 rounded">
                         Correcto! Tu respuesta es correcta.
                       </div>
                     ) : (
-                      <div className="text-red-700 bg-red-100 p-2 rounded">
+                      <div className="text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/30 p-2 rounded">
                         {t('exam.answerIncorrect')}
                       </div>
                     )}
@@ -1854,11 +1854,11 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
           {/* Indicador de progreso para pregunta múltiple */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
             <div className="mb-6">
-              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 mb-2">
                 <span>{t('exam.progressAnswers')}</span>
                 <span>{getSelectedCount()}/{currentQuestion.expectedAnswers}</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div 
                   className={`h-2 rounded-full transition-all ${
                     getSelectedCount() === currentQuestion.expectedAnswers 
@@ -1879,7 +1879,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               className={`px-6 py-3 rounded font-medium transition-colors ${
                 currentQuestionIndex > 0 && !isPaused
                   ? 'bg-gray-600 text-white hover:bg-gray-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-300 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               }`}
               onClick={handlePreviousQuestion}
               disabled={currentQuestionIndex === 0 || isPaused}
@@ -1919,28 +1919,28 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* Advertencia para preguntas incompletas */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && getSelectedCount() < currentQuestion.expectedAnswers && (
-            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded text-orange-800 text-sm">
+            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded text-orange-800 text-sm">
               {t('exam.selectMore', { count: currentQuestion.expectedAnswers - getSelectedCount() })}
             </div>
           )}
 
           {/* Advertencia de tiempo */}
           {timeLeft < 300 && timeLeft > 0 && !isPaused && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-yellow-800 text-sm">
+            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-yellow-800 dark:text-yellow-200 text-sm">
               {t('exam.timeLow')}
             </div>
           )}
 
           {/* Advertencia de modo realista */}
           {examMode === 'realistic' && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded text-red-800 text-sm">
               <strong>{t('examModes.label.realistic')}:</strong> {t('exam.realisticWarning')}
             </div>
           )}
 
           {/* Información adicional para preguntas fallidas */}
           {isFailedQuestionsMode && (
-            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded text-orange-800 text-sm">
+            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded text-orange-800 text-sm">
               <strong>{t('examModes.label.failed_questions')}:</strong> {t('exam.failedModeInfo')}
             </div>
           )}

@@ -59,19 +59,19 @@ describe('ExamExitModal', () => {
     it('renderiza el modal correctamente', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Salir del examen/i)).toBeInTheDocument();
+      expect(screen.getByText(/Exit the exam/i)).toBeInTheDocument();
     });
 
     it('muestra el mensaje para modo práctica', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/guardar tu progreso/i)).toBeInTheDocument();
+      expect(screen.getByText(/current progress/i)).toBeInTheDocument();
     });
 
     it('muestra el mensaje para modo realista', () => {
       render(<ExamExitModal {...defaultProps} examMode="realistic" />);
       
-      expect(screen.getByText(/perder todo el progreso/i)).toBeInTheDocument();
+      expect(screen.getByText(/will lose all progress/i)).toBeInTheDocument();
     });
   });
 
@@ -103,7 +103,7 @@ describe('ExamExitModal', () => {
     it('muestra badge de modo práctica', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Práctica/i)).toBeInTheDocument();
+      expect(screen.getByText(/Practice/i)).toBeInTheDocument();
     });
 
     it('muestra badge de modo realista', () => {
@@ -112,7 +112,7 @@ describe('ExamExitModal', () => {
       // En modo realista NO debería mostrar "Práctica" 
       expect(screen.queryByText(/Práctica/)).not.toBeInTheDocument();
       // El modal debe renderizar correctamente
-      expect(screen.getByText(/Salir del examen/i)).toBeInTheDocument();
+      expect(screen.getByText(/Exit the exam/i)).toBeInTheDocument();
     });
   });
 
@@ -148,19 +148,19 @@ describe('ExamExitModal', () => {
     it('muestra opción de guardar en modo práctica', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Guardar y continuar después/i)).toBeInTheDocument();
+      expect(screen.getByText(/Save and continue later/i)).toBeInTheDocument();
     });
 
     it('no muestra opción de guardar en modo realista', () => {
       render(<ExamExitModal {...defaultProps} examMode="realistic" />);
       
-      expect(screen.queryByText(/Guardar y continuar después/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Save and continue later/i)).not.toBeInTheDocument();
     });
 
     it('muestra opción de salir sin guardar', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Salir sin guardar/i)).toBeInTheDocument();
+      expect(screen.getByText(/Exit without saving/i)).toBeInTheDocument();
     });
   });
 
@@ -178,20 +178,20 @@ describe('ExamExitModal', () => {
     it('no muestra opción de guardar', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.queryByText(/Guardar y continuar después/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Save and continue later/i)).not.toBeInTheDocument();
     });
 
     it('muestra advertencia de invitado', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Modo Invitado/i)).toBeInTheDocument();
+      expect(screen.getByText(/Guest Mode:/i)).toBeInTheDocument();
     });
 
     it('no muestra advertencia de invitado en modo realista', () => {
       render(<ExamExitModal {...defaultProps} examMode="realistic" />);
       
       // En modo realista se muestra otra advertencia, no la de invitado
-      expect(screen.queryByText(/Modo Invitado/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Guest Mode:/i)).not.toBeInTheDocument();
     });
   });
 
@@ -203,7 +203,7 @@ describe('ExamExitModal', () => {
       const user = userEvent.setup();
       render(<ExamExitModal {...defaultProps} />);
       
-      const saveOption = screen.getByText(/Guardar y continuar después/i).closest('button');
+      const saveOption = screen.getByText(/Save and continue later/i).closest('button');
       await user.click(saveOption);
       
       // Debería aparecer el botón de confirmar
@@ -215,19 +215,19 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} />);
       
       // Buscar el botón que contiene "Salir sin guardar"
-      const exitButton = screen.getByText(/Salir sin guardar/i).closest('button');
+      const exitButton = screen.getByText(/Exit without saving/i).closest('button');
       await user.click(exitButton);
       
       // Después de seleccionar, debería aparecer el botón de confirmar con emoji 🚪
       await waitFor(() => {
-        expect(screen.getByText(/Salir sin Guardar/)).toBeInTheDocument();
+        expect(screen.getByText(/Exit without saving/i)).toBeInTheDocument();
       });
     });
 
     it('muestra mensaje de selección cuando no hay opción elegida', () => {
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Selecciona una opción para continuar/i)).toBeInTheDocument();
+      expect(screen.getByText(/Select an option to continue/i)).toBeInTheDocument();
     });
   });
 
@@ -241,7 +241,7 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} onSaveAndExit={onSaveAndExit} />);
       
       // Seleccionar guardar
-      const saveOption = screen.getByText(/Guardar y continuar después/i).closest('button');
+      const saveOption = screen.getByText(/Save and continue later/i).closest('button');
       await user.click(saveOption);
       
       // Confirmar
@@ -259,15 +259,15 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} onConfirmExit={onConfirmExit} />);
       
       // Seleccionar salir
-      const exitOption = screen.getByText(/Salir sin guardar/i).closest('button');
+      const exitOption = screen.getByText(/Exit without saving/i).closest('button');
       await user.click(exitOption);
       
       // Esperar a que aparezca el botón de confirmar y hacer clic
       await waitFor(() => {
-        expect(screen.getByText(/Salir sin Guardar/)).toBeInTheDocument();
+        expect(screen.getByText(/Exit without saving/i)).toBeInTheDocument();
       });
       
-      const confirmButton = screen.getByText(/Salir sin Guardar/).closest('button');
+      const confirmButton = screen.getByText(/Exit without saving/i).closest('button');
       await user.click(confirmButton);
       
       await waitFor(() => {
@@ -280,7 +280,7 @@ describe('ExamExitModal', () => {
       const user = userEvent.setup();
       render(<ExamExitModal {...defaultProps} onCancel={onCancel} />);
       
-      const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
       await user.click(cancelButton);
       
       expect(onCancel).toHaveBeenCalled();
@@ -299,7 +299,7 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} onSaveAndExit={onSaveAndExit} />);
       
       // Seleccionar y confirmar guardar
-      const saveOption = screen.getByText(/Guardar y continuar después/i).closest('button');
+      const saveOption = screen.getByText(/Save and continue later/i).closest('button');
       await user.click(saveOption);
       
       const confirmButton = screen.getByText(/Guardar y Salir/i);
@@ -316,14 +316,14 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} onSaveAndExit={onSaveAndExit} />);
       
       // Seleccionar y confirmar guardar
-      const saveOption = screen.getByText(/Guardar y continuar después/i).closest('button');
+      const saveOption = screen.getByText(/Save and continue later/i).closest('button');
       await user.click(saveOption);
       
       const confirmButton = screen.getByText(/Guardar y Salir/i);
       await user.click(confirmButton);
       
       // El botón de cancelar debería estar deshabilitado
-      const cancelButton = screen.getByRole('button', { name: /Cancelar/i });
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i });
       expect(cancelButton).toBeDisabled();
     });
   });
@@ -336,7 +336,7 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} examMode="realistic" />);
       
       // El componente muestra "Modo Examen Real:" en negrita
-      expect(screen.getByText(/Modo Examen Real/)).toBeInTheDocument();
+      expect(screen.getByText(/Real Exam Mode:/)).toBeInTheDocument();
     });
 
     it('muestra advertencia para invitados en modo práctica', () => {
@@ -347,7 +347,7 @@ describe('ExamExitModal', () => {
       
       render(<ExamExitModal {...defaultProps} />);
       
-      expect(screen.getByText(/Modo Invitado/i)).toBeInTheDocument();
+      expect(screen.getByText(/Guest Mode:/i)).toBeInTheDocument();
       expect(screen.getByText(/necesitas crear una cuenta/i)).toBeInTheDocument();
     });
   });
@@ -383,7 +383,7 @@ describe('ExamExitModal', () => {
       render(<ExamExitModal {...defaultProps} exam={{ id: 'exam-123', questions: [] }} />);
       
       // Si renderiza sin error, el test pasa
-      expect(screen.getByText(/Salir del examen/i)).toBeInTheDocument();
+      expect(screen.getByText(/Exit the exam/i)).toBeInTheDocument();
     });
   });
 });

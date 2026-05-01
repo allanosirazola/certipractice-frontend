@@ -80,19 +80,19 @@ describe('ExamModeSelector', () => {
     it('muestra modo realista', () => {
       render(<ExamModeSelector {...defaultProps} />);
       
-      expect(screen.getByText('Prueba de Examen Real')).toBeInTheDocument();
+      expect(screen.getByText('Real Exam Test')).toBeInTheDocument();
     });
 
     it('muestra modo práctica', () => {
       render(<ExamModeSelector {...defaultProps} />);
       
-      expect(screen.getByText('Modo Práctica')).toBeInTheDocument();
+      expect(screen.getAllByText('Practice Mode')[0]).toBeInTheDocument();
     });
 
     it('muestra modo preguntas fallidas', () => {
       render(<ExamModeSelector {...defaultProps} />);
       
-      expect(screen.getByText('Preguntas Fallidas')).toBeInTheDocument();
+      expect(screen.getByText('Failed Questions')).toBeInTheDocument();
     });
 
     it('muestra iconos para cada modo', () => {
@@ -111,7 +111,7 @@ describe('ExamModeSelector', () => {
     it('muestra características del modo realista', () => {
       render(<ExamModeSelector {...defaultProps} />);
       
-      expect(screen.getByText(/Tiempo límite estricto/i)).toBeInTheDocument();
+      expect(screen.getByText(/Strict time limit/i)).toBeInTheDocument();
     });
 
     it('muestra características del modo práctica', () => {
@@ -229,7 +229,7 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const realisticCard = screen.getByText('Prueba de Examen Real').closest('div[class*="cursor"]');
+      const realisticCard = screen.getByText('Real Exam Test').closest('div[class*="cursor"]');
       await user.click(realisticCard);
       
       // Debe mostrar la pantalla de confirmación
@@ -242,7 +242,7 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
@@ -258,7 +258,7 @@ describe('ExamModeSelector', () => {
         expect(screen.getByText('10 preguntas')).toBeInTheDocument();
       });
 
-      const failedCard = screen.getByText('Preguntas Fallidas').closest('div[class*="cursor"]');
+      const failedCard = screen.getByText('Failed Questions').closest('div[class*="cursor"]');
       await user.click(failedCard);
       
       await waitFor(() => {
@@ -275,11 +275,11 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
-        expect(screen.getByText(/Configuración del Examen/i)).toBeInTheDocument();
+        expect(screen.getByText(/Exam Configuration/i)).toBeInTheDocument();
         expect(screen.getByText('65')).toBeInTheDocument(); // questionCount
       });
     });
@@ -288,7 +288,7 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
@@ -300,7 +300,7 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
@@ -318,14 +318,14 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} onStartExam={onStartExam} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
         expect(screen.getByText(/Confirmar Modo/i)).toBeInTheDocument();
       });
       
-      const startButton = screen.getByRole('button', { name: /Iniciar Modo Práctica/i });
+      const startButton = screen.getByRole('button', { name: /Practice Mode/i });
       await user.click(startButton);
       
       expect(onStartExam).toHaveBeenCalledWith(
@@ -339,7 +339,7 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} onStartExam={onStartExam} />);
       
-      const realisticCard = screen.getByText('Prueba de Examen Real').closest('div[class*="cursor"]');
+      const realisticCard = screen.getByText('Real Exam Test').closest('div[class*="cursor"]');
       await user.click(realisticCard);
       
       await waitFor(() => {
@@ -364,7 +364,7 @@ describe('ExamModeSelector', () => {
         expect(screen.getByText('10 preguntas')).toBeInTheDocument();
       });
 
-      const failedCard = screen.getByText('Preguntas Fallidas').closest('div[class*="cursor"]');
+      const failedCard = screen.getByText('Failed Questions').closest('div[class*="cursor"]');
       await user.click(failedCard);
       
       await waitFor(() => {
@@ -400,14 +400,14 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
         expect(screen.getByText(/Confirmar Modo/i)).toBeInTheDocument();
       });
       
-      const changeButton = screen.getByRole('button', { name: /Cambiar Modo/i });
+      const changeButton = screen.getByRole('button', { name: /Change Mode/i });
       await user.click(changeButton);
       
       // Debe volver a la selección de modo
@@ -425,11 +425,11 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Cambiar Modo/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Change Mode/i })).toBeInTheDocument();
       });
     });
 
@@ -437,11 +437,11 @@ describe('ExamModeSelector', () => {
       const user = userEvent.setup();
       render(<ExamModeSelector {...defaultProps} />);
       
-      const practiceCard = screen.getByText('Modo Práctica').closest('div[class*="cursor"]');
+      const practiceCard = screen.getAllByText('Practice Mode')[0].closest('div[class*="cursor"]');
       await user.click(practiceCard);
       
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Iniciar Modo Práctica/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Practice Mode/i })).toBeInTheDocument();
       });
     });
   });

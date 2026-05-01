@@ -47,19 +47,19 @@ export default function ExamExitModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
         <div className="p-6">
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
               {t('exitModal.title')}
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               {isRealisticMode 
                 ? t('exitModal.exitRealisticDesc')
                 : t('exitModal.exitOptionDesc')
@@ -68,29 +68,29 @@ export default function ExamExitModal({
           </div>
 
           {/* {t('exitModal.title')} */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-gray-700 mb-3">{t('exitModal.currentState')}</h4>
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6">
+            <h4 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">{t('exitModal.currentState')}</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">{t('exitModal.answered')}</span>
+                <span className="text-gray-600 dark:text-gray-300">{t('exitModal.answered')}</span>
                 <span className="font-semibold">
                   {getAnsweredCount()}/{exam?.questions?.length || 0}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">{t('exitModal.timeLeft')}</span>
+                <span className="text-gray-600 dark:text-gray-300">{t('exitModal.timeLeft')}</span>
                 <span className="font-semibold text-orange-600">
                   {formatTime(timeLeft)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">{t('exitModal.progress')}</span>
+                <span className="text-gray-600 dark:text-gray-300">{t('exitModal.progress')}</span>
                 <span className="font-semibold">
                   {Math.round((getAnsweredCount() / (exam?.questions?.length || 1)) * 100)}%
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">{t('exitModal.examMode')}</span>
+                <span className="text-gray-600 dark:text-gray-300">{t('exitModal.examMode')}</span>
                 <span className={`font-semibold ${
                   isRealisticMode ? 'text-red-600' : 'text-blue-600'
                 }`}>
@@ -109,8 +109,8 @@ export default function ExamExitModal({
                 disabled={loading}
                 className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                   selectedAction === 'save'
-                    ? 'border-green-600 bg-green-50'
-                    : 'border-gray-200 hover:border-green-300 hover:bg-green-25'
+                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-green-300 hover:bg-green-25'
                 } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex items-start gap-3">
@@ -118,10 +118,10 @@ export default function ExamExitModal({
                     💾
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-800 mb-1">
+                    <div className="font-semibold text-gray-800 dark:text-gray-100 mb-1">
                       {t('exitModal.saveAndExit')}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
                       {t('exitModal.saveAndExitDesc')}
                     </div>
                   </div>
@@ -135,8 +135,8 @@ export default function ExamExitModal({
               disabled={loading}
               className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                 selectedAction === 'exit'
-                  ? 'border-red-600 bg-red-50'
-                  : 'border-gray-200 hover:border-red-300 hover:bg-red-25'
+                  ? 'border-red-600 bg-red-50 dark:bg-red-900/20'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-red-300 hover:bg-red-25'
               } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div className="flex items-start gap-3">
@@ -144,10 +144,10 @@ export default function ExamExitModal({
                   🚪
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-800 mb-1">
+                  <div className="font-semibold text-gray-800 dark:text-gray-100 mb-1">
                     {t('exitModal.exitWithoutSaving')}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
                     {isRealisticMode 
                       ? t('exitModal.realisticWarning')
                       : t('exitModal.exitWithoutSavingDesc')
@@ -160,7 +160,7 @@ export default function ExamExitModal({
 
           {/* Advertencias especiales */}
           {isRealisticMode && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -175,13 +175,13 @@ export default function ExamExitModal({
           )}
 
           {!isAuthenticated && !isRealisticMode && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 <div className="flex-1">
-                  <div className="text-sm text-yellow-800">
+                  <div className="text-sm text-yellow-800 dark:text-yellow-200">
                     {t('exitModal.guestWarning')}
                   </div>
                 </div>
@@ -225,7 +225,7 @@ export default function ExamExitModal({
 
           {!selectedAction && (
             <div className="mt-4 text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t('exitModal.cancelButton')}
               </p>
             </div>

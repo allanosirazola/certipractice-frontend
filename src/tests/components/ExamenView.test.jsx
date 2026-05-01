@@ -1,4 +1,10 @@
 // ExamenView.test.jsx - Tests para Vitest
+
+// Mock AdBreak to skip countdown in these tests
+vi.mock('../../components/ads/AdBreak', () => ({
+  default: ({ onComplete }) => { onComplete(); return null; },
+}));
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -328,7 +334,7 @@ describe('ExamenView', () => {
       render(<ExamenView {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Práctica/i)).toBeInTheDocument();
+        expect(screen.getByText(/Practice/i)).toBeInTheDocument();
       });
     });
   });

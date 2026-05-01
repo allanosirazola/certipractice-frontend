@@ -768,6 +768,72 @@ export const statsAPI = {
   }
 };
 
+// Community Forum API
+// Note: backend endpoints may not all be implemented yet — methods return graceful empty results when unavailable.
+export const communityAPI = {
+  // Browse community-submitted questions
+  getQuestions: async (filters = {}) => {
+    try {
+      const params = new URLSearchParams(filters).toString();
+      const path = params ? `/community/questions?${params}` : '/community/questions';
+      return await apiRequest(path);
+    } catch {
+      return { success: true, data: [] };
+    }
+  },
+
+  // Get a single community question with comments
+  getQuestion: async (questionId) => {
+    try {
+      return await apiRequest(`/community/questions/${questionId}`);
+    } catch {
+      return { success: false, data: null };
+    }
+  },
+
+  // Submit a new question for community review
+  submitQuestion: async (questionData) => {
+    return await apiRequest('/community/questions', {
+      method: 'POST',
+      body: JSON.stringify(questionData)
+    });
+  },
+
+  // Vote on a community question (up/down)
+  voteQuestion: async (questionId, vote) => {
+    return await apiRequest(`/community/questions/${questionId}/vote`, {
+      method: 'POST',
+      body: JSON.stringify({ vote })
+    });
+  },
+
+  // List comments for a question
+  getComments: async (questionId) => {
+    try {
+      return await apiRequest(`/community/questions/${questionId}/comments`);
+    } catch {
+      return { success: true, data: [] };
+    }
+  },
+
+  // Post a comment
+  postComment: async (questionId, text) => {
+    return await apiRequest(`/community/questions/${questionId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ text })
+    });
+  },
+
+  // Get current user's submissions
+  getMySubmissions: async () => {
+    try {
+      return await apiRequest('/community/my-submissions');
+    } catch {
+      return { success: true, data: [] };
+    }
+  },
+};
+
 // Utility functions
 export const utils = {
   // Generate anonymous session ID

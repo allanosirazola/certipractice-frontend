@@ -578,7 +578,8 @@
       "approved": "Aprobada",
       "rejected": "Rechazada",
       "discussion": "En Discusión"
-    }
+    },
+    "backToHome": "← Volver al inicio"
   },
   "profile": {
     "title": "Mi Perfil",
@@ -639,7 +640,8 @@
   },
   "privacy": {
     "title": "Control de Privacidad",
-    "subtitle": "Gestiona tus preferencias de privacidad"
+    "subtitle": "Gestiona tus preferencias de privacidad",
+    "backToHome": "← Volver al inicio"
   },
   "ads": {
     "startTitle": "¡Tu examen está listo!",
@@ -654,6 +656,10 @@
     "title": "Ajustes",
     "language": "Idioma",
     "cookies": "Preferencias de cookies",
-    "privacy": "Política de privacidad"
+    "privacy": "Política de privacidad",
+    "theme": "Tema",
+    "darkMode": "Modo oscuro",
+    "lightMode": "Modo claro",
+    "community": "Foro de la comunidad"
   }
 }

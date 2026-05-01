@@ -123,7 +123,7 @@ describe('ExamReview', () => {
       mockGetExamForReview.mockImplementation(() => new Promise(() => {}));
       render(<ExamReview examId="exam-456" onClose={vi.fn()} />);
       
-      expect(screen.getByText(/Cargando revisión del examen/i)).toBeInTheDocument();
+      expect(screen.getByText(/Loading review/i)).toBeInTheDocument();
     });
   });
 
@@ -135,7 +135,7 @@ describe('ExamReview', () => {
       render(<ExamReview {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Revisión del Examen')).toBeInTheDocument();
+        expect(screen.getByText('Exam Review')).toBeInTheDocument();
       });
     });
 
@@ -240,12 +240,12 @@ describe('ExamReview', () => {
   // ============================================
   // TESTS DE EXPLICACIÓN
   // ============================================
-  describe('Explicación', () => {
+  describe('Explanation', () => {
     it('muestra sección de explicación', async () => {
       render(<ExamReview {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Explicación')).toBeInTheDocument();
+        expect(screen.getByText('Explanation')).toBeInTheDocument();
       });
     });
   });
@@ -260,10 +260,10 @@ describe('ExamReview', () => {
       render(<ExamReview {...defaultProps} onClose={onClose} />);
       
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Cerrar Revisión/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Close Review/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /Cerrar Revisión/i }));
+      await user.click(screen.getByRole('button', { name: /Close Review/i }));
       expect(onClose).toHaveBeenCalled();
     });
 
