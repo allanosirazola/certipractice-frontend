@@ -141,9 +141,10 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           timeInSeconds = (startedExam.timeLimit || 60) * 60;
         }
         setTimeLeft(timeInSeconds);
-        // Show start-of-exam ad before revealing questions
+        // Show start-of-exam ad — loading stays true until ad completes
         setAdPhase('start');
-        
+        return; // skip finally's setLoading(false)
+
       } catch (err) {
         console.error('❌ Error creando/iniciando examen:', err);
         
@@ -162,9 +163,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         }
         
         setError(errorMessage);
-        
-      } finally {
-        setLoading(false);
+        setLoading(false); // only on error
       }
     };
 
@@ -751,11 +750,9 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       const examResults = await examAPI.getResults(exam.id);
       setResults(examResults.data);
       setShowConfirmFinish(false);
+      setLoading(false); // clear spinner before ad appears
+      setAdPhase('finish'); // adPhase check in render takes over
 
-      // Show finish ad before revealing results
-      setAdPhase('finish');
-      // examCompleted will be set after the ad completes (in onAdComplete)
-      
     } catch (err) {
       console.error('Error completando examen:', err);
       setError(`Error completando examen: ${err.response?.data?.error || err.message}`);
@@ -767,10 +764,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
   // Called when an ad break finishes (countdown ends or user skips)
   const handleAdComplete = () => {
-    if (adPhase === 'finish') {
-      setExamCompleted(true);
-    }
+    const phase = adPhase;
     setAdPhase(null);
+    if (phase === 'start') {
+      setLoading(false); // now reveal the exam questions
+    } else if (phase === 'finish') {
+      setExamCompleted(true); // now reveal the results
+    }
   };
 
   const formatTime = (seconds) => {
@@ -1203,11 +1203,14 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     ? `Taking a ${examCertName} practice exam. ${exam?.questions?.length || ''} questions with instant explanations. Prepare for your ${examProviderName} certification.`
     : 'Cloud certification practice exam with real questions and instant explanations.';
 
+  // ── Ad break takes full priority over all other screens ──────────────────
+  if (adPhase) {
+    return <AdBreak phase={adPhase} onComplete={handleAdComplete} />;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
-        {/* Start ad shows on top of loading screen */}
-        {adPhase === 'start' && <AdBreak phase="start" onComplete={handleAdComplete} />}
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-blue-700 font-medium text-lg">
@@ -1717,8 +1720,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
   return (
     <>
-    {/* Finish-of-exam ad: overlays exam screen while results are prepared */}
-    {adPhase === 'finish' && <AdBreak phase="finish" onComplete={handleAdComplete} />}
     <SEOHead
       pageType="exam"
       title={examSeoTitle}
