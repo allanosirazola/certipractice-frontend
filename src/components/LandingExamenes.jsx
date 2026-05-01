@@ -15,11 +15,11 @@ import UserProfile from './user/UserProfile';
 import ExamHistory from './exam/ExamHistory';
 import ExamModeSelector from './exam/ExamModeSelector';
 import FailedQuestionsStats from './exam/FailedQuestionsStats';
-import LanguageSwitcher from './common/LanguageSwitcher';
+import SettingsPanel from './common/SettingsPanel';
 import SEOHead, { SEO_CONFIGS, SITE_URL } from './seo/SEOHead';
 import { useTranslation } from 'react-i18next';
 
-export default function LandingExamenes({ onEmpezar }) {
+export default function LandingExamenes({ onEmpezar, onOpenCookies }) {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,6 @@ export default function LandingExamenes({ onEmpezar }) {
         setError(null);
         
         // Verificar backend
-        console.log('Verificando backend...');
         const health = await checkBackendHealth();
         setBackendStatus(health);
         
@@ -59,18 +58,11 @@ export default function LandingExamenes({ onEmpezar }) {
           setError(t('landing.backendError'));
           return;
         }
-
-        console.log('Backend disponible, cargando proveedores...');
-        
         // Cargar proveedores disponibles desde PostgreSQL
         const providersResponse = await questionAPI.getProviders();
-        console.log('Proveedores recibidos:', providersResponse);
-        
         if (providersResponse.success && providersResponse.data) {
           const providersList = providersResponse.data.map(provider => parseProviderData(provider));
           setProviders(providersList);
-          console.log('Proveedores procesados:', providersList);
-
           if (providersList.length === 0) {
             setError('No se encontraron proveedores en la base de datos. Ejecuta el script de datos de ejemplo.');
             return;
@@ -81,7 +73,6 @@ export default function LandingExamenes({ onEmpezar }) {
         }
         
       } catch (err) {
-        console.error('Error inicializando app:', err);
         setError(`Error conectando con el backend: ${err.message}`);
       } finally {
         setLoading(false);
@@ -102,19 +93,15 @@ export default function LandingExamenes({ onEmpezar }) {
       }
 
       try {
-        console.log(`Cargando certificaciones para ${providerSeleccionado.name}...`);
         const response = await questionAPI.getCertifications(providerSeleccionado.name);
         
         if (response.success && response.data) {
           const certificationsList = response.data.map(cert => formatCertification(cert));
           setCertifications(certificationsList);
-          console.log('Certificaciones procesadas:', certificationsList);
         } else {
-          console.error('Error en respuesta de certificaciones:', response);
           setCertifications([]);
         }
       } catch (err) {
-        console.error('Error cargando certificaciones:', err);
         setCertifications([]);
       }
     };
@@ -123,7 +110,6 @@ export default function LandingExamenes({ onEmpezar }) {
   }, [providerSeleccionado]);
 
   const handleProviderSelection = (provider) => {
-    console.log(`Proveedor seleccionado:`, provider);
     setProviderSeleccionado(provider);
     setCertificacionSeleccionada(null);
   };
@@ -135,8 +121,6 @@ export default function LandingExamenes({ onEmpezar }) {
 
   const handleModeSelected = async (examConfig, nombreCertificacion) => {
     try {
-      console.log(`Iniciando examen con configuración simplificada:`, examConfig);
-      
       // Solo validar campos esenciales
       if (!examConfig.provider || !examConfig.certification) {
         throw new Error('Proveedor y certificación son requeridos');
@@ -145,7 +129,6 @@ export default function LandingExamenes({ onEmpezar }) {
       // Llamar a la función onEmpezar con la configuración validada
       onEmpezar(examConfig, nombreCertificacion);
     } catch (err) {
-      console.error('Error iniciando examen:', err);
       setError(`Error iniciando examen: ${err.message}`);
     }
   };
@@ -155,7 +138,6 @@ export default function LandingExamenes({ onEmpezar }) {
   };
 
   const handleResumeExam = (examId, showResults = false) => {
-    console.log('Resumir examen:', examId, showResults);
     setShowHistory(false);
     // TODO: Implementar lógica para continuar examen
   };
@@ -207,7 +189,6 @@ export default function LandingExamenes({ onEmpezar }) {
   const createBaseExamConfig = () => {
     // Validar que tenemos proveedor y certificación seleccionados
     if (!providerSeleccionado || !certificacionSeleccionada) {
-      console.error('Proveedor o certificación no seleccionados');
       return null;
     }
 
@@ -216,14 +197,6 @@ export default function LandingExamenes({ onEmpezar }) {
     
     // Crear descripción del examen
     const examDescription = `Examen de práctica para la certificación ${certificacionSeleccionada.code || certificacionSeleccionada.name} de ${providerSeleccionado.name}`;
-
-    console.log('Creando configuración base del examen:', {
-      provider: providerSeleccionado.id,
-      provider_name: providerSeleccionado.name,
-      certification: certificacionSeleccionada.id,
-      title: examTitle
-    });
-
     return {
       // CAMPOS REQUERIDOS
       title: examTitle,
@@ -258,12 +231,10 @@ export default function LandingExamenes({ onEmpezar }) {
     const [imageLoaded, setImageLoaded] = useState(false);
     
     const handleImageError = (e) => {
-      console.warn(`Error cargando imagen para proveedor ${provider.name}:`, e.target.src);
       setImageError(true);
     };
 
     const handleImageLoad = () => {
-      console.log(`Imagen cargada exitosamente para proveedor ${provider.name}`);
       setImageLoaded(true);
     };
 
@@ -315,12 +286,10 @@ export default function LandingExamenes({ onEmpezar }) {
     const [imageLoaded, setImageLoaded] = useState(false);
     
     const handleImageError = (e) => {
-      console.error(`Error cargando imagen para certificación ${certification.code}:`, e.target.src);
       setImageError(true);
     };
 
     const handleImageLoad = () => {
-      console.log(`Imagen de certificación cargada exitosamente para ${certification.code}`);
       setImageLoaded(true);
     };
 
@@ -450,13 +419,8 @@ export default function LandingExamenes({ onEmpezar }) {
         </div>
         
         <div className="flex items-center space-x-4 mt-4 md:mt-0">
-          <LanguageSwitcher />
-          {backendStatus?.available && (
-            <div className="flex items-center text-green-600 text-sm">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              {t('landing.postgresConnected')}
-            </div>
-          )}
+          <SettingsPanel onOpenCookies={onOpenCookies} />
+
           
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
@@ -513,7 +477,7 @@ export default function LandingExamenes({ onEmpezar }) {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
         {!isAuthenticated && (
           <div className="bg-gradient-to-r from-blue-100 to-green-100 border border-blue-200 rounded-lg p-6 mb-8 max-w-2xl text-center">
-            <h3 className="font-semibold text-blue-800 mb-2">Practica gratis sin registro!</h3>
+            <h3 className="font-semibold text-blue-800 mb-2">{t('landing.freeTitle')}</h3>
             <p className="text-blue-700 mb-3">
               {t('landing.freeDesc')}
             </p>
@@ -579,7 +543,7 @@ export default function LandingExamenes({ onEmpezar }) {
               )}
               {providerSeleccionado?.name === provider.name && (
                 <span className="mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold animate-pulse">
-                  Seleccionado
+                  {t('landing.selectedBadge')}
                 </span>
               )}
             </div>
@@ -590,7 +554,7 @@ export default function LandingExamenes({ onEmpezar }) {
         {providerSeleccionado && certifications.length > 0 && (
           <div className="w-full max-w-4xl mb-10 animate-fade-in">
             <h3 className="text-lg font-semibold mb-4 text-blue-700 text-center">
-              Certificaciones disponibles para {providerSeleccionado.name}
+              {t('landing.certsAvailable', { provider: providerSeleccionado.name })}
             </h3>            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {certifications.map(cert => (
@@ -612,7 +576,7 @@ export default function LandingExamenes({ onEmpezar }) {
                       </div>
                       {cert.difficulty && (
                         <div className="text-xs opacity-60">
-                          Dificultad: {cert.difficulty}
+                          {t('landing.difficulty')} {cert.difficulty}
                         </div>
                       )}
                     </div>
@@ -656,7 +620,7 @@ export default function LandingExamenes({ onEmpezar }) {
                 <div className="flex justify-between">
                   <span>{t('landing.saveProgress')}</span>
                   <span className="font-semibold text-green-600">
-                    {isAuthenticated ? 'Si' : 'No (sin registro)'}
+                    {isAuthenticated ? t('landing.saveYes') : t('landing.saveNo')}
                   </span>
                 </div>
               </div>
@@ -669,10 +633,10 @@ export default function LandingExamenes({ onEmpezar }) {
                     onClick={handleShowFailedQuestions}
                     className="w-full px-4 py-2 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors text-sm font-medium"
                   >
-                    Ver {t('landing.failedQuestions')}
+                    {t('landing.viewFailed')}
                   </button>
                   <p className="text-xs text-gray-500 mt-1">
-                    Practica solo las preguntas que has respondido incorrectamente
+                    {t('landing.failedHint')}
                   </p>
                 </div>
               )}
@@ -691,7 +655,7 @@ export default function LandingExamenes({ onEmpezar }) {
           onClick={handleStartExam}
         >
           {certificacionSeleccionada 
-            ? 'Seleccionar Modo de Examen'
+            ? t('landing.selectMode')
             : t('landing.selectCertFirst')
           }
         </button>
@@ -700,7 +664,7 @@ export default function LandingExamenes({ onEmpezar }) {
           <div className="mt-6 text-center max-w-md">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <p className="text-sm text-yellow-800 mb-2">
-                <strong>t('common.guestMode'):</strong> {t('landing.guestModeInfo')}
+                <strong>{t('landing.guestModeLabel')}</strong> {t('landing.guestModeInfo')}
               </p>
               <div className="space-y-2">
                 <button
@@ -710,7 +674,7 @@ export default function LandingExamenes({ onEmpezar }) {
                   {t('landing.registerForProgress')}
                 </button>
                 <p className="text-xs text-yellow-700">
-                  <strong>Con cuenta:</strong> Accede al modo "{t('landing.failedQuestions')}" para practicar solo lo que necesitas mejorar
+                  {t('landing.withAccount')} {t('landing.failedModePromo')}
                 </p>
               </div>
             </div>
@@ -720,8 +684,8 @@ export default function LandingExamenes({ onEmpezar }) {
         {/* Estado de la conexión */}
         {providers.length === 0 && !loading && (
           <div className="mt-8 text-center text-gray-600">
-            <p>No se encontraron proveedores en la base de datos.</p>
-            <p className="text-sm mt-2">Ejecuta el script de datos de ejemplo para comenzar.</p>
+            <p>{t('landing.noProviders')}</p>
+            <p className="text-sm mt-2">{t('landing.runSampleData')}</p>
           </div>
         )}
       </main>
@@ -729,13 +693,9 @@ export default function LandingExamenes({ onEmpezar }) {
       <footer className="bg-white text-center py-6 text-gray-500 text-sm border-t">
         <div className="max-w-4xl mx-auto px-4">
           <p className="mb-2">
-            © {new Date().getFullYear()} CertiPractice • Conectado a {totalQuestions.toLocaleString()} preguntas totales
+            {t('landing.copyright', { year: new Date().getFullYear() })} • {t('landing.totalQuestions', { count: totalQuestions.toLocaleString() })}
           </p>
-          {backendStatus?.available && (
-            <p className="text-green-600 text-xs">
-              PostgreSQL {backendStatus.version ? `v${backendStatus.version.split(' ')[1]}` : 'conectado'}
-            </p>
-          )}
+
           {isAuthenticated && (
             <p className="text-blue-600">
               {t('landing.activeSession')} {user?.username}

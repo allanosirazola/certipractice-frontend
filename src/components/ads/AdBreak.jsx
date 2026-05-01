@@ -1,6 +1,7 @@
 // src/components/ads/AdBreak.jsx
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { hasAdvertisingConsent } from '../privacy/CookieConsentBanner';
 
 // ─── AdSense config ──────────────────────────────────────────────────────────
 // Replace with your real publisher ID and slot IDs from your AdSense account
@@ -35,17 +36,18 @@ function ensureAdsenseScript() {
 function AdSlot({ slot, phase }) {
   const ref = useRef(null);
   const pushed = useRef(false);
-  const hasSlot = slot && !slot.startsWith('0000') && slot !== '1234567890' && slot !== '0987654321';
+  const hasSlot = slot && slot !== '1234567890' && slot !== '0987654321';
+  const canShow = hasSlot && hasAdvertisingConsent();
 
   useEffect(() => {
-    if (!hasSlot || pushed.current || !ref.current) return;
+    if (!canShow || pushed.current || !ref.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       pushed.current = true;
     } catch {}
-  }, [hasSlot]);
+  }, [canShow]);
 
-  if (!hasSlot) {
+  if (!canShow) {
     return (
       <div className="w-full bg-gradient-to-br from-slate-100 to-slate-200 border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center py-14 px-8 text-slate-400 select-none">
         <svg className="w-10 h-10 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +55,9 @@ function AdSlot({ slot, phase }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
         </svg>
         <span className="text-sm font-medium tracking-widest uppercase">Advertisement</span>
-        <span className="text-xs mt-1 opacity-60">Set AD_SLOTS.{phase} in AdBreak.jsx</span>
+        <span className="text-xs mt-1 opacity-60">
+          {!hasSlot ? `Set AD_SLOTS.${phase} in AdBreak.jsx` : 'Accept advertising cookies to see ads'}
+        </span>
       </div>
     );
   }

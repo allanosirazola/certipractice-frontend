@@ -43,7 +43,7 @@
     "subtitle": "Prepara tu certificación con miles de preguntas reales",
     "backendError": "Backend no disponible. Asegúrate de que el servidor esté corriendo en puerto 3000.",
     "loadingProviders": "Cargando proveedores...",
-    "noProviders": "No hay proveedores disponibles",
+    "noProviders": "No se encontraron proveedores en la base de datos.",
     "selectProvider": "Selecciona un proveedor",
     "selectCertification": "Selecciona una certificación",
     "noCertifications": "No hay certificaciones para este proveedor",
@@ -69,8 +69,8 @@
       "online": "Backend conectado",
       "offline": "Backend desconectado"
     },
-    "freeGuest": "Práctica gratuita - {count} proveedores disponibles",
-    "welcomeUser": "Hola {name}! - {count} proveedores disponibles",
+    "freeGuest": "Práctica gratuita - {{count}} proveedores disponibles",
+    "welcomeUser": "Hola {{name}}! - {{count}} proveedores disponibles",
     "postgresConnected": "PostgreSQL conectado",
     "practiceForCerts": "Practica con preguntas reales de certificación",
     "chooseProvider": "Elige el proveedor y certificación. Las preguntas vienen directamente de la base de datos PostgreSQL.",
@@ -103,7 +103,21 @@
     "solutionStart": "Inicia el backend: npm run dev",
     "solutionPort": "Verifica el puerto 3000 esté libre",
     "solutionSample": "Ejecuta datos de ejemplo: POST /api/v1/questions/admin/sample-data",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "selectedBadge": "Seleccionado",
+    "certsAvailable": "Certificaciones disponibles para {{provider}}",
+    "saveYes": "Sí",
+    "saveNo": "No (invitado)",
+    "viewFailed": "Ver preguntas fallidas",
+    "failedHint": "Practica solo las preguntas que has respondido incorrectamente",
+    "selectMode": "Seleccionar Modo de Examen",
+    "guestModeLabel": "Modo Invitado:",
+    "withAccount": "Con cuenta:",
+    "failedModePromo": "desbloquea el modo \"Preguntas Fallidas\" para practicar solo lo que necesitas mejorar",
+    "runSampleData": "Ejecuta el script de datos de ejemplo para comenzar.",
+    "totalQuestions": "{{count}} preguntas disponibles",
+    "copyright": "© {{year}} CertiPractice",
+    "createAccount": "Crear Cuenta"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -376,7 +390,7 @@
     "correct": "Correctas",
     "incorrect": "Incorrectas",
     "timeUsed": "Tiempo usado",
-    "noExamsFilter": "No tienes exámenes {filter}",
+    "noExamsFilter": "No tienes exámenes {{filter}}",
     "startFirst": "Comienza tu primer examen desde la página principal",
     "viewResults": "Ver Resultados",
     "invalidDate": "Fecha inválida",
@@ -507,7 +521,7 @@
     "whatProblem": "¿Qué tipo de problema has encontrado? *",
     "description": "Descripción",
     "descriptionPlaceholder": "Por favor explica qué está mal con esta pregunta...",
-    "charCount": "{count}/500 caracteres (mínimo 10)",
+    "charCount": "{{count}}/500 caracteres (mínimo 10)",
     "suggestedFix": "¿Tienes una corrección sugerida? (opcional)",
     "suggestedFixPlaceholder": "Si sabes cuál debería ser la respuesta correcta o cómo mejorar la pregunta...",
     "anonymousNote": "Estás reportando como usuario anónimo.",
@@ -635,5 +649,11 @@
     "skip": "Saltar →",
     "skipIn": "Saltar en {{count}}s",
     "disclaimer": "Los anuncios permiten que CertiPractice sea gratuito para todos."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "cookies": "Preferencias de cookies",
+    "privacy": "Política de privacidad"
   }
 }

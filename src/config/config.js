@@ -55,14 +55,10 @@ const config = {
 
 // Validación de configuración en desarrollo
 if (config.DEBUG) {
-  console.log('🔧 Configuración de la aplicación:', config);
-  
   // Verificar que la URL de la API sea válida
   try {
     new URL(config.API_URL);
-    console.log('✅ URL de API válida:', config.API_URL);
   } catch (error) {
-    console.warn('⚠️ URL de API inválida:', config.API_URL);
   }
 }
 

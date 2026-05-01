@@ -22,7 +22,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error creando examen:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -50,7 +49,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error obteniendo exámenes:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -73,7 +71,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error obteniendo examen:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -97,7 +94,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error iniciando examen:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -122,7 +118,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error enviando respuesta:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -146,7 +141,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error completando examen:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -169,7 +163,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error obteniendo resultados:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }
@@ -193,7 +186,6 @@ class ExamService {
         return { success: false, error: data.error };
       }
     } catch (error) {
-      console.error('Error eliminando examen:', error);
       return { success: false, error: 'Error de conexión' };
     }
   }

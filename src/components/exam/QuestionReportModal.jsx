@@ -79,7 +79,6 @@ export default function QuestionReportModal({
         throw new Error(response.error || 'Error al enviar el reporte');
       }
     } catch (err) {
-      console.error('Error submitting report:', err);
       setError(err.message || 'Error al enviar el reporte. Por favor intenta de nuevo.');
     } finally {
       setLoading(false);

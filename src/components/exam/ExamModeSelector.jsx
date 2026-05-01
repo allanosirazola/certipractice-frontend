@@ -29,7 +29,6 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
           setFailedQuestionsCount(response.data.length);
         }
       } catch (error) {
-        console.error('Error cargando preguntas fallidas:', error);
         setFailedQuestionsCount(0);
       } finally {
         setLoadingFailedQuestions(false);

@@ -29,7 +29,6 @@ export default function PrivacyControlPanel({ onClose }) {
         setSettings(response.data);
       }
     } catch (err) {
-      console.error('Error loading privacy settings:', err);
     }
   };
 
@@ -41,7 +40,6 @@ export default function PrivacyControlPanel({ onClose }) {
 
       await privacyAPI.updateSettings({ [key]: value });
     } catch (err) {
-      console.error('Error updating settings:', err);
       // Revertir en caso de error
       setSettings(settings);
     } finally {
@@ -65,7 +63,6 @@ export default function PrivacyControlPanel({ onClose }) {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Error exporting data:', err);
       alert('Error al exportar los datos. Por favor intenta de nuevo.');
     } finally {
       setExportLoading(false);
@@ -90,7 +87,6 @@ export default function PrivacyControlPanel({ onClose }) {
         alert(response.error || 'Error al eliminar la cuenta');
       }
     } catch (err) {
-      console.error('Error deleting account:', err);
       alert('Error al eliminar la cuenta. Verifica tu contraseña.');
     } finally {
       setLoading(false);

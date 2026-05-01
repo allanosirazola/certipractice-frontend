@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         if (config.DEBUG) {
-          console.error('Error verificando autenticación:', error);
         }
         localStorage.removeItem(config.STORAGE_KEYS.authToken);
         setToken(null);
@@ -85,7 +84,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error en login:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -121,7 +119,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error en registro:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -141,7 +138,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.warn('Error notifying server about logout:', error);
       }
     } finally {
       // Always clear local state
@@ -174,7 +170,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error actualizando perfil:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -200,7 +195,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error cambiando contraseña:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -228,7 +222,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error eliminando cuenta:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -252,7 +245,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error obteniendo estadísticas:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -277,7 +269,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error obteniendo progreso:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -311,7 +302,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error refrescando token:', error);
       }
       await logout();
       return { success: false, error: 'Error de conexión' };
@@ -338,7 +328,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error verificando token:', error);
       }
       await logout();
       return { success: false, error: 'Error de conexión' };
@@ -367,7 +356,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (config.DEBUG) {
-        console.error('Error validando email:', error);
       }
       return { success: false, error: 'Error de conexión' };
     }
@@ -376,7 +364,6 @@ export const AuthProvider = ({ children }) => {
   // Interceptor for handling 401 responses globally
   const handleUnauthorized = async () => {
     if (config.DEBUG) {
-      console.warn('Token expirado o inválido, cerrando sesión...');
     }
     await logout();
   };
@@ -405,7 +392,6 @@ export const AuthProvider = ({ children }) => {
         throw error;
       }
       if (config.DEBUG) {
-        console.error('Error en petición autenticada:', error);
       }
       throw new Error('Error de conexión');
     }

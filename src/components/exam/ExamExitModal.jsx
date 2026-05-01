@@ -37,7 +37,6 @@ export default function ExamExitModal({
         await onConfirmExit();
       }
     } catch (error) {
-      console.error('Error al salir del examen:', error);
     } finally {
       setLoading(false);
     }

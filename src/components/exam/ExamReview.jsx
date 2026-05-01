@@ -27,7 +27,6 @@ export default function ExamReview({ examId, examData, onClose }) {
       throw new Error('No options in response');
     } catch (error) {
       if (attempt === retries - 1) {
-        console.error(`Failed to load options for ${questionId} after ${retries} attempts`);
         return null;
       }
       // Esperar con backoff exponencial
@@ -40,18 +39,8 @@ export default function ExamReview({ examId, examData, onClose }) {
     try {
       setLoading(true);
       setError(null);
-
-      console.log('ExamReview - Datos recibidos:', {
-        examId,
-        examData,
-        hasQuestions: examData?.questions?.length,
-        hasResults: examData?.results?.questionResults?.length
-      });
-
       // Verificar si tenemos datos de resultados con questionResults
       if (examData && examData.results && examData.results.questionResults && examData.results.questionResults.length > 0) {
-        console.log('Usando datos de resultados con', examData.results.questionResults.length, 'preguntas');
-        
         // Transformar questionResults a formato de examen
         const transformedExam = {
           id: examData.examSummary?.id || examId,
@@ -86,11 +75,7 @@ export default function ExamReview({ examId, examData, onClose }) {
 
         setExam(transformedExam);
         setResults(examData.results);
-        
-        console.log('Examen transformado con', transformedExam.questions.length, 'preguntas');
-        
       } else if (examData && examData.questions && examData.questions.length > 0) {
-        console.log('Usando examData proporcionado con', examData.questions.length, 'preguntas');
         setExam(examData);
         
         // Cargar resultados si no los tenemos
@@ -101,22 +86,15 @@ export default function ExamReview({ examId, examData, onClose }) {
               setResults(resultsResponse.data);
             }
           } catch (err) {
-            console.warn('Error cargando resultados:', err);
           }
         }
       } else {
         // Cargar datos completos del examen usando el nuevo endpoint
-        console.log('Cargando datos del examen desde API...');
-        
         try {
           // Intentar primero con el endpoint de revisión
           const examResponse = await examAPI.getExamForReview(examId);
-          console.log('Respuesta del API:', examResponse);
-          
           if (examResponse.success && examResponse.data) {
             setExam(examResponse.data);
-            console.log('Examen cargado con', examResponse.data.questions?.length || 0, 'preguntas');
-            
             // Cargar resultados
             try {
               const resultsResponse = await examAPI.getResults(examId);
@@ -124,20 +102,16 @@ export default function ExamReview({ examId, examData, onClose }) {
                 setResults(resultsResponse.data);
               }
             } catch (err) {
-              console.warn('Error cargando resultados:', err);
             }
           } else {
             throw new Error(examResponse.error || 'Error cargando examen para revisión');
           }
         } catch (err) {
-          console.error('Error con endpoint de revisión, intentando endpoint normal:', err);
-          
           // Fallback al endpoint normal
           try {
             const examResponse = await examAPI.getExam(examId);
             if (examResponse.success && examResponse.data) {
               setExam(examResponse.data);
-              console.log('Examen cargado (fallback) con', examResponse.data.questions?.length || 0, 'preguntas');
             } else {
               throw new Error(examResponse.error || 'Error cargando examen');
             }
@@ -148,7 +122,6 @@ export default function ExamReview({ examId, examData, onClose }) {
       }
 
     } catch (err) {
-      console.error('Error cargando datos del examen:', err);
       setError(err.message || 'Error cargando examen');
     } finally {
       setLoading(false);
@@ -164,7 +137,6 @@ export default function ExamReview({ examId, examData, onClose }) {
     // Si la pregunta ya tiene opciones cargadas desde questionResults, no necesitamos cargar más
     const currentQuestion = exam?.questions?.find(q => q.id === questionId);
     if (currentQuestion && currentQuestion.options && currentQuestion.options.length > 0) {
-      console.log('Pregunta ya tiene opciones cargadas:', questionId);
       setQuestionDetails(prev => ({
         ...prev,
         [questionId]: {
@@ -176,7 +148,6 @@ export default function ExamReview({ examId, examData, onClose }) {
     }
     
     // MEJORADO: Cargar pregunta completa con opciones
-    console.log(`🔄 Cargando pregunta completa con opciones: ${questionId}`);
     const response = await questionAPI.getQuestion(questionId, true, false);
     
     if (response.success && response.data) {
@@ -213,13 +184,10 @@ export default function ExamReview({ examId, examData, onClose }) {
           explanation: questionData.explanation || t('examReview.noExplanation')
         }
       }));
-      
-      console.log(`✅ Pregunta ${questionId} cargada con ${questionData.options?.length || 0} opciones`);
     } else {
       throw new Error(response.error || 'Error cargando pregunta');
     }
   } catch (err) {
-    console.error('Error cargando detalles de pregunta:', err);
     // Usar datos básicos si están disponibles
     const currentQuestion = exam?.questions?.find(q => q.id === questionId);
     if (currentQuestion) {

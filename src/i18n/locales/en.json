@@ -43,7 +43,7 @@
     "subtitle": "Prepare your certification with thousands of real questions",
     "backendError": "Backend unavailable. Make sure the server is running on port 3000.",
     "loadingProviders": "Loading providers...",
-    "noProviders": "No providers available",
+    "noProviders": "No providers found in the database.",
     "selectProvider": "Select a provider",
     "selectCertification": "Select a certification",
     "noCertifications": "No certifications for this provider",
@@ -69,8 +69,8 @@
       "online": "Backend connected",
       "offline": "Backend disconnected"
     },
-    "freeGuest": "Free practice - {count} providers available",
-    "welcomeUser": "Hi {name}! - {count} providers available",
+    "freeGuest": "Free practice - {{count}} providers available",
+    "welcomeUser": "Hi {{name}}! - {{count}} providers available",
     "postgresConnected": "PostgreSQL connected",
     "practiceForCerts": "Practice with real certification questions",
     "chooseProvider": "Choose the provider and certification. Questions come directly from the PostgreSQL database.",
@@ -103,7 +103,21 @@
     "solutionStart": "Start the backend: npm run dev",
     "solutionPort": "Verify port 3000 is free",
     "solutionSample": "Run sample data: POST /api/v1/questions/admin/sample-data",
-    "retry": "Retry"
+    "retry": "Retry",
+    "selectedBadge": "Selected",
+    "certsAvailable": "Certifications available for {{provider}}",
+    "saveYes": "Yes",
+    "saveNo": "No (guest)",
+    "viewFailed": "View failed questions",
+    "failedHint": "Practice only the questions you have answered incorrectly",
+    "selectMode": "Select Exam Mode",
+    "guestModeLabel": "Guest Mode:",
+    "withAccount": "With account:",
+    "failedModePromo": "unlock \"Failed Questions\" mode to practice only what you need to improve",
+    "runSampleData": "Run the sample data script to get started.",
+    "totalQuestions": "{{count}} questions available",
+    "copyright": "© {{year}} CertiPractice",
+    "createAccount": "Create Account"
   },
   "auth": {
     "login": "Log In",
@@ -376,7 +390,7 @@
     "correct": "Correct",
     "incorrect": "Incorrect",
     "timeUsed": "Time used",
-    "noExamsFilter": "No exams {filter}",
+    "noExamsFilter": "No exams {{filter}}",
     "startFirst": "Start your first exam from the home page",
     "viewResults": "View Results",
     "invalidDate": "Invalid date",
@@ -507,7 +521,7 @@
     "whatProblem": "What type of problem did you find? *",
     "description": "Description",
     "descriptionPlaceholder": "Please explain what is wrong with this question...",
-    "charCount": "{count}/500 characters (minimum 10)",
+    "charCount": "{{count}}/500 characters (minimum 10)",
     "suggestedFix": "Do you have a suggested fix? (optional)",
     "suggestedFixPlaceholder": "If you know what the correct answer should be or how to improve the question...",
     "anonymousNote": "You are reporting as an anonymous user.",
@@ -635,5 +649,11 @@
     "skip": "Skip →",
     "skipIn": "Skip in {{count}}s",
     "disclaimer": "Ads help keep CertiPractice free for everyone."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "cookies": "Cookie preferences",
+    "privacy": "Privacy policy"
   }
 }

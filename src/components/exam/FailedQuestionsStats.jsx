@@ -32,13 +32,11 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
 
       // Cargar preguntas fallidas
       const questionsResponse = await userAPI.getFailedQuestions(filters);
-      console.log(questionsResponse)
       if (questionsResponse.success) {
         setFailedQuestions(questionsResponse.data);
       }
 
     } catch (err) {
-      console.error('Error cargando datos de preguntas fallidas:', err);
       setError(t('failedStats.error'));
     } finally {
       setLoading(false);

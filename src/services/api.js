@@ -49,7 +49,6 @@ const apiRequest = async (endpoint, options = {}) => {
 
   try {
     if (config.DEBUG) {
-      console.log(`API Request: ${defaultOptions.method || 'GET'} ${url}`);
     }
     
     const response = await fetch(url, defaultOptions);
@@ -58,7 +57,6 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await handleResponse(response);
     
     if (config.DEBUG) {
-      console.log(`API Response (${response.status}):`, data);
     }
     
     return data;
@@ -66,7 +64,6 @@ const apiRequest = async (endpoint, options = {}) => {
     clearTimeout(timeoutId);
     
     if (config.DEBUG) {
-      console.error(`API Error for ${url}:`, error);
     }
     
     // Enhanced error handling
@@ -101,7 +98,6 @@ export const checkBackendHealth = async () => {
     };
   } catch (error) {
     if (config.DEBUG) {
-      console.error('Backend health check failed:', error);
     }
     
     return {
@@ -297,7 +293,6 @@ export const examAPI = {
   // Create exam with minimal data
   createExam: async (examConfig) => {
     if (config.DEBUG) {
-      console.log('Creating exam with simplified config:', examConfig);
     }
     
     // Transform frontend config to simplified backend format
@@ -331,9 +326,6 @@ export const examAPI = {
     if (!backendConfig.certification) {
       throw new Error('Certification is required');
     }
-
-    console.log('Sending to backend:', backendConfig);
-
     return await apiRequest('/exams', {
       method: 'POST',
       body: JSON.stringify(backendConfig),
@@ -444,8 +436,6 @@ export const examAPI = {
   },
    // Crear examen de preguntas fallidas
   createFailedQuestionsExam: async (examConfig) => {
-    console.log('Creando examen de preguntas fallidas:', examConfig);
-    
     const backendConfig = {
       // REQUIRED MINIMAL FIELDS
       provider: examConfig.provider,
@@ -480,9 +470,6 @@ export const examAPI = {
     if (!backendConfig.certification) {
       throw new Error('Certification is required');
     }
-
-    console.log('Sending failed questions exam config to backend:', backendConfig);
-
     return await apiRequest('/exams/failed-questions', {
       method: 'POST',
       body: JSON.stringify(backendConfig),
@@ -538,7 +525,6 @@ export const authAPI = {
       });
     } catch (error) {
       if (config.DEBUG) {
-        console.warn('Logout request failed:', error);
       }
     } finally {
       // Always clear local storage
@@ -859,7 +845,6 @@ export const utils = {
         const delay = baseDelay * Math.pow(2, attempt - 1);
         
         if (config.DEBUG) {
-          console.log(`Retrying request in ${delay}ms (attempt ${attempt}/${maxRetries})`);
         }
         
         await new Promise(resolve => setTimeout(resolve, delay));

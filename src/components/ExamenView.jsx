@@ -3,12 +3,12 @@ import { useAuth } from '../context/AuthContext';
 import { examAPI, questionAPI } from '../services/api';
 import ExamExitModal from './exam/ExamExitModal';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from './common/LanguageSwitcher';
+import SettingsPanel from './common/SettingsPanel';
 import SEOHead, { SITE_URL } from './seo/SEOHead';
 import AdBreak from './ads/AdBreak';
 import ExamReview from './exam/ExamReview';
 
-export default function ExamenView({ examConfig, nombreCertificacion, onVolver }) {
+export default function ExamenView({ examConfig, nombreCertificacion, onVolver, onOpenCookies }) {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -63,9 +63,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       try {
         setLoading(true);
         setError(null);
-        
-        console.log('🔍 Validando configuración del examen:', examConfig);
-        
         if (!examConfig) {
           throw new Error(t('exam.errorTitle'));
         }
@@ -82,25 +79,12 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           setExamMode(examConfig.mode);
           setIsFailedQuestionsMode(examConfig.mode === 'failed_questions');
         }
-
-        console.log('✅ Configuración validada, creando examen:', {
-          provider: examConfig.provider,
-          certification: examConfig.certification,
-          questionCount: examConfig.questionCount || 'default',
-          timeLimit: examConfig.timeLimit || 'default',
-          mode: examConfig.mode,
-          isFailedQuestions: examConfig.mode === 'failed_questions',
-          sessionId: sessionId
-        });
-        
         let examResponse;
         
         // Usar endpoint específico para preguntas fallidas
         if (examConfig.mode === 'failed_questions') {
-          console.log('🔄 Creando examen de preguntas fallidas...');
           examResponse = await examAPI.createFailedQuestionsExam(examConfig);
         } else {
-          console.log('📝 Creando examen normal...');
           examResponse = await examAPI.createExam(examConfig);
         }
         
@@ -109,8 +93,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         }
         
         const createdExam = examResponse.data;
-        console.log('✅ Examen creado exitosamente:', createdExam);
-        
         // Validar que tenemos preguntas para modo de preguntas fallidas
         if (examConfig.mode === 'failed_questions' && (!createdExam.questions || createdExam.questions.length === 0)) {
           throw new Error(t('landing.noFailedQuestions'));
@@ -120,8 +102,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           setSessionId(examResponse.sessionId);
           localStorage.setItem('anonymousSessionId', examResponse.sessionId);
         }
-        
-        console.log('🏁 Iniciando examen:', createdExam.id);
         const startedExamResponse = await examAPI.startExam(createdExam.id);
         
         if (!startedExamResponse.success) {
@@ -130,9 +110,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         
         const startedExam = startedExamResponse.data;
         setExam(startedExam);
-        
-        console.log('✅ Examen iniciado exitosamente:', startedExam);
-        
         // Ajustar tiempo para preguntas fallidas (más tiempo por pregunta)
         let timeInSeconds;
         if (examConfig.mode === 'failed_questions') {
@@ -146,8 +123,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         return; // skip finally's setLoading(false)
 
       } catch (err) {
-        console.error('❌ Error creando/iniciando examen:', err);
-        
         let errorMessage = 'Error desconocido';
         
         if (err.message.includes('preguntas fallidas')) {
@@ -203,13 +178,10 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   // Función mejorada para preparar datos de revisión
   const prepareReviewData = async () => {
     if (!exam || !results) {
-      console.error('⚠️ No hay datos de examen o resultados para revisar');
       return null;
     }
 
     try {
-      console.log('📋 Preparando datos para revisión...');
-      
       // Crear estructura exacta que espera ExamReview
       const reviewData = {
         // Información básica del examen
@@ -285,66 +257,43 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       reviewData.questions.forEach((question, index) => {
         if (!question.options || question.options.length === 0) {
           questionsWithoutOptions++;
-          console.warn(`⚠️ Pregunta ${index + 1} (ID: ${question.id}) no tiene opciones`);
-          
           // Intentar cargar opciones desde la API
           questionAPI.getQuestion(question.id, true, false)
             .then(response => {
               if (response.success && response.data && response.data.options) {
                 question.options = response.data.options;
-                console.log(`✅ Opciones cargadas para pregunta ${question.id}`);
               }
             })
             .catch(err => {
-              console.error(`❌ Error cargando opciones para pregunta ${question.id}:`, err);
             });
         }
       });
 
       if (questionsWithoutOptions > 0) {
-        console.warn(`⚠️ ${questionsWithoutOptions} preguntas sin opciones detectadas`);
       }
-
-      console.log('✅ Datos de revisión preparados:', {
-        examId: reviewData.id,
-        questionsCount: reviewData.questions.length,
-        answersCount: Object.keys(reviewData.answers).length,
-        resultsAvailable: !!reviewData.results,
-        questionResultsCount: reviewData.results.questionResults?.length || 0,
-        hasExplanations: Object.keys(showExplanation).length,
-        questionsWithOptions: reviewData.questions.filter(q => q.options && q.options.length > 0).length
-      });
-
       return reviewData;
       
     } catch (error) {
-      console.error('⚠️ Error preparando datos de revisión:', error);
       return null;
     }
   };
 
   // Función para mostrar la revisión
   const handleShowReview = async () => {
-    console.log('📋 Iniciando revisión del examen...');
-    
     try {
       setLoading(true);
       
       // Verificar que tenemos todas las opciones de las preguntas
-      console.log('🔍 Verificando opciones de preguntas...');
       let questionsNeedingOptions = [];
       
       exam.questions.forEach((question, index) => {
         if (!question.options || question.options.length === 0) {
           questionsNeedingOptions.push(question.id);
-          console.log(`⚠️ Pregunta ${index + 1} (ID: ${question.id}) necesita cargar opciones`);
         }
       });
       
       // Cargar opciones faltantes si es necesario
       if (questionsNeedingOptions.length > 0) {
-        console.log(`🔄 Cargando opciones para ${questionsNeedingOptions.length} preguntas...`);
-        
         const optionsPromises = questionsNeedingOptions.map(async (questionId) => {
           try {
             const response = await questionAPI.getQuestion(questionId, true, false);
@@ -353,7 +302,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             }
             return { questionId, options: [] };
           } catch (err) {
-            console.error(`❌ Error cargando opciones para pregunta ${questionId}:`, err);
             return { questionId, options: [] };
           }
         });
@@ -374,15 +322,12 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           ...prevExam,
           questions: updatedQuestions
         }));
-        
-        console.log(`✅ Opciones cargadas para ${optionsResults.filter(r => r.options.length > 0).length} preguntas`);
       }
       
       // Preparar datos para revisión con opciones incluidas
       const preparedData = await prepareReviewData();
       
       if (!preparedData) {
-        console.error('⚠️ No se pudieron preparar los datos de revisión');
         setError(t('common.error'));
         return;
       }
@@ -390,8 +335,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       // Verificación final de opciones
       const questionsWithoutOptionsAfter = preparedData.questions.filter(q => !q.options || q.options.length === 0);
       if (questionsWithoutOptionsAfter.length > 0) {
-        console.warn(`⚠️ Aún hay ${questionsWithoutOptionsAfter.length} preguntas sin opciones después de la carga`);
-        
         // Crear opciones placeholder basadas en las respuestas
         questionsWithoutOptionsAfter.forEach(question => {
           const maxOption = Math.max(
@@ -403,24 +346,17 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             label: String.fromCharCode(65 + i), // A, B, C, D...
             text: `Opción ${String.fromCharCode(65 + i)}` // Placeholder text
           }));
-          
-          console.log(`🔧 Opciones placeholder creadas para pregunta ${question.id}:`, question.options);
         });
       }
-      
-      console.log('✅ Datos preparados correctamente, guardando en estado...');
-      
       // Guardar los datos preparados en el estado
       setReviewData(preparedData);
       
       // Pequeña pausa para asegurar que el estado se actualice
       setTimeout(() => {
         setShowReview(true);
-        console.log('✅ Modal de revisión abierto');
       }, 100);
       
     } catch (error) {
-      console.error('⚠️ Error al abrir revisión:', error);
       setError(t('common.error'));
     } finally {
       setLoading(false);
@@ -433,13 +369,11 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         try {
           await examAPI.cancelExam(exam.id);
         } catch (err) {
-          console.warn('Error cancelando examen:', err);
         }
       }
       
       onVolver();
     } catch (err) {
-      console.error('Error al salir del examen:', err);
       onVolver();
     }
   };
@@ -457,11 +391,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         markedForReview: Array.from(markedForReview),
         checkedQuestions: Array.from(checkedQuestions)
       });
-
-      console.log('Examen guardado y pausado');
       onVolver();
     } catch (err) {
-      console.error('Error guardando examen:', err);
       throw err;
     }
   };
@@ -502,15 +433,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     setAnswers(newAnswers);
 
     try {
-      console.log('Submitting answer:', {
-        examId: exam.id,
-        questionId: currentQuestion.id,
-        answer: newAnswer
-      });
-      
       await examAPI.submitAnswer(exam.id, currentQuestion.id, newAnswer);
     } catch (err) {
-      console.error('Error enviando respuesta:', err);
       setError('Error guardando respuesta. Continuando con el examen...');
       setTimeout(() => setError(null), 3000);
     }
@@ -528,7 +452,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, currentAnswer);
     } catch (err) {
-      console.error('Error guardando respuesta fill-blank:', err);
     }
   };
 
@@ -573,7 +496,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, newOrder);
     } catch (err) {
-      console.error('Error guardando drag & drop:', err);
     }
   };
 
@@ -594,7 +516,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, newAnswer);
     } catch (err) {
-      console.error('Error guardando checkbox:', err);
     }
   };
 
@@ -614,10 +535,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
     if (!currentQuestion || checkedQuestions.has(currentQuestion.id) || examMode === 'realistic' || isPaused) return;
 
     try {
-      console.log('🔍 Solicitando detalles de pregunta:', currentQuestion.id);
       const questionDetails = await questionAPI.getQuestionDetails(currentQuestion.id);
-      console.log('📝 Respuesta completa del backend:', questionDetails);
-
       let correctAnswer = null;
       let explanation = t('examReview.noExplanation');
       
@@ -630,15 +548,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                       data.correct_answers;
         
         explanation = data.explanation || explanation;
-        
-        console.log('✅ Datos extraídos:', {
-          correctAnswer,
-          explanation: explanation.substring(0, 100) + '...',
-          questionType: currentQuestion.isMultipleChoice ? 'multiple' : 'single',
-          userAnswer: answers[currentQuestion.id],
-          isFailedQuestionsMode
-        });
-        
       } else {
         correctAnswer = questionDetails.correctAnswer || 
                       questionDetails.correctAnswers ||
@@ -649,7 +558,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       }
 
       if (correctAnswer === undefined || correctAnswer === null) {
-        console.error('❌ No se pudo obtener la respuesta correcta del backend');
         throw new Error('Respuesta correcta no disponible');
       }
 
@@ -669,13 +577,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           normalizedCorrectAnswer = correctAnswer[0];
         }
       }
-
-      console.log('🎯 Respuesta correcta normalizada:', {
-        original: correctAnswer,
-        normalized: normalizedCorrectAnswer,
-        isMultiple: currentQuestion.isMultipleChoice
-      });
-      
       setShowExplanation(prev => ({
         ...prev,
         [currentQuestion.id]: {
@@ -689,12 +590,9 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       // Para modo de preguntas fallidas, mostrar información adicional
       if (isFailedQuestionsMode) {
         const isCorrect = isAnswerCorrect(currentQuestion.id);
-        console.log(`🔄 Pregunta fallida verificada - ${isCorrect ? 'Correcta esta vez' : 'Aún incorrecta'}`);
       }
       
     } catch (err) {
-      console.error('Error obteniendo detalles de pregunta:', err);
-      
       // Fallback con datos simulados
       setShowExplanation(prev => ({
         ...prev,
@@ -743,9 +641,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
     try {
       setLoading(true);
-      
-      console.log('Completing exam:', exam.id);
-      
       const completedExam = await examAPI.completeExam(exam.id);
       const examResults = await examAPI.getResults(exam.id);
       setResults(examResults.data);
@@ -754,7 +649,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       setAdPhase('finish'); // adPhase check in render takes over
 
     } catch (err) {
-      console.error('Error completando examen:', err);
       setError(`Error completando examen: ${err.response?.data?.error || err.message}`);
       setExamCompleted(true); // fallback: skip ad on error
     } finally {
@@ -1455,7 +1349,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
             examId={exam.id}
             examData={reviewData}
             onClose={() => {
-              console.log('Cerrando modal de revisión');
               setShowReview(false);
               setReviewData(null);
             }}
@@ -1801,7 +1694,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
                 </button>
               )}
 
-              <LanguageSwitcher />
+              <SettingsPanel onOpenCookies={onOpenCookies} />
               {/* Botón de resumen */}
               <button
                 onClick={handleShowSummary}
@@ -2073,7 +1966,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           examId={exam.id}
           examData={reviewData}
           onClose={() => {
-            console.log('Cerrando modal de revisión');
             setShowReview(false);
             setReviewData(null);
           }}

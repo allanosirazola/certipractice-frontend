@@ -31,19 +31,15 @@ export default function ExamHistory({ onClose, onResumeExam }) {
     setError('');
     
     try {
-      console.log(`Cargando exámenes con filtro: ${filter}`);
       const filters = filter !== 'all' ? { status: filter } : {};
       const result = await examAPI.getUserExams(filters);
       
       if (result.success !== false && result.data) {
         setExams(result.data);
-        console.log(`${result.data.length} exámenes cargados`);
       } else {
         setError(result.error || t('common.loading'));
-        console.error('Error en respuesta:', result);
       }
     } catch (err) {
-      console.error('Error cargando exámenes:', err);
       setError(utils.formatApiError(err));
     } finally {
       setLoading(false);
@@ -56,25 +52,20 @@ export default function ExamHistory({ onClose, onResumeExam }) {
     }
 
     try {
-      console.log(`Eliminando examen: ${examId}`);
       const result = await examAPI.deleteExam(examId);
       
       if (result.success !== false) {
         setExams(exams.filter(exam => exam.id !== examId));
-        console.log('Examen eliminado exitosamente');
       } else {
         setError(result.error || 'Error eliminando examen');
-        console.error('Error eliminando examen:', result);
       }
     } catch (err) {
-      console.error('Error eliminando examen:', err);
       setError(utils.formatApiError(err));
     }
   };
 
   // NUEVA FUNCIÓN PARA MANEJAR LA REVISIÓN
   const handleShowReview = (exam) => {
-    console.log('Abriendo revisión para examen:', exam.id);
     setReviewExamId(exam.id);
     setReviewExamData(exam);
     setShowReview(true);
@@ -135,7 +126,6 @@ export default function ExamHistory({ onClose, onResumeExam }) {
         minute: '2-digit'
       });
     } catch (error) {
-      console.warn('Error formatting date:', dateString);
       return t('examHistory.invalidDate');
     }
   };

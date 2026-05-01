@@ -89,7 +89,6 @@ export default function CommunityForum({ onClose }) {
         return q;
       }));
     } catch (err) {
-      console.error('Error voting:', err);
     }
   };
 
@@ -164,7 +163,6 @@ export default function CommunityForum({ onClose }) {
         setSelectedQuestion(response.data);
       }
     } catch (err) {
-      console.error('Error adding comment:', err);
     }
   };
 
