@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 // Replace with your real publisher ID and slot IDs from your AdSense account
 export const ADSENSE_PUBLISHER_ID = 'ca-pub-1098845223790619';
 export const AD_SLOTS = {
-  start:  '1234567890',   // Start-of-exam ad slot
-  finish: '0987654321',   // Pre-results ad slot
+  start:  '9248547089',   // CertiPractice - Inicio examen
+  finish: '2973723288',   // CertiPractice - Pre-resultados
 };
 
 // ─── Inject AdSense script once ──────────────────────────────────────────────
