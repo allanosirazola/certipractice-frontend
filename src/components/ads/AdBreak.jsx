@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 // ─── AdSense config ──────────────────────────────────────────────────────────
 // Replace with your real publisher ID and slot IDs from your AdSense account
-export const ADSENSE_PUBLISHER_ID = 'ca-pub-XXXXXXXXXXXXXXXXX';
+export const ADSENSE_PUBLISHER_ID = 'ca-pub-1098845223790619';
 export const AD_SLOTS = {
   start:  '1234567890',   // Start-of-exam ad slot
   finish: '0987654321',   // Pre-results ad slot
@@ -13,8 +13,15 @@ export const AD_SLOTS = {
 // ─── Inject AdSense script once ──────────────────────────────────────────────
 let adsenseInjected = false;
 function ensureAdsenseScript() {
-  if (adsenseInjected || !ADSENSE_PUBLISHER_ID.includes('pub-') || ADSENSE_PUBLISHER_ID.includes('XXXX')) return;
-  if (document.querySelector('script[data-adsense]')) { adsenseInjected = true; return; }
+  if (adsenseInjected || document.querySelector('script[data-adsense]')) {
+    adsenseInjected = true;
+    return;
+  }
+  // Script already injected via index.html — just mark as done
+  if (document.querySelector('script[src*="adsbygoogle"]')) {
+    adsenseInjected = true;
+    return;
+  }
   const s = document.createElement('script');
   s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`;
   s.async = true;
@@ -28,18 +35,17 @@ function ensureAdsenseScript() {
 function AdSlot({ slot, phase }) {
   const ref = useRef(null);
   const pushed = useRef(false);
-  const isConfigured = !ADSENSE_PUBLISHER_ID.includes('XXXX');
+  const hasSlot = slot && !slot.startsWith('0000') && slot !== '1234567890' && slot !== '0987654321';
 
   useEffect(() => {
-    if (!isConfigured || pushed.current || !ref.current) return;
+    if (!hasSlot || pushed.current || !ref.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       pushed.current = true;
     } catch {}
-  }, [isConfigured]);
+  }, [hasSlot]);
 
-  if (!isConfigured) {
-    // Placeholder when AdSense is not yet configured
+  if (!hasSlot) {
     return (
       <div className="w-full bg-gradient-to-br from-slate-100 to-slate-200 border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center py-14 px-8 text-slate-400 select-none">
         <svg className="w-10 h-10 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +53,7 @@ function AdSlot({ slot, phase }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
         </svg>
         <span className="text-sm font-medium tracking-widest uppercase">Advertisement</span>
-        <span className="text-xs mt-1 opacity-60">Configure ADSENSE_PUBLISHER_ID in AdBreak.jsx</span>
+        <span className="text-xs mt-1 opacity-60">Set AD_SLOTS.{phase} in AdBreak.jsx</span>
       </div>
     );
   }
