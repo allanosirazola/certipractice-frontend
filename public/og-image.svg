@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.12"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="1050" cy="100" r="180" fill="white" opacity="0.04"/>
+  <circle cx="150" cy="530" r="140" fill="white" opacity="0.04"/>
+  <circle cx="1100" cy="500" r="100" fill="white" opacity="0.06"/>
+
+  <!-- Main card -->
+  <rect x="60" y="60" width="1080" height="510" rx="24" fill="url(#card)" stroke="white" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Logo / brand mark -->
+  <rect x="100" y="110" width="56" height="56" rx="14" fill="#3b82f6"/>
+  <text x="128" y="148" font-family="Arial,sans-serif" font-size="30" font-weight="900" fill="white" text-anchor="middle">C</text>
+
+  <!-- Brand name -->
+  <text x="172" y="148" font-family="Arial,sans-serif" font-size="32" font-weight="700" fill="white">CertiPractice</text>
+
+  <!-- Tagline dot separator -->
+  <circle cx="370" cy="136" r="4" fill="#60a5fa"/>
+  <text x="386" y="148" font-family="Arial,sans-serif" font-size="20" fill="#93c5fd">Free · No registration required</text>
+
+  <!-- Main headline -->
+  <text x="100" y="270" font-family="Arial,sans-serif" font-size="62" font-weight="900" fill="white">Ace Your Cloud</text>
+  <text x="100" y="348" font-family="Arial,sans-serif" font-size="62" font-weight="900" fill="#60a5fa">Certification</text>
+
+  <!-- Sub headline -->
+  <text x="100" y="412" font-family="Arial,sans-serif" font-size="26" fill="#bfdbfe">Practice with thousands of real exam questions.</text>
+  <text x="100" y="448" font-family="Arial,sans-serif" font-size="26" fill="#bfdbfe">Instant explanations. Full progress tracking.</text>
+
+  <!-- Provider pills -->
+  <rect x="100" y="490" width="128" height="44" rx="22" fill="#1e40af"/>
+  <text x="164" y="518" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="white" text-anchor="middle">AWS</text>
+
+  <rect x="242" y="490" width="180" height="44" rx="22" fill="#1e40af"/>
+  <text x="332" y="518" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="white" text-anchor="middle">Google Cloud</text>
+
+  <rect x="436" y="490" width="154" height="44" rx="22" fill="#1e40af"/>
+  <text x="513" y="518" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="white" text-anchor="middle">MS Azure</text>
+
+  <rect x="604" y="490" width="164" height="44" rx="22" fill="#1e40af"/>
+  <text x="686" y="518" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="white" text-anchor="middle">Databricks</text>
+
+  <rect x="782" y="490" width="152" height="44" rx="22" fill="#1e40af"/>
+  <text x="858" y="518" font-family="Arial,sans-serif" font-size="18" font-weight="600" fill="white" text-anchor="middle">Snowflake</text>
+
+  <!-- Right side visual – mock question card -->
+  <rect x="720" y="120" width="380" height="330" rx="16" fill="white" opacity="0.08"/>
+  <rect x="740" y="145" width="200" height="14" rx="7" fill="white" opacity="0.3"/>
+  <rect x="740" y="170" width="340" height="10" rx="5" fill="white" opacity="0.2"/>
+  <rect x="740" y="188" width="300" height="10" rx="5" fill="white" opacity="0.2"/>
+
+  <!-- Answer options -->
+  <rect x="740" y="220" width="340" height="46" rx="10" fill="#1e40af" opacity="0.7"/>
+  <circle cx="764" cy="243" r="12" fill="#3b82f6"/>
+  <text x="764" y="248" font-family="Arial,sans-serif" font-size="13" fill="white" text-anchor="middle">A</text>
+  <rect x="785" y="236" width="180" height="10" rx="5" fill="white" opacity="0.5"/>
+
+  <rect x="740" y="276" width="340" height="46" rx="10" fill="white" opacity="0.06"/>
+  <circle cx="764" cy="299" r="12" fill="white" opacity="0.2"/>
+  <text x="764" y="304" font-family="Arial,sans-serif" font-size="13" fill="white" text-anchor="middle">B</text>
+  <rect x="785" y="292" width="160" height="10" rx="5" fill="white" opacity="0.3"/>
+
+  <rect x="740" y="332" width="340" height="46" rx="10" fill="#166534" opacity="0.7"/>
+  <circle cx="764" cy="355" r="12" fill="#22c55e"/>
+  <text x="764" y="360" font-family="Arial,sans-serif" font-size="13" fill="white" text-anchor="middle">✓</text>
+  <rect x="785" y="348" width="200" height="10" rx="5" fill="white" opacity="0.6"/>
+
+  <rect x="740" y="388" width="340" height="46" rx="10" fill="white" opacity="0.06"/>
+  <circle cx="764" cy="411" r="12" fill="white" opacity="0.2"/>
+  <text x="764" y="416" font-family="Arial,sans-serif" font-size="13" fill="white" text-anchor="middle">D</text>
+  <rect x="785" y="404" width="140" height="10" rx="5" fill="white" opacity="0.3"/>
+
+  <!-- URL watermark -->
+  <text x="1140" y="590" font-family="Arial,sans-serif" font-size="18" fill="white" opacity="0.4" text-anchor="end">certipractice.app</text>
+</svg>

@@ -1,193 +1,169 @@
+// src/components/seo/SEOHead.jsx
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const DEFAULT_SEO = {
-  title: 'CertiPractice - Exámenes de Práctica para Certificaciones Cloud',
-  description: 'Practica para tus certificaciones de AWS, Google Cloud, Azure, Databricks y más. Miles de preguntas reales de examen con explicaciones detalladas.',
-  keywords: 'certificaciones cloud, exámenes práctica, AWS certification, Google Cloud exam, Azure certification, Databricks, preparación exámenes',
-  image: '/og-image.jpg',
-  url: 'https://certipractice.vercel.app'
+export const SITE_URL = 'https://certipractice.app';
+export const SITE_NAME = 'CertiPractice';
+const OG_IMAGE = `${SITE_URL}/og-image.svg`;
+
+const structuredOrganization = () => ({
+  '@context': 'https://schema.org', '@type': 'Organization',
+  name: SITE_NAME, url: SITE_URL, logo: `${SITE_URL}/favicon.png`,
+  description: 'Free cloud certification practice exam platform for AWS, Google Cloud, Azure, Databricks and Snowflake.',
+});
+
+const structuredWebSite = () => ({
+  '@context': 'https://schema.org', '@type': 'WebSite',
+  name: SITE_NAME, url: SITE_URL, inLanguage: ['en', 'es'],
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+});
+
+const structuredCourse = ({ certificationName, certificationCode, provider, description }) => ({
+  '@context': 'https://schema.org', '@type': 'Course',
+  name: `${certificationName} Practice Exam`,
+  description: description || `Free practice questions for the ${certificationName} certification.`,
+  provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  teaches: certificationName,
+  educationalCredentialAwarded: certificationCode || certificationName,
+  courseMode: 'online', isAccessibleForFree: true, inLanguage: ['en', 'es'],
+  about: { '@type': 'Thing', name: provider || 'Cloud Computing' },
+});
+
+const structuredQuiz = ({ examName, certification, provider }) => ({
+  '@context': 'https://schema.org', '@type': 'Quiz',
+  name: examName || `${certification} Practice Exam`,
+  about: { '@type': 'Thing', name: certification || 'Cloud Certification' },
+  isAccessibleForFree: true,
+  provider: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+});
+
+const structuredBreadcrumb = (items) => ({
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, i) => ({
+    '@type': 'ListItem', position: i + 1, name: item.name, item: item.url,
+  })),
+});
+
+const FAQ_DATA = [
+  { q: 'Is CertiPractice free?', a: 'Yes, completely free. Take full practice exams without creating an account. Register to save progress and access Failed Questions mode and exam history.' },
+  { q: 'Which certifications does CertiPractice support?', a: 'AWS (SAA-C03, DVA-C02, SOA-C02 and more), Google Cloud (Professional Cloud Architect, Data Engineer, ML Engineer), Microsoft Azure (AZ-900, AZ-104, AZ-204, AZ-305), Databricks (Data Engineer, ML Professional) and Snowflake.' },
+  { q: 'How are practice questions created?', a: 'Questions are curated from real exam experiences, official documentation and community contributions. Each includes a detailed explanation of the correct answer.' },
+  { q: 'Can I track my progress?', a: 'Yes. Create a free account to track exam history, see scores per certification, identify weak areas with Failed Questions mode, and monitor improvement over time.' },
+  { q: 'What exam modes are available?', a: 'Three modes: Real Exam Simulation (timed, no aids), Practice Mode (instant verification and explanations), and Failed Questions Mode (focus on previously wrong answers).' },
+];
+
+const structuredFAQ = () => ({
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: FAQ_DATA.map(({ q, a }) => ({
+    '@type': 'Question', name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+
+const PROVIDER_KEYWORDS = {
+  'AWS': 'AWS certification practice, AWS exam questions, SAA-C03 practice test, DVA-C02 questions, AWS Solutions Architect exam, AWS Developer exam, free AWS practice exam',
+  'Google Cloud': 'Google Cloud certification practice, GCP exam questions, Professional Cloud Architect practice, Data Engineer exam, GCP practice test, free Google Cloud exam',
+  'Microsoft Azure': 'Azure certification practice, AZ-900 practice test, AZ-104 questions, Azure fundamentals exam, Microsoft Azure practice, free Azure exam questions',
+  'Databricks': 'Databricks certification practice, Databricks Data Engineer exam, Databricks ML Professional, Delta Lake exam questions, free Databricks practice test',
+  'Snowflake': 'Snowflake certification practice, SnowPro Core exam, Snowflake Data Engineer practice, free Snowflake exam questions',
 };
 
-// Datos estructurados para SEO
-const generateStructuredData = (pageType, data = {}) => {
-  const baseOrg = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "CertiPractice",
-    "url": DEFAULT_SEO.url,
-    "logo": `${DEFAULT_SEO.url}/logo.png`,
-    "description": DEFAULT_SEO.description
-  };
+const BASE_KEYWORDS = 'cloud certification practice exam, free certification practice, exam preparation, certification questions, practice test';
 
-  const structures = {
-    home: {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "CertiPractice",
-      "url": DEFAULT_SEO.url,
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": `${DEFAULT_SEO.url}/search?q={search_term_string}`,
-        "query-input": "required name=search_term_string"
-      }
-    },
-    certification: {
-      "@context": "https://schema.org",
-      "@type": "Course",
-      "name": data.certificationName || "Certification Practice",
-      "description": data.description || DEFAULT_SEO.description,
-      "provider": {
-        "@type": "Organization",
-        "name": data.provider || "CertiPractice"
-      },
-      "educationalCredentialAwarded": data.certificationCode || ""
-    },
-    exam: {
-      "@context": "https://schema.org",
-      "@type": "Quiz",
-      "name": data.examName || "Practice Exam",
-      "about": {
-        "@type": "Thing",
-        "name": data.certification || "Cloud Certification"
-      },
-      "educationalAlignment": {
-        "@type": "AlignmentObject",
-        "educationalFramework": data.provider || "Cloud Provider"
-      }
-    },
-    faq: {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": data.faqs || []
-    }
-  };
-
-  return structures[pageType] || baseOrg;
+const setMeta = (attr, attrVal, content) => {
+  let el = document.querySelector(`meta[${attr}="${attrVal}"]`);
+  if (!el) { el = document.createElement('meta'); el.setAttribute(attr, attrVal); document.head.appendChild(el); }
+  el.setAttribute('content', content);
 };
 
-export default function SEOHead({ 
-  title,
-  description,
-  keywords,
-  image,
-  url,
-  pageType = 'home',
-  structuredData = {},
-  noIndex = false
+const setLink = (rel, href) => {
+  let el = document.querySelector(`link[rel="${rel}"]`);
+  if (!el) { el = document.createElement('link'); el.setAttribute('rel', rel); document.head.appendChild(el); }
+  el.setAttribute('href', href);
+};
+
+const upsertJsonLd = (id, data) => {
+  let el = document.querySelector(`script[data-seo-id="${id}"]`);
+  if (!el) { el = document.createElement('script'); el.type = 'application/ld+json'; el.setAttribute('data-seo-id', id); document.head.appendChild(el); }
+  el.textContent = JSON.stringify(data);
+};
+
+export default function SEOHead({
+  pageType = 'home', title, description, keywords, canonical,
+  provider, certification, certificationCode, examName, noIndex = false,
 }) {
-  const seo = {
-    title: title ? `${title} | CertiPractice` : DEFAULT_SEO.title,
-    description: description || DEFAULT_SEO.description,
-    keywords: keywords || DEFAULT_SEO.keywords,
-    image: image || DEFAULT_SEO.image,
-    url: url || DEFAULT_SEO.url
-  };
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('es') ? 'es' : 'en';
+
+  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} – Free Cloud Certification Practice Exams`;
+
+  const resolvedDescription = description || (
+    provider && certification
+      ? `Free ${certification}${certificationCode ? ` (${certificationCode})` : ''} practice exam. Real questions with detailed explanations. Prepare for your ${provider} certification today.`
+      : provider
+      ? `Free ${provider} certification practice exams. Real questions with instant explanations. Prepare for your ${provider} certification today.`
+      : 'Practice for AWS, Google Cloud, Azure, Databricks and Snowflake certifications with thousands of real questions. Instant explanations, progress tracking, and exam simulations. 100% free.'
+  );
+
+  const resolvedKeywords = keywords || (provider ? `${PROVIDER_KEYWORDS[provider] || ''}, ${BASE_KEYWORDS}` : BASE_KEYWORDS);
+  const resolvedCanonical = canonical || `${SITE_URL}/`;
 
   useEffect(() => {
-    // Actualizar título
-    document.title = seo.title;
+    document.title = fullTitle;
+    document.documentElement.lang = lang;
 
-    // Función helper para actualizar o crear meta tags
-    const setMetaTag = (name, content, isProperty = false) => {
-      const attr = isProperty ? 'property' : 'name';
-      let tag = document.querySelector(`meta[${attr}="${name}"]`);
-      
-      if (!tag) {
-        tag = document.createElement('meta');
-        tag.setAttribute(attr, name);
-        document.head.appendChild(tag);
-      }
-      tag.setAttribute('content', content);
-    };
+    setMeta('name', 'description', resolvedDescription);
+    setMeta('name', 'keywords', resolvedKeywords);
+    setMeta('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1');
+    setMeta('name', 'author', SITE_NAME);
 
-    // Meta tags básicos
-    setMetaTag('description', seo.description);
-    setMetaTag('keywords', seo.keywords);
-    
-    // Robots
-    setMetaTag('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
+    setMeta('property', 'og:title', fullTitle);
+    setMeta('property', 'og:description', resolvedDescription);
+    setMeta('property', 'og:url', resolvedCanonical);
+    setMeta('property', 'og:type', 'website');
+    setMeta('property', 'og:site_name', SITE_NAME);
+    setMeta('property', 'og:image', OG_IMAGE);
+    setMeta('property', 'og:image:width', '1200');
+    setMeta('property', 'og:image:height', '630');
+    setMeta('property', 'og:image:alt', `${SITE_NAME} – Cloud Certification Practice`);
+    setMeta('property', 'og:locale', lang === 'es' ? 'es_ES' : 'en_US');
 
-    // Open Graph
-    setMetaTag('og:title', seo.title, true);
-    setMetaTag('og:description', seo.description, true);
-    setMetaTag('og:image', seo.image, true);
-    setMetaTag('og:url', seo.url, true);
-    setMetaTag('og:type', 'website', true);
-    setMetaTag('og:site_name', 'CertiPractice', true);
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', fullTitle);
+    setMeta('name', 'twitter:description', resolvedDescription);
+    setMeta('name', 'twitter:image', OG_IMAGE);
+    setMeta('name', 'twitter:site', '@certipractice');
 
-    // Twitter Cards
-    setMetaTag('twitter:card', 'summary_large_image');
-    setMetaTag('twitter:title', seo.title);
-    setMetaTag('twitter:description', seo.description);
-    setMetaTag('twitter:image', seo.image);
+    setLink('canonical', resolvedCanonical);
 
-    // Canonical URL
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
+    upsertJsonLd('org', structuredOrganization());
+    upsertJsonLd('website', structuredWebSite());
+
+    if (pageType === 'home') upsertJsonLd('faq', structuredFAQ());
+
+    if ((pageType === 'certification' || pageType === 'provider') && provider) {
+      upsertJsonLd('course', structuredCourse({ certificationName: certification || `${provider} Certification`, certificationCode, provider, description: resolvedDescription }));
+      const crumbs = [{ name: SITE_NAME, url: SITE_URL }];
+      if (provider) crumbs.push({ name: provider, url: `${SITE_URL}/?provider=${encodeURIComponent(provider)}` });
+      if (certification) crumbs.push({ name: certification, url: resolvedCanonical });
+      upsertJsonLd('breadcrumb', structuredBreadcrumb(crumbs));
     }
-    canonical.setAttribute('href', seo.url);
 
-    // Structured Data (JSON-LD)
-    let script = document.querySelector('script[type="application/ld+json"]');
-    if (!script) {
-      script = document.createElement('script');
-      script.type = 'application/ld+json';
-      document.head.appendChild(script);
-    }
-    script.textContent = JSON.stringify(generateStructuredData(pageType, structuredData));
-
-    // Cleanup
-    return () => {
-      // Los meta tags permanecen para evitar parpadeo
-    };
-  }, [seo, pageType, structuredData, noIndex]);
+    if (pageType === 'exam') upsertJsonLd('quiz', structuredQuiz({ examName, certification, provider }));
+  }, [fullTitle, resolvedDescription, resolvedKeywords, resolvedCanonical, pageType, provider, certification, certificationCode, examName, noIndex, lang]);
 
   return null;
 }
 
-// Hook para páginas específicas
-export const useSEO = (config) => {
-  return <SEOHead {...config} />;
-};
-
-// Configuraciones predefinidas para páginas comunes
 export const SEO_CONFIGS = {
-  home: {
-    title: null, // Usa el default
-    description: DEFAULT_SEO.description,
-    pageType: 'home'
-  },
-  awsCertifications: {
-    title: 'Exámenes de Práctica AWS - Certificaciones Cloud',
-    description: 'Prepárate para las certificaciones AWS: Solutions Architect, Developer, SysOps, DevOps y más. Miles de preguntas de práctica con explicaciones.',
-    keywords: 'AWS certification, AWS Solutions Architect, AWS Developer, AWS exam practice, AWS SAA-C03, AWS DVA-C02',
-    pageType: 'certification',
-    structuredData: {
-      provider: 'Amazon Web Services',
-      certificationName: 'AWS Certifications Practice Exams'
-    }
-  },
-  gcpCertifications: {
-    title: 'Exámenes de Práctica Google Cloud - GCP Certifications',
-    description: 'Practica para certificaciones Google Cloud: Professional Cloud Architect, Data Engineer, ML Engineer y más.',
-    keywords: 'Google Cloud certification, GCP exam, Cloud Architect, Data Engineer, GCP practice',
-    pageType: 'certification',
-    structuredData: {
-      provider: 'Google Cloud',
-      certificationName: 'Google Cloud Certifications Practice Exams'
-    }
-  },
-  azureCertifications: {
-    title: 'Exámenes de Práctica Microsoft Azure - Azure Certifications',
-    description: 'Prepárate para las certificaciones Azure: AZ-900, AZ-104, AZ-204, AZ-305 y más.',
-    keywords: 'Azure certification, Microsoft Azure exam, AZ-900, AZ-104, Azure fundamentals',
-    pageType: 'certification',
-    structuredData: {
-      provider: 'Microsoft Azure',
-      certificationName: 'Microsoft Azure Certifications Practice Exams'
-    }
-  }
+  home: { pageType: 'home' },
+  aws: { pageType: 'provider', provider: 'AWS', title: 'AWS Certification Practice Exams – Free Questions', description: 'Prepare for AWS certifications with thousands of real practice questions. SAA-C03, DVA-C02, SOA-C02, MLS-C01 and more. Instant explanations included.' },
+  gcp: { pageType: 'provider', provider: 'Google Cloud', title: 'Google Cloud Certification Practice Exams – Free Questions', description: 'Prepare for Google Cloud certifications with real practice questions. Professional Cloud Architect, Data Engineer, ML Engineer and more.' },
+  azure: { pageType: 'provider', provider: 'Microsoft Azure', title: 'Microsoft Azure Certification Practice Exams – Free Questions', description: 'Prepare for Azure certifications with real practice questions. AZ-900, AZ-104, AZ-204, AZ-305 and more.' },
+  databricks: { pageType: 'provider', provider: 'Databricks', title: 'Databricks Certification Practice Exams – Free Questions', description: 'Prepare for Databricks certifications with real practice questions. Data Engineer, ML Professional and more.' },
+  snowflake: { pageType: 'provider', provider: 'Snowflake', title: 'Snowflake Certification Practice Exams – Free Questions', description: 'Prepare for Snowflake certifications with real practice questions. SnowPro Core, Data Engineer and more.' },
 };

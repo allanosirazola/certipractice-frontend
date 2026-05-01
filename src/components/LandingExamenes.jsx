@@ -16,6 +16,7 @@ import ExamHistory from './exam/ExamHistory';
 import ExamModeSelector from './exam/ExamModeSelector';
 import FailedQuestionsStats from './exam/FailedQuestionsStats';
 import LanguageSwitcher from './common/LanguageSwitcher';
+import SEOHead, { SEO_CONFIGS, SITE_URL } from './seo/SEOHead';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar }) {
@@ -413,6 +414,7 @@ export default function LandingExamenes({ onEmpezar }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
+      <SEOHead {...seoProps} />
       <header className="bg-white shadow p-6 flex flex-col md:flex-row items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-blue-700 mb-2">CertiPractice</h1>

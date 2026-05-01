@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import LandingExamenes from './components/LandingExamenes';
 import ExamenView from './components/ExamenView';
+import SEOHead from './components/seo/SEOHead';
 import './App.css';
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
 
   return (
     <AuthProvider>
+      {/* Global base SEO — overridden by page-level SEOHead */}
+      <SEOHead pageType="home" />
       <div className="app">
         {enExamen && examConfig ? (
           <ExamenView

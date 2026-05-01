@@ -4,6 +4,7 @@ import { examAPI, questionAPI } from '../services/api';
 import ExamExitModal from './exam/ExamExitModal';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './common/LanguageSwitcher';
+import SEOHead, { SITE_URL } from './seo/SEOHead';
 import ExamReview from './exam/ExamReview';
 
 export default function ExamenView({ examConfig, nombreCertificacion, onVolver }) {
@@ -1175,6 +1176,17 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   const canPause = examMode === 'practice' || examMode === 'failed_questions';
   const canShowQuestionMetadata = examMode === 'practice' || examMode === 'failed_questions';
 
+  // ── SEO for exam page ────────────────────────────────────────────────────────
+  const examProviderName = examConfig?.provider_name || examConfig?.provider || null;
+  const examCertName = nombreCertificacion || examConfig?.certification || null;
+  const examCertCode = examConfig?.certificationCode || null;
+  const examSeoTitle = examCertName
+    ? `${examCertName} Practice Exam`
+    : 'Cloud Certification Practice Exam';
+  const examSeoDesc = examCertName && examProviderName
+    ? `Taking a ${examCertName} practice exam. ${exam?.questions?.length || ''} questions with instant explanations. Prepare for your ${examProviderName} certification.`
+    : 'Cloud certification practice exam with real questions and instant explanations.';
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
@@ -1218,6 +1230,16 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   // Vista de resultados
   if (examCompleted && results) {
     return (
+      <>
+      <SEOHead
+        pageType="exam"
+        title={examSeoTitle}
+        description={examSeoDesc}
+        provider={examProviderName}
+        certification={examCertName}
+        certificationCode={examCertCode}
+        noIndex={true}
+      />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
         <header className="bg-white shadow p-6">
           <div className="flex justify-between items-center">
@@ -1419,6 +1441,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           />
         )}
       </div>
+    </>
     );
   }
 
@@ -1675,6 +1698,16 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   }
 
   return (
+    <>
+    <SEOHead
+      pageType="exam"
+      title={examSeoTitle}
+      description={examSeoDesc}
+      provider={examProviderName}
+      certification={examCertName}
+      certificationCode={examCertCode}
+      noIndex={true}
+    />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
       
       {/* Header con información del examen */}
@@ -2026,5 +2059,6 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
         />
       )}
     </div>
+    </>
   );
 }
