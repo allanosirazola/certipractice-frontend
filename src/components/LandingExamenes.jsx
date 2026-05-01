@@ -412,6 +412,28 @@ export default function LandingExamenes({ onEmpezar }) {
   // Calcular total de preguntas
   const totalQuestions = providers.reduce((sum, provider) => sum + (provider.questionCount || 0), 0);
 
+  // ── SEO dinámico según selección ─────────────────────────────────────────
+  const seoProviderName = providerSeleccionado?.name || null;
+  const seoCertName = certificacionSeleccionada
+    ? (certificacionSeleccionada.name || certificacionSeleccionada.code)
+    : null;
+  const seoCertCode = certificacionSeleccionada?.code || null;
+
+  const providerKeyMap = { 'AWS': 'aws', 'Google Cloud': 'gcp', 'Microsoft Azure': 'azure', 'Databricks': 'databricks', 'Snowflake': 'snowflake' };
+
+  const seoProps = seoCertName && seoProviderName
+    ? {
+        pageType: 'certification',
+        provider: seoProviderName,
+        certification: seoCertName,
+        certificationCode: seoCertCode,
+        title: `${seoCertName} Practice Exam – Free Questions`,
+        description: `Free ${seoCertName}${seoCertCode ? ` (${seoCertCode})` : ''} practice exam questions with instant explanations. Prepare for your ${seoProviderName} certification with CertiPractice.`,
+      }
+    : seoProviderName && providerKeyMap[seoProviderName]
+    ? { ...SEO_CONFIGS[providerKeyMap[seoProviderName]] }
+    : SEO_CONFIGS.home;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
       <SEOHead {...seoProps} />
