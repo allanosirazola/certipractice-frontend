@@ -5,6 +5,7 @@ import ExamExitModal from './exam/ExamExitModal';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './common/LanguageSwitcher';
 import SEOHead, { SITE_URL } from './seo/SEOHead';
+import AdBreak from './ads/AdBreak';
 import ExamReview from './exam/ExamReview';
 
 export default function ExamenView({ examConfig, nombreCertificacion, onVolver }) {
@@ -38,6 +39,9 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   // Estado para drag & drop
   const [dragItems, setDragItems] = useState({});
   const [dragOverIndex, setDragOverIndex] = useState(null);
+
+  // Ad break phase: null | 'start' | 'finish'
+  const [adPhase, setAdPhase] = useState(null);
 
   // Obtener o generar sessionId para usuarios anónimos
   useEffect(() => {
@@ -137,6 +141,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
           timeInSeconds = (startedExam.timeLimit || 60) * 60;
         }
         setTimeLeft(timeInSeconds);
+        // Show start-of-exam ad before revealing questions
+        setAdPhase('start');
         
       } catch (err) {
         console.error('❌ Error creando/iniciando examen:', err);
@@ -744,17 +750,27 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       const completedExam = await examAPI.completeExam(exam.id);
       const examResults = await examAPI.getResults(exam.id);
       setResults(examResults.data);
-      setExamCompleted(true);
       setShowConfirmFinish(false);
-      
-      console.log('Exam completed:', examResults.data);
+
+      // Show finish ad before revealing results
+      setAdPhase('finish');
+      // examCompleted will be set after the ad completes (in onAdComplete)
       
     } catch (err) {
       console.error('Error completando examen:', err);
       setError(`Error completando examen: ${err.response?.data?.error || err.message}`);
+      setExamCompleted(true); // fallback: skip ad on error
     } finally {
       setLoading(false);
     }
+  };
+
+  // Called when an ad break finishes (countdown ends or user skips)
+  const handleAdComplete = () => {
+    if (adPhase === 'finish') {
+      setExamCompleted(true);
+    }
+    setAdPhase(null);
   };
 
   const formatTime = (seconds) => {
@@ -1190,6 +1206,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex items-center justify-center">
+        {/* Start ad shows on top of loading screen */}
+        {adPhase === 'start' && <AdBreak phase="start" onComplete={handleAdComplete} />}
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-blue-700 font-medium text-lg">
@@ -1699,6 +1717,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
 
   return (
     <>
+    {/* Finish-of-exam ad: overlays exam screen while results are prepared */}
+    {adPhase === 'finish' && <AdBreak phase="finish" onComplete={handleAdComplete} />}
     <SEOHead
       pageType="exam"
       title={examSeoTitle}
@@ -1708,7 +1728,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver }
       certificationCode={examCertCode}
       noIndex={true}
     />
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       
       {/* Header con información del examen */}
       <header className="bg-white shadow p-4">

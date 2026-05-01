@@ -626,5 +626,14 @@
   "privacy": {
     "title": "Control de Privacidad",
     "subtitle": "Gestiona tus preferencias de privacidad"
+  },
+  "ads": {
+    "startTitle": "¡Tu examen está listo!",
+    "startSubtitle": "Un mensaje breve de nuestros patrocinadores",
+    "finishTitle": "Calculando tus resultados…",
+    "finishSubtitle": "Un mensaje breve de nuestros patrocinadores",
+    "skip": "Saltar →",
+    "skipIn": "Saltar en {{count}}s",
+    "disclaimer": "Los anuncios permiten que CertiPractice sea gratuito para todos."
   }
 }

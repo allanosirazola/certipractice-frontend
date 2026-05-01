@@ -626,5 +626,14 @@
   "privacy": {
     "title": "Privacy Control",
     "subtitle": "Manage your privacy preferences"
+  },
+  "ads": {
+    "startTitle": "Your exam is ready!",
+    "startSubtitle": "A short message from our sponsors",
+    "finishTitle": "Calculating your results…",
+    "finishSubtitle": "A short message from our sponsors",
+    "skip": "Skip →",
+    "skipIn": "Skip in {{count}}s",
+    "disclaimer": "Ads help keep CertiPractice free for everyone."
   }
 }
