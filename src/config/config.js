@@ -59,6 +59,9 @@ if (config.DEBUG) {
   try {
     new URL(config.API_URL);
   } catch (error) {
+    // Avoid a circular import with logger.js — config is loaded first.
+    // eslint-disable-next-line no-console
+    console.warn('[CertiPractice][config] Invalid API_URL:', config.API_URL, error?.message);
   }
 }
 

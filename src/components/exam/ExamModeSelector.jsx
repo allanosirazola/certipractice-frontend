@@ -1,5 +1,6 @@
 // ExamModeSelector.jsx - Con modalidad de preguntas fallidas
 import { useState, useEffect } from 'react';
+import logger from '../../utils/logger.js';
 import { useAuth } from '../../context/AuthContext';
 import { userAPI } from '../../services/api';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +30,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
           setFailedQuestionsCount(response.data.length);
         }
       } catch (error) {
+        logger.warn('ExamModeSelector catch:', error?.message || error);
         setFailedQuestionsCount(0);
       } finally {
         setLoadingFailedQuestions(false);

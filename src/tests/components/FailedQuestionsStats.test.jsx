@@ -97,7 +97,7 @@ describe('FailedQuestionsStats', () => {
       
       render(<FailedQuestionsStats {...defaultProps} />);
       
-      expect(screen.getByText(/Loading statistics/i)).toBeInTheDocument();
+      expect(screen.getByText(/Cargando estadísticas/i)).toBeInTheDocument();
     });
   });
 
@@ -218,7 +218,7 @@ describe('FailedQuestionsStats', () => {
       render(<FailedQuestionsStats {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /By Category/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Por Categoría/i })).toBeInTheDocument();
       });
     });
 
@@ -235,10 +235,10 @@ describe('FailedQuestionsStats', () => {
       render(<FailedQuestionsStats {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /By Category/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Por Categoría/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /By Category/i }));
+      await user.click(screen.getByRole('button', { name: /Por Categoría/i }));
       
       // Debería aparecer el select de categorías
       await waitFor(() => {
@@ -255,7 +255,7 @@ describe('FailedQuestionsStats', () => {
       });
 
       // Activar filtro por categoría
-      await user.click(screen.getByRole('button', { name: /By Category/i }));
+      await user.click(screen.getByRole('button', { name: /Por Categoría/i }));
       
       // Seleccionar categoría
       const select = await screen.findByRole('combobox');
@@ -433,7 +433,7 @@ describe('FailedQuestionsStats', () => {
       });
 
       // Activar filtro por categoría
-      await user.click(screen.getByRole('button', { name: /By Category/i }));
+      await user.click(screen.getByRole('button', { name: /Por Categoría/i }));
       
       // Seleccionar categoría
       const select = await screen.findByRole('combobox');

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import logger from '../../utils/logger.js';
 import { useAuth } from '../../context/AuthContext';
 import { communityAPI } from '../../services/api';
 import { useTranslation } from 'react-i18next';
@@ -63,6 +64,7 @@ export default function CommunityForum({ onClose }) {
         setQuestions(response.data);
       }
     } catch (err) {
+      logger.warn('CommunityForum catch:', err?.message || err);
       setError(t('community.loadError'));
     } finally {
       setLoading(false);
@@ -89,6 +91,7 @@ export default function CommunityForum({ onClose }) {
         return q;
       }));
     } catch (err) {
+      logger.warn('CommunityForum catch:', err?.message || err);
     }
   };
 
@@ -141,6 +144,7 @@ export default function CommunityForum({ onClose }) {
         loadQuestions();
       }
     } catch (err) {
+      logger.warn('CommunityForum catch:', err?.message || err);
       setError(t('community.submitError'));
     } finally {
       setLoading(false);
@@ -163,6 +167,7 @@ export default function CommunityForum({ onClose }) {
         setSelectedQuestion(response.data);
       }
     } catch (err) {
+      logger.warn('CommunityForum catch:', err?.message || err);
     }
   };
 

@@ -1,5 +1,6 @@
 // src/services/api.js - Updated for PostgreSQL backend (Fixed)
 import config from '../config/config.js';
+import logger from '../utils/logger.js';
 
 const API_BASE_URL = config.API_URL;
 
@@ -48,24 +49,14 @@ const apiRequest = async (endpoint, options = {}) => {
   };
 
   try {
-    if (config.DEBUG) {
-    }
-    
     const response = await fetch(url, defaultOptions);
     clearTimeout(timeoutId);
     
     const data = await handleResponse(response);
-    
-    if (config.DEBUG) {
-    }
-    
     return data;
   } catch (error) {
+    logger.warn('api catch:', error?.message || error);
     clearTimeout(timeoutId);
-    
-    if (config.DEBUG) {
-    }
-    
     // Enhanced error handling
     if (error.name === 'AbortError') {
       const timeoutError = new Error('La solicitud tardó demasiado tiempo. Verifica tu conexión.');
@@ -97,9 +88,7 @@ export const checkBackendHealth = async () => {
       version: response.data?.postgresVersion
     };
   } catch (error) {
-    if (config.DEBUG) {
-    }
-    
+    logger.warn('api catch:', error?.message || error);
     return {
       available: false,
       status: 'unhealthy',
@@ -292,9 +281,6 @@ export const questionAPI = {
 export const examAPI = {
   // Create exam with minimal data
   createExam: async (examConfig) => {
-    if (config.DEBUG) {
-    }
-    
     // Transform frontend config to simplified backend format
     const backendConfig = {
       // REQUIRED MINIMAL FIELDS
@@ -524,8 +510,7 @@ export const authAPI = {
         method: 'POST',
       });
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('api catch:', error?.message || error);
     } finally {
       // Always clear local storage
       localStorage.removeItem(config.STORAGE_KEYS.authToken);
@@ -560,6 +545,7 @@ export const authAPI = {
       const response = await apiRequest('/auth/verify');
       return response;
     } catch (error) {
+      logger.warn('api catch:', error?.message || error);
       // If token verification fails, remove it
       localStorage.removeItem(config.STORAGE_KEYS.authToken);
       sessionStorage.removeItem(config.STORAGE_KEYS.authToken);
@@ -904,15 +890,12 @@ export const utils = {
       try {
         return await requestFn();
       } catch (error) {
+        logger.warn('api catch:', error?.message || error);
         if (attempt === maxRetries || error.status < 500) {
           throw error;
         }
         
         const delay = baseDelay * Math.pow(2, attempt - 1);
-        
-        if (config.DEBUG) {
-        }
-        
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }

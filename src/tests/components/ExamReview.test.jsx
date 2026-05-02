@@ -3,6 +3,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+vi.mock('../../context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { firstName: 'Test', lastName: 'User', email: 'test@test.com', username: 'testuser' },
+    isAuthenticated: true,
+  }),
+}));
+
+vi.mock('../../utils/generateExamReport', () => ({
+  generateExamReport: vi.fn(() => 'mock-report.pdf'),
+}));
+
 // Mock del API
 const mockGetExamForReview = vi.fn();
 const mockGetExam = vi.fn();
@@ -123,7 +134,7 @@ describe('ExamReview', () => {
       mockGetExamForReview.mockImplementation(() => new Promise(() => {}));
       render(<ExamReview examId="exam-456" onClose={vi.fn()} />);
       
-      expect(screen.getByText(/Loading review/i)).toBeInTheDocument();
+      expect(screen.getByText(/Cargando revisión|Cargando/i)).toBeInTheDocument();
     });
   });
 
@@ -135,7 +146,7 @@ describe('ExamReview', () => {
       render(<ExamReview {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Exam Review')).toBeInTheDocument();
+        expect(screen.getByText(/Revisión del Examen/i)).toBeInTheDocument();
       });
     });
 
@@ -175,7 +186,7 @@ describe('ExamReview', () => {
       
       // Esperar a que cargue
       await waitFor(() => {
-        expect(screen.getByText(/Revisión/i)).toBeInTheDocument();
+        expect(screen.getByText(/Revisión del Examen/i)).toBeInTheDocument();
       });
 
       // Verificar que el botón de filtro existe
@@ -240,12 +251,12 @@ describe('ExamReview', () => {
   // ============================================
   // TESTS DE EXPLICACIÓN
   // ============================================
-  describe('Explanation', () => {
+  describe('Explicación', () => {
     it('muestra sección de explicación', async () => {
       render(<ExamReview {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText('Explanation')).toBeInTheDocument();
+        expect(screen.getByText('Explicación')).toBeInTheDocument();
       });
     });
   });
@@ -260,10 +271,10 @@ describe('ExamReview', () => {
       render(<ExamReview {...defaultProps} onClose={onClose} />);
       
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Close Review/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Cerrar/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /Close Review/i }));
+      await user.click(screen.getByRole('button', { name: /Cerrar/i }));
       expect(onClose).toHaveBeenCalled();
     });
 

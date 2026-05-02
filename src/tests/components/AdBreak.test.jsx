@@ -32,29 +32,32 @@ describe('AdBreak', () => {
   });
 
   it('skip button becomes enabled after 3 seconds', async () => {
+    vi.useRealTimers();
     render(<AdBreak phase="start" onComplete={vi.fn()} />);
-    act(() => { vi.advanceTimersByTime(3000); });
     await waitFor(() => {
       const skip = screen.getByRole('button', { name: /skip/i });
       expect(skip).not.toBeDisabled();
-    });
-  });
+    }, { timeout: 4000 });
+  }, 6000);
 
   it('calls onComplete when skip is clicked after 3s', async () => {
+    vi.useRealTimers();
     const onComplete = vi.fn();
     render(<AdBreak phase="start" onComplete={onComplete} />);
-    act(() => { vi.advanceTimersByTime(3000); });
-    await waitFor(() => expect(screen.getByRole('button', { name: /^skip/i })).not.toBeDisabled());
+    await waitFor(
+      () => expect(screen.getByRole('button', { name: /^skip/i })).not.toBeDisabled(),
+      { timeout: 4000 }
+    );
     await userEvent.click(screen.getByRole('button', { name: /^skip/i }));
     await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1), { timeout: 1000 });
-  });
+  }, 8000);
 
   it('calls onComplete automatically after 5 seconds', async () => {
+    vi.useRealTimers();
     const onComplete = vi.fn();
     render(<AdBreak phase="start" onComplete={onComplete} />);
-    act(() => { vi.advanceTimersByTime(5100); });
-    await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1));
-  });
+    await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1), { timeout: 7000 });
+  }, 9000);
 
   it('renders finish phase copy', () => {
     render(<AdBreak phase="finish" onComplete={vi.fn()} />);

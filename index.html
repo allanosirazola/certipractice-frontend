@@ -123,7 +123,23 @@
 
   </head>
   <body>
-    <div id="root"></div>
+    <noscript>
+      <div style="font-family: system-ui, -apple-system, Segoe UI, sans-serif; padding: 2rem; max-width: 640px; margin: 4rem auto; text-align: center; line-height: 1.6;">
+        <h1 style="color: #1e40af;">CertiPractice</h1>
+        <p>This application requires JavaScript to run. Please enable JavaScript in your browser settings and reload the page.</p>
+        <p style="color: #6b7280; font-size: 0.9rem;">Esta aplicación requiere JavaScript para funcionar. Por favor, habilita JavaScript en tu navegador y recarga la página.</p>
+      </div>
+    </noscript>
+    <div id="root">
+      <!-- Initial loading state, shown until JS hydrates -->
+      <div style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #eff6ff; font-family: system-ui, -apple-system, sans-serif;" aria-label="Loading CertiPractice">
+        <div style="text-align: center;">
+          <div style="width: 48px; height: 48px; border: 4px solid #dbeafe; border-top-color: #2563eb; border-radius: 50%; margin: 0 auto 16px; animation: cp-spin 1s linear infinite;"></div>
+          <p style="color: #6b7280; font-size: 14px; margin: 0;">CertiPractice</p>
+        </div>
+      </div>
+      <style>@keyframes cp-spin { to { transform: rotate(360deg); } }</style>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

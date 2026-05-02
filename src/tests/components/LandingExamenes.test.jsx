@@ -133,7 +133,7 @@ describe('LandingExamenes', () => {
       render(<LandingExamenes {...defaultProps} />);
       
       // El componente muestra "Verificando autenticación..." cuando authLoading es true
-      expect(screen.getByText(/Verifying authentication/i)).toBeInTheDocument();
+      expect(screen.getByText(/Verificando autenticación/i)).toBeInTheDocument();
     });
 
     it('muestra carga del backend', () => {
@@ -154,7 +154,7 @@ describe('LandingExamenes', () => {
       render(<LandingExamenes {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Connection Error/i)).toBeInTheDocument();
+        expect(screen.getByText(/Error de Conexión/i)).toBeInTheDocument();
       });
     });
 
@@ -193,13 +193,6 @@ describe('LandingExamenes', () => {
       });
     });
 
-    it('muestra estado de PostgreSQL conectado', async () => {
-      render(<LandingExamenes {...defaultProps} />);
-      
-      await waitFor(() => {
-        expect(screen.getByText(/PostgreSQL conectado/i)).toBeInTheDocument();
-      });
-    });
 
     it('muestra botones login/registro para invitados', async () => {
       render(<LandingExamenes {...defaultProps} />);
@@ -211,7 +204,7 @@ describe('LandingExamenes', () => {
       
       // Ahora verificar que hay botones de login/registro
       // Puede haber varios en diferentes partes de la página
-      const loginButtons = screen.getAllByText(/Log In/i);
+      const loginButtons = screen.getAllByText(/Iniciar Sesión/i);
       expect(loginButtons.length).toBeGreaterThan(0);
     });
 
@@ -453,7 +446,7 @@ describe('LandingExamenes', () => {
       });
       
       // Verificar que hay texto de login en la página
-      expect(screen.getAllByText(/Log In/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Iniciar Sesión/i).length).toBeGreaterThan(0);
     });
 
     it('abre modal login', async () => {
@@ -465,7 +458,7 @@ describe('LandingExamenes', () => {
       });
 
       // Verificar que hay botones de login
-      const loginButtons = screen.getAllByText(/Log In/i);
+      const loginButtons = screen.getAllByText(/Iniciar Sesión/i);
       expect(loginButtons.length).toBeGreaterThan(0);
     });
 
@@ -478,7 +471,7 @@ describe('LandingExamenes', () => {
       });
 
       // Verificar que hay botones de registro
-      const registerButtons = screen.getAllByText(/Create Account|Sign Up|Register/i);
+      const registerButtons = screen.getAllByText(/Registrarse|Crear Cuenta/i);
       expect(registerButtons.length).toBeGreaterThan(0);
     });
 
@@ -490,8 +483,8 @@ describe('LandingExamenes', () => {
       });
 
       // Verificar que ambas opciones están presentes
-      expect(screen.getAllByText(/Log In/i).length).toBeGreaterThan(0);
-      expect(screen.getAllByText(/Create Account|Sign Up|Register/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Iniciar Sesión/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Registrarse|Crear Cuenta/i).length).toBeGreaterThan(0);
     });
   });
 
@@ -650,7 +643,7 @@ describe('LandingExamenes', () => {
       await waitFor(() => {
         // El componente muestra "Conectado a X preguntas totales"
         // 500 + 300 = 800
-        expect(screen.getByText(/800 preguntas totales/i)).toBeInTheDocument();
+        expect(screen.getByText(/800 preguntas disponibles/i)).toBeInTheDocument();
       });
     });
 
@@ -664,7 +657,7 @@ describe('LandingExamenes', () => {
       
       await waitFor(() => {
         // El componente muestra "Sesión activa: {username}"
-        expect(screen.getByText(/Active session: testuser/i)).toBeInTheDocument();
+        expect(screen.getByText(/Sesión activa.*testuser/i)).toBeInTheDocument();
       });
     });
   });

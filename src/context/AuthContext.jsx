@@ -1,6 +1,7 @@
 // src/context/AuthContext.jsx - Updated for new backend structure (Fixed)
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import config from '../config/config.js';
+import logger from '../utils/logger.js';
 
 const AuthContext = createContext();
 
@@ -45,8 +46,7 @@ export const AuthProvider = ({ children }) => {
           setToken(null);
         }
       } catch (error) {
-        if (config.DEBUG) {
-        }
+        logger.warn('AuthContext error:', error?.message || error);
         localStorage.removeItem(config.STORAGE_KEYS.authToken);
         setToken(null);
       }
@@ -83,8 +83,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error en el login' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -118,8 +117,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error en el registro' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -137,8 +135,7 @@ export const AuthProvider = ({ children }) => {
         });
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
     } finally {
       // Always clear local state
       setUser(null);
@@ -169,8 +166,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error actualizando perfil' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -194,8 +190,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error cambiando contraseña' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -221,8 +216,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error eliminando cuenta' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -244,8 +238,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error obteniendo estadísticas' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -268,8 +261,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error obteniendo progreso' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
@@ -301,8 +293,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error refrescando token' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       await logout();
       return { success: false, error: 'Error de conexión' };
     }
@@ -327,8 +318,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Token inválido' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       await logout();
       return { success: false, error: 'Error de conexión' };
     }
@@ -355,16 +345,13 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: data.error || 'Error validando email' };
       }
     } catch (error) {
-      if (config.DEBUG) {
-      }
+      logger.warn('AuthContext error:', error?.message || error);
       return { success: false, error: 'Error de conexión' };
     }
   };
 
   // Interceptor for handling 401 responses globally
   const handleUnauthorized = async () => {
-    if (config.DEBUG) {
-    }
     await logout();
   };
 
@@ -388,10 +375,9 @@ export const AuthProvider = ({ children }) => {
 
       return response;
     } catch (error) {
+      logger.warn('AuthContext error:', error?.message || error);
       if (error.message === 'Token expirado') {
         throw error;
-      }
-      if (config.DEBUG) {
       }
       throw new Error('Error de conexión');
     }

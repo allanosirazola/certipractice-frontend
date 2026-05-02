@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import logger from '../utils/logger.js';
 import { useAuth } from '../context/AuthContext';
 import { examAPI, questionAPI } from '../services/api';
 import ExamExitModal from './exam/ExamExitModal';
@@ -123,6 +124,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         return; // skip finally's setLoading(false)
 
       } catch (err) {
+        logger.warn('ExamenView catch:', err?.message || err);
         let errorMessage = 'Error desconocido';
         
         if (err.message.includes('preguntas fallidas')) {
@@ -274,6 +276,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       return reviewData;
       
     } catch (error) {
+      logger.warn('ExamenView catch:', error?.message || error);
       return null;
     }
   };
@@ -302,6 +305,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             }
             return { questionId, options: [] };
           } catch (err) {
+            logger.warn('ExamenView catch:', err?.message || err);
             return { questionId, options: [] };
           }
         });
@@ -357,6 +361,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       }, 100);
       
     } catch (error) {
+      logger.warn('ExamenView catch:', error?.message || error);
       setError(t('common.error'));
     } finally {
       setLoading(false);
@@ -369,11 +374,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         try {
           await examAPI.cancelExam(exam.id);
         } catch (err) {
+          logger.warn('ExamenView catch:', err?.message || err);
         }
       }
       
       onVolver();
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
       onVolver();
     }
   };
@@ -393,6 +400,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       });
       onVolver();
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
       throw err;
     }
   };
@@ -435,6 +443,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, newAnswer);
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
       setError('Error guardando respuesta. Continuando con el examen...');
       setTimeout(() => setError(null), 3000);
     }
@@ -452,6 +461,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, currentAnswer);
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
     }
   };
 
@@ -496,6 +506,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, newOrder);
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
     }
   };
 
@@ -516,6 +527,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     try {
       await examAPI.submitAnswer(exam.id, currentQuestion.id, newAnswer);
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
     }
   };
 
@@ -593,6 +605,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       }
       
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
       // Fallback con datos simulados
       setShowExplanation(prev => ({
         ...prev,
@@ -649,6 +662,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       setAdPhase('finish'); // adPhase check in render takes over
 
     } catch (err) {
+      logger.warn('ExamenView catch:', err?.message || err);
       setError(`Error completando examen: ${err.response?.data?.error || err.message}`);
       setExamCompleted(true); // fallback: skip ad on error
     } finally {

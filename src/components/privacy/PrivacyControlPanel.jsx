@@ -1,5 +1,6 @@
 // PrivacyControlPanel.jsx - Panel de control de privacidad completo
 import { useState, useEffect } from 'react';
+import logger from '../../utils/logger.js';
 import { useAuth } from '../../context/AuthContext';
 import { privacyAPI } from '../../services/api';
 
@@ -29,6 +30,7 @@ export default function PrivacyControlPanel({ onClose }) {
         setSettings(response.data);
       }
     } catch (err) {
+      logger.warn('PrivacyControlPanel catch:', err?.message || err);
     }
   };
 
@@ -40,6 +42,7 @@ export default function PrivacyControlPanel({ onClose }) {
 
       await privacyAPI.updateSettings({ [key]: value });
     } catch (err) {
+      logger.warn('PrivacyControlPanel catch:', err?.message || err);
       // Revertir en caso de error
       setSettings(settings);
     } finally {
@@ -63,6 +66,7 @@ export default function PrivacyControlPanel({ onClose }) {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (err) {
+      logger.warn('PrivacyControlPanel catch:', err?.message || err);
       alert('Error al exportar los datos. Por favor intenta de nuevo.');
     } finally {
       setExportLoading(false);
@@ -87,6 +91,7 @@ export default function PrivacyControlPanel({ onClose }) {
         alert(response.error || 'Error al eliminar la cuenta');
       }
     } catch (err) {
+      logger.warn('PrivacyControlPanel catch:', err?.message || err);
       alert('Error al eliminar la cuenta. Verifica tu contraseña.');
     } finally {
       setLoading(false);

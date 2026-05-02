@@ -1,5 +1,6 @@
 // ExamExitModal.jsx - Modal para confirmar salida del examen
 import { useState } from 'react';
+import logger from '../../utils/logger.js';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -37,6 +38,7 @@ export default function ExamExitModal({
         await onConfirmExit();
       }
     } catch (error) {
+      logger.warn('ExamExitModal catch:', error?.message || error);
     } finally {
       setLoading(false);
     }

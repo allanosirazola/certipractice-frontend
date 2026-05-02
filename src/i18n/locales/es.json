@@ -120,7 +120,8 @@
     "runSampleData": "Ejecuta el script de datos de ejemplo para comenzar.",
     "totalQuestions": "{{count}} preguntas disponibles",
     "copyright": "© {{year}} CertiPractice",
-    "createAccount": "Crear Cuenta"
+    "createAccount": "Crear Cuenta",
+    "resumeNotAvailable": "La reanudación de exámenes pausados aún no está disponible. Tu progreso queda guardado en el historial."
   },
   "auth": {
     "login": "Iniciar Sesión",

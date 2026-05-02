@@ -15,21 +15,13 @@
       <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-
-  <!-- outer ring -->
   <circle cx="100" cy="100" r="94" fill="url(#g-CLF-C02)" filter="url(#shadow-CLF-C02)"/>
   <circle cx="100" cy="100" r="94" fill="url(#r-CLF-C02)"/>
-
-  <!-- inner disk -->
   <circle cx="100" cy="100" r="80" fill="#232F3E" opacity="0.92"/>
   <circle cx="100" cy="100" r="80" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="2"/>
-
-  <!-- speciality glyph (centered, scaled to 100x100 box at 50,40) -->
   <g transform="translate(50,40)">
     <path d="M30 70 V40 L50 25 L70 40 V70 Z M40 70 V55 h20 V70" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
   </g>
-
-  <!-- cert code label band -->
   <rect x="20" y="138" width="160" height="34" rx="6" fill="#FF9900" opacity="0.96"/>
   <text x="100" y="161" text-anchor="middle"
     font-family="'Helvetica Neue', Arial, sans-serif"
@@ -37,8 +29,6 @@
     font-weight="800"
     fill="#FFFFFF"
     letter-spacing="1">CLF-C02</text>
-
-  <!-- provider mark -->
   <text x="100" y="118" text-anchor="middle"
     font-family="'Helvetica Neue', Arial, sans-serif"
     font-size="9"

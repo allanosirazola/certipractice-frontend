@@ -1,29 +1,7 @@
 // CertificationLogo.jsx - Logos locales en /public/images/certifications/{CODE}.svg
 // Con fallback inteligente: cert local → provider PNG local → iniciales en gradiente
 import { useState, useEffect } from 'react';
-
-// Lista de códigos para los que tenemos un SVG local generado.
-// Se mantiene sincronizado con scripts/generate-cert-logos.mjs
-const LOCAL_CERT_CODES = new Set([
-  // AWS
-  'CLF-C02','SAA-C03','DVA-C02','SOA-C02','SAP-C02','DOP-C02','MLS-C01',
-  'DBS-C01','ANS-C01','SCS-C02','DEA-C01','DAS-C01','MLA-C01','AIF-C01',
-  // GCP
-  'GCP-CDL','GCP-ACE','GCP-PCA','GCP-PDE','GCP-PMLE','GCP-PCN','GCP-PCS',
-  'GCP-PCD','GCP-PCDE','GCP-PDB',
-  // Azure
-  'AZ-900','AZ-104','AZ-204','AZ-305','AZ-400','AZ-500','AZ-700','AZ-800',
-  'AI-900','AI-102','DP-900','DP-203','DP-300','DP-100','DP-700',
-  'SC-900','SC-200','SC-300','MS-900','PL-900','PL-300',
-  // Databricks
-  'DATABRICKS-DE','DATABRICKS-ML','DATABRICKS-DA','DATABRICKS-GAI',
-  // Snowflake
-  'SNOWPRO-CORE','SNOWPRO-ADV','SNOWPRO-ARCHITECT','SNOWPRO-DE',
-  // HashiCorp
-  'TERRAFORM','VAULT','CONSUL','NOMAD',
-  // Salesforce
-  'SF-ADMIN','SF-PD1','SF-PD2','SF-ARCHITECT',
-]);
+import { LOCAL_CERT_CODES } from '../../data/certRegistry.js';
 
 // Mapa de provider name → logo PNG local en /public/images
 const PROVIDER_LOGO_FILE = {

@@ -253,7 +253,8 @@ describe('ExamenView', () => {
       render(<ExamenView {...defaultProps} examConfig={null} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Error/i)).toBeInTheDocument();
+        const errs = screen.queryAllByText(/Error/i);
+        expect(errs.length).toBeGreaterThan(0);
       });
     });
 
@@ -261,7 +262,8 @@ describe('ExamenView', () => {
       render(<ExamenView {...defaultProps} examConfig={{ ...mockExamConfig, provider: '' }} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Error/i)).toBeInTheDocument();
+        const errs = screen.queryAllByText(/Error/i);
+        expect(errs.length).toBeGreaterThan(0);
       });
     });
 
@@ -269,7 +271,8 @@ describe('ExamenView', () => {
       render(<ExamenView {...defaultProps} examConfig={{ ...mockExamConfig, certification: '' }} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Error/i)).toBeInTheDocument();
+        const errs = screen.queryAllByText(/Error/i);
+        expect(errs.length).toBeGreaterThan(0);
       });
     });
 
@@ -334,7 +337,7 @@ describe('ExamenView', () => {
       render(<ExamenView {...defaultProps} />);
       
       await waitFor(() => {
-        expect(screen.getByText(/Practice/i)).toBeInTheDocument();
+        expect(screen.getByText(/Práctica/i)).toBeInTheDocument();
       });
     });
   });

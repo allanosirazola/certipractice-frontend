@@ -109,7 +109,7 @@ describe('QuestionReportModal', () => {
     it('muestra tipo "Error tipográfico"', () => {
       render(<QuestionReportModal {...defaultProps} />);
       
-      expect(screen.getByText(/typo/i)).toBeInTheDocument();
+      expect(screen.getByText(/Error tipográfico/i)).toBeInTheDocument();
     });
 
     it('permite seleccionar un tipo de reporte', async () => {
@@ -349,7 +349,7 @@ describe('QuestionReportModal', () => {
     it('muestra nota de privacidad', () => {
       render(<QuestionReportModal {...defaultProps} />);
       
-      expect(screen.getByText(/anonymous/i)).toBeInTheDocument();
+      expect(screen.getByText(/anónimo/i)).toBeInTheDocument();
     });
 
     it('permite enviar reporte sin autenticar', async () => {

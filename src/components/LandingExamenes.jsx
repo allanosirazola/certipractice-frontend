@@ -138,9 +138,17 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
     setShowModeSelector(false);
   };
 
-  const handleResumeExam = (examId, showResults = false) => {
+  const handleResumeExam = async (examId, showResults = false) => {
     setShowHistory(false);
-    // TODO: Implementar lógica para continuar examen
+    if (!examId) return;
+    // showResults=true: open the review modal directly via ExamHistory's flow.
+    // showResults=false: resuming a paused exam isn't supported by the
+    // backend yet; surface that clearly instead of silently doing nothing.
+    if (!showResults) {
+      setError(t('landing.resumeNotAvailable', {
+        defaultValue: 'La reanudación de exámenes pausados aún no está disponible. Tu progreso queda guardado en el historial.',
+      }));
+    }
   };
 
   // Función para manejar preguntas fallidas
@@ -400,7 +408,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setShowHistory(true)}
-                className="flex items-center space-x-2 px-3 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50 dark:bg-blue-950/30 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 text-blue-600 dark:text-blue-300 border border-blue-600 dark:border-blue-700 rounded hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />

@@ -1,5 +1,6 @@
 // ExamReview.jsx - Componente para revisar preguntas del examen completado
 import { useState, useEffect } from 'react';
+import logger from '../../utils/logger.js';
 import { examAPI, questionAPI } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -30,6 +31,7 @@ export default function ExamReview({ examId, examData, onClose }) {
       }
       throw new Error('No options in response');
     } catch (error) {
+      logger.warn('ExamReview catch:', error?.message || error);
       if (attempt === retries - 1) {
         return null;
       }
@@ -90,6 +92,7 @@ export default function ExamReview({ examId, examData, onClose }) {
               setResults(resultsResponse.data);
             }
           } catch (err) {
+            logger.warn('ExamReview catch:', err?.message || err);
           }
         }
       } else {
@@ -106,11 +109,13 @@ export default function ExamReview({ examId, examData, onClose }) {
                 setResults(resultsResponse.data);
               }
             } catch (err) {
+              logger.warn('ExamReview catch:', err?.message || err);
             }
           } else {
             throw new Error(examResponse.error || 'Error cargando examen para revisión');
           }
         } catch (err) {
+          logger.warn('ExamReview catch:', err?.message || err);
           // Fallback al endpoint normal
           try {
             const examResponse = await examAPI.getExam(examId);
@@ -120,12 +125,14 @@ export default function ExamReview({ examId, examData, onClose }) {
               throw new Error(examResponse.error || 'Error cargando examen');
             }
           } catch (fallbackErr) {
+            logger.warn('ExamReview catch:', fallbackErr?.message || fallbackErr);
             throw new Error('No se pudo cargar el examen: ' + fallbackErr.message);
           }
         }
       }
 
     } catch (err) {
+      logger.warn('ExamReview catch:', err?.message || err);
       setError(err.message || 'Error cargando examen');
     } finally {
       setLoading(false);
@@ -192,6 +199,7 @@ export default function ExamReview({ examId, examData, onClose }) {
       throw new Error(response.error || 'Error cargando pregunta');
     }
   } catch (err) {
+    logger.warn('ExamReview catch:', err?.message || err);
     // Usar datos básicos si están disponibles
     const currentQuestion = exam?.questions?.find(q => q.id === questionId);
     if (currentQuestion) {

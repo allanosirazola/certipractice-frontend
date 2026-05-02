@@ -1,5 +1,6 @@
 // FailedQuestionsStats.jsx - Componente para mostrar estadísticas de preguntas fallidas
 import { useState, useEffect } from 'react';
+import logger from '../../utils/logger.js';
 import { userAPI } from '../../services/api';
 import { useTranslation } from 'react-i18next';
 
@@ -37,6 +38,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
       }
 
     } catch (err) {
+      logger.warn('FailedQuestionsStats catch:', err?.message || err);
       setError(t('failedStats.error'));
     } finally {
       setLoading(false);
