@@ -109,7 +109,7 @@ export default function ExamExitModal({
                 disabled={loading}
                 className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                   selectedAction === 'save'
-                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
+                    ? 'border-green-600 bg-green-50 dark:bg-green-900'
                     : 'border-gray-200 dark:border-gray-700 hover:border-green-300 hover:bg-green-25'
                 } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
@@ -135,8 +135,8 @@ export default function ExamExitModal({
               disabled={loading}
               className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                 selectedAction === 'exit'
-                  ? 'border-red-600 bg-red-50 dark:bg-red-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-red-300 hover:bg-red-25'
+                  ? 'border-red-600 bg-red-50 dark:bg-red-900'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-red-300 dark:border-red-600 hover:bg-red-25'
               } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <div className="flex items-start gap-3">
@@ -160,13 +160,13 @@ export default function ExamExitModal({
 
           {/* Advertencias especiales */}
           {isRealisticMode && (
-            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg">
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 <div className="flex-1">
-                  <div className="text-sm text-red-800">
+                  <div className="text-sm text-red-800 dark:text-red-200">
                     {t('exitModal.realisticWarning')}
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default function ExamExitModal({
           )}
 
           {!isAuthenticated && !isRealisticMode && (
-            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />

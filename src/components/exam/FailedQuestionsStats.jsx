@@ -107,8 +107,8 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-red-800 mb-4">{t('common.error')}</h3>
-          <p className="text-red-700 dark:text-red-400 mb-6">{error}</p>
+          <h3 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-4">{t('common.error')}</h3>
+          <p className="text-red-700 dark:text-red-300 mb-6">{error}</p>
           <button
             onClick={onClose}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
@@ -127,7 +127,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
       <div className="bg-white dark:bg-gray-800 rounded-lg max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden">
         
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b bg-orange-50 dark:bg-orange-900/20">
+        <div className="flex justify-between items-center p-6 border-b bg-orange-50 dark:bg-orange-900">
           <div>
             <h2 className="text-2xl font-bold text-orange-800">{t('failedStats.title')}</h2>
             <p className="text-orange-600">{provider} - {certification}</p>
@@ -148,23 +148,23 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
           {/* Estadísticas generales */}
           {stats && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg p-4 text-center">
+              <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-red-600">{stats.totalFailed}</div>
-                <div className="text-sm text-red-700 dark:text-red-400">{t('failedStats.total')}</div>
+                <div className="text-sm text-red-700 dark:text-red-300">{t('failedStats.total')}</div>
               </div>
-              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 dark:bg-orange-900 border border-orange-200 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-orange-600">{stats.recentlyFailed || 0}</div>
                 <div className="text-sm text-orange-700 dark:text-orange-400">{t('failedStats.thisWeek')}</div>
               </div>
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-lg p-4 text-center">
+              <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-green-600">{stats.improved || 0}</div>
-                <div className="text-sm text-green-700 dark:text-green-400">{t('failedStats.improved')}</div>
+                <div className="text-sm text-green-700 dark:text-green-300">{t('failedStats.improved')}</div>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
+              <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-blue-600">
                   {stats.improvementRate ? `${Math.round(stats.improvementRate)}%` : '0%'}
                 </div>
-                <div className="text-sm text-blue-700 dark:text-blue-400">{t('failedStats.improvementRate')}</div>
+                <div className="text-sm text-blue-700 dark:text-blue-300">{t('failedStats.improvementRate')}</div>
               </div>
             </div>
           )}
@@ -243,13 +243,13 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                 {filteredQuestions.map((question, index) => (
                   <div
                     key={question.id}
-                    className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-orange-50 dark:bg-orange-900/20 hover:border-orange-200 transition-colors"
+                    className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-orange-50 dark:bg-orange-900 hover:border-orange-200 transition-colors"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-3">
                         <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">#{index + 1}</span>
                         <div className="flex gap-2">
-                          <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400">
+                          <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
                             {getCategoryIcon(question.category)} {question.category}
                           </span>
                           <span className={`text-xs px-2 py-1 rounded ${getDifficultyColor(question.difficulty)}`}>
@@ -278,7 +278,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
             ) : (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
@@ -321,7 +321,7 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
 
           {/* Consejo motivacional */}
           {failedQuestions.length > 0 && (
-            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -329,8 +329,8 @@ export default function FailedQuestionsStats({ provider, certification, onClose,
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">{t('failedStats.studyTip')}</h4>
-                  <p className="text-blue-700 dark:text-blue-400 text-sm">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">{t('failedStats.studyTip')}</h4>
+                  <p className="text-blue-700 dark:text-blue-300 text-sm">
                     {t('failedStats.studyTipText')}
                   </p>
                 </div>

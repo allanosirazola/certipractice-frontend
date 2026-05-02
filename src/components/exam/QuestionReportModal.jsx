@@ -115,9 +115,9 @@ export default function QuestionReportModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b bg-red-50 dark:bg-red-900/20">
+        <div className="flex justify-between items-center p-6 border-b bg-red-50 dark:bg-red-900">
           <div>
-            <h2 className="text-xl font-bold text-red-800">🚩 Reportar Pregunta</h2>
+            <h2 className="text-xl font-bold text-red-800 dark:text-red-200">🚩 Reportar Pregunta</h2>
             <p className="text-red-600 text-sm mt-1">
               {t('questionReport.helpUs')}
             </p>
@@ -142,7 +142,7 @@ export default function QuestionReportModal({
               }
             </p>
             <div className="flex gap-2 mt-2">
-              <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">
+              <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
                 {question.category}
               </span>
               <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
@@ -164,8 +164,8 @@ export default function QuestionReportModal({
                   onClick={() => setSelectedType(type)}
                   className={`p-3 rounded-lg border-2 text-left transition-all ${
                     selectedType?.id === type.id
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-red-300 hover:bg-red-25'
+                      ? 'border-red-500 bg-red-50 dark:bg-red-900'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-red-300 dark:border-red-600 hover:bg-red-25'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
@@ -213,14 +213,14 @@ export default function QuestionReportModal({
 
           {/* Error */}
           {error && (
-            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 text-red-800 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-600 text-red-800 dark:text-red-200 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           {/* Nota de privacidad */}
           {!isAuthenticated && (
-            <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-lg text-sm">
               <strong>{t('common.confirm')}:</strong> {t('questionReport.anonymousNote')} 
               <a href="#" className="underline ml-1">{t('questionReport.loginForUpdates')}</a> {t('questionReport.loginForUpdatesText')}
             </div>

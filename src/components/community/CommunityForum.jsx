@@ -211,7 +211,7 @@ export default function CommunityForum({ onClose }) {
                 <button
                   onClick={() => handleVote(question.id, 'up')}
                   className={`p-1 rounded hover:bg-green-100 dark:bg-green-900/30 ${
-                    question.userVote === 'up' ? 'text-green-600' : 'text-gray-400'
+                    question.userVote === 'up' ? 'text-green-600' : 'text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   ▲
@@ -220,7 +220,7 @@ export default function CommunityForum({ onClose }) {
                 <button
                   onClick={() => handleVote(question.id, 'down')}
                   className={`p-1 rounded hover:bg-red-100 dark:bg-red-900/30 ${
-                    question.userVote === 'down' ? 'text-red-600' : 'text-gray-400'
+                    question.userVote === 'down' ? 'text-red-600' : 'text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   ▼
@@ -288,7 +288,7 @@ export default function CommunityForum({ onClose }) {
         <div className="space-y-3">
           {newQuestion.options.map((option, index) => (
             <div key={index} className="flex items-center gap-3">
-              <span className="w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 rounded-full flex items-center justify-center font-medium">
+              <span className="w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center font-medium">
                 {String.fromCharCode(65 + index)}
               </span>
               <input
@@ -402,7 +402,7 @@ export default function CommunityForum({ onClose }) {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg">{error}</div>
+        <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg">{error}</div>
       )}
 
       <button
@@ -439,7 +439,7 @@ export default function CommunityForum({ onClose }) {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-3 font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-950/30'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100'
               }`}
             >

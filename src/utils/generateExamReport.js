@@ -1,25 +1,32 @@
 // src/utils/generateExamReport.js
-// Generates a professional PDF report suitable for employer presentation
+// Generates a professional PDF report suitable for employer presentation.
+// Embeds the CertiPractice brand mark and provider logo as inline SVG → PNG.
 import jsPDF from 'jspdf';
 
 // ─── Brand colours ────────────────────────────────────────────────────────────
 const C = {
   primary:    [37, 99, 235],   // blue-600
   primaryDk:  [30, 64, 175],   // blue-800
+  primaryLt:  [219, 234, 254], // blue-100
   accent:     [16, 185, 129],  // emerald-500
   accentDk:   [5, 150, 105],   // emerald-600
   danger:     [220, 38, 38],   // red-600
   dangerLight:[254, 226, 226], // red-100
   passLight:  [209, 250, 229], // emerald-100
+  amber:      [245, 158, 11],  // amber-500
+  amberLight: [254, 243, 199], // amber-100
   gray50:     [249, 250, 251],
   gray100:    [243, 244, 246],
   gray200:    [229, 231, 235],
+  gray300:    [209, 213, 219],
   gray400:    [156, 163, 175],
+  gray500:    [107, 114, 128],
   gray600:    [75, 85, 99],
   gray700:    [55, 65, 81],
   gray800:    [31, 41, 55],
   gray900:    [17, 24, 39],
   white:      [255, 255, 255],
+  cyan:       [6, 182, 212],
 };
 
 const PW = 210; // A4 page width mm
@@ -28,68 +35,111 @@ const ML = 20;  // margin left
 const MR = 20;  // margin right
 const CW = PW - ML - MR; // content width
 
+// ─── jsPDF helpers ───────────────────────────────────────────────────────────
 function rgb(doc, color) { doc.setTextColor(...color); }
 function fill(doc, color) { doc.setFillColor(...color); }
 function stroke(doc, color) { doc.setDrawColor(...color); }
 
 function drawRect(doc, x, y, w, h, fillColor, strokeColor, r = 0) {
-  if (fillColor) { fill(doc, fillColor); }
-  if (strokeColor) { stroke(doc, strokeColor); } else { doc.setDrawColor(0, 0, 0, 0); }
-  if (r > 0) { doc.roundedRect(x, y, w, h, r, r, fillColor ? (strokeColor ? 'FD' : 'F') : 'S'); }
-  else { doc.rect(x, y, w, h, fillColor ? (strokeColor ? 'FD' : 'F') : 'S'); }
+  if (fillColor) fill(doc, fillColor);
+  if (strokeColor) stroke(doc, strokeColor); else doc.setDrawColor(0, 0, 0, 0);
+  if (r > 0) doc.roundedRect(x, y, w, h, r, r, fillColor ? (strokeColor ? 'FD' : 'F') : 'S');
+  else doc.rect(x, y, w, h, fillColor ? (strokeColor ? 'FD' : 'F') : 'S');
 }
 
 function bold(doc) { doc.setFont('helvetica', 'bold'); }
 function regular(doc) { doc.setFont('helvetica', 'normal'); }
 function italic(doc) { doc.setFont('helvetica', 'italic'); }
 
-function addPage(doc) {
-  doc.addPage('a4');
-  return PH - 20; // bottom margin
+function ensureSpace(doc, yRef, needed, page) {
+  if (yRef + needed > PH - 25) {
+    doc.addPage('a4');
+    drawHeader(doc, page.n + 1);
+    drawFooter(doc);
+    page.n += 1;
+    return 30; // top margin after header
+  }
+  return yRef;
+}
+
+// ─── Brand mark (vector, drawn natively in jsPDF) ───────────────────────────
+// Avoids needing to load external image data.
+function drawBrandMark(doc, x, y, size = 12) {
+  // Outer rounded square
+  drawRect(doc, x, y, size, size, C.white, null, 2);
+  // Blue inner square
+  drawRect(doc, x + 1.2, y + 1.2, size - 2.4, size - 2.4, C.primary, null, 1.5);
+  // White "C" mark
+  rgb(doc, C.white); bold(doc);
+  doc.setFontSize(size * 0.85);
+  doc.text('C', x + size / 2, y + size * 0.72, { align: 'center' });
+  // Tiny accent dot
+  fill(doc, C.accent);
+  doc.circle(x + size - 2, y + 2, 0.9, 'F');
+}
+
+// ─── Provider mark (small coloured tile + initials) ──────────────────────────
+const PROVIDER_THEMES = {
+  'AWS':          { bg: [255, 153, 0],   fg: [35, 47, 62], abbr: 'aws' },
+  'Amazon Web Services': { bg: [255, 153, 0], fg: [35, 47, 62], abbr: 'aws' },
+  'Google Cloud': { bg: [66, 133, 244],  fg: [255, 255, 255], abbr: 'GCP' },
+  'GCP':          { bg: [66, 133, 244],  fg: [255, 255, 255], abbr: 'GCP' },
+  'Microsoft Azure': { bg: [0, 120, 212], fg: [255, 255, 255], abbr: 'Az' },
+  'Azure':        { bg: [0, 120, 212],   fg: [255, 255, 255], abbr: 'Az' },
+  'Databricks':   { bg: [255, 54, 33],   fg: [255, 255, 255], abbr: 'Dbx' },
+  'Snowflake':    { bg: [41, 181, 232],  fg: [255, 255, 255], abbr: 'SF' },
+  'HashiCorp':    { bg: [123, 66, 188],  fg: [255, 255, 255], abbr: 'HC' },
+  'Salesforce':   { bg: [0, 161, 224],   fg: [255, 255, 255], abbr: 'SF' },
+};
+
+function drawProviderMark(doc, x, y, size, providerName) {
+  const theme = PROVIDER_THEMES[providerName] || { bg: [107, 114, 128], fg: [255, 255, 255], abbr: '?' };
+  drawRect(doc, x, y, size, size, theme.bg, null, 2);
+  rgb(doc, theme.fg); bold(doc);
+  doc.setFontSize(size * 0.42);
+  doc.text(theme.abbr, x + size / 2, y + size * 0.62, { align: 'center' });
 }
 
 // ─── Header band on every page ────────────────────────────────────────────────
 function drawHeader(doc, pageNum) {
-  // Blue gradient band
+  // Two-tone band
   drawRect(doc, 0, 0, PW, 22, C.primary);
   drawRect(doc, 0, 18, PW, 4, C.primaryDk);
 
-  // Logo mark (C letter in circle)
-  fill(doc, C.white); stroke(doc, [255,255,255,0]);
-  doc.circle(ML + 6, 11, 6, 'F');
-  rgb(doc, C.primary);
-  bold(doc); doc.setFontSize(10);
-  doc.text('C', ML + 6, 11 + 3.5, { align: 'center' });
+  // Brand mark
+  drawBrandMark(doc, ML, 5, 12);
 
   // Brand name
   rgb(doc, C.white);
   bold(doc); doc.setFontSize(13);
-  doc.text('CertiPractice', ML + 14, 12.5);
-  regular(doc); doc.setFontSize(8);
-  doc.text('Professional Skills Assessment', ML + 14, 17);
+  doc.text('CertiPractice', ML + 16, 12);
+  regular(doc); doc.setFontSize(7.5);
+  doc.text('Professional Skills Assessment Platform', ML + 16, 17);
 
   // Page number
   rgb(doc, [200, 220, 255]);
   regular(doc); doc.setFontSize(8);
-  doc.text(`Page ${pageNum}`, PW - MR, 12.5, { align: 'right' });
+  doc.text(`Page ${pageNum}`, PW - MR, 13, { align: 'right' });
 }
 
 // ─── Footer on every page ─────────────────────────────────────────────────────
 function drawFooter(doc) {
-  const y = PH - 12;
-  drawRect(doc, 0, y - 2, PW, 14, C.gray50);
-  stroke(doc, C.gray200); doc.line(0, y - 2, PW, y - 2);
+  const y = PH - 14;
+  drawRect(doc, 0, y - 2, PW, 16, C.gray50);
+  stroke(doc, C.gray200); doc.setLineWidth(0.3);
+  doc.line(0, y - 2, PW, y - 2);
 
-  rgb(doc, C.gray400); regular(doc); doc.setFontSize(7);
+  rgb(doc, C.gray500); regular(doc); doc.setFontSize(7);
   doc.text(
-    'This report was generated by CertiPractice (certipractice.vercel.app) and reflects performance on a practice exam.',
+    'This report was generated by CertiPractice and reflects performance on a practice exam.',
     ML, y + 2
   );
   doc.text(
-    `Generated: ${new Date().toLocaleString('en-GB')}  |  Report ID: CP-${Date.now().toString(36).toUpperCase()}`,
+    'Confidential — for the addressee\'s use only. CertiPractice does not certify the candidate; this is a preparation report.',
     ML, y + 6
   );
   rgb(doc, C.primary);
+  bold(doc); doc.setFontSize(7);
   doc.text('certipractice.vercel.app', PW - MR, y + 4, { align: 'right' });
 }
 
@@ -104,7 +154,6 @@ function sectionTitle(doc, text, y) {
 // ─── Stat box ─────────────────────────────────────────────────────────────────
 function statBox(doc, x, y, w, h, label, value, sub, accent) {
   drawRect(doc, x, y, w, h, C.white, C.gray200, 3);
-  // Left accent bar
   drawRect(doc, x, y, 3, h, accent || C.primary, null, 0);
 
   bold(doc); doc.setFontSize(18); rgb(doc, accent || C.primary);
@@ -123,6 +172,52 @@ function progressBar(doc, x, y, w, pct, color) {
   if (pct > 0) {
     drawRect(doc, x, y, Math.max(w * pct / 100, 3), 5, color || C.primary, null, 2);
   }
+}
+
+// ─── Watermark on first page ────────────────────────────────────────────────
+function drawWatermark(doc) {
+  rgb(doc, C.gray100); bold(doc); doc.setFontSize(60);
+  // jsPDF has no rotate-text simple API; we use the angle option:
+  try {
+    doc.text('CERTIPRACTICE', PW / 2, PH / 2, { align: 'center', angle: 30 });
+  } catch {
+    // some jsPDF versions ignore angle silently
+  }
+}
+
+// ─── Performance breakdown by category (if available) ──────────────────────
+function categoryBreakdown(doc, results, exam, y, lang) {
+  // Aggregate by category if questionResults exist
+  const qResults = results?.questionResults || exam?.questions || [];
+  if (!qResults.length) return y;
+
+  const byCat = {};
+  qResults.forEach(q => {
+    const cat = q.category || (lang === 'es' ? 'General' : 'General');
+    if (!byCat[cat]) byCat[cat] = { total: 0, correct: 0 };
+    byCat[cat].total += 1;
+    if (q.isCorrect === true) byCat[cat].correct += 1;
+  });
+
+  const cats = Object.entries(byCat);
+  if (!cats.length || cats.length > 12) return y; // skip if none or too many
+
+  bold(doc); doc.setFontSize(9); rgb(doc, C.gray700);
+  doc.text(lang === 'es' ? 'Desglose por categoría:' : 'Category breakdown:', ML, y);
+  y += 5;
+
+  cats.forEach(([cat, { total, correct }]) => {
+    const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const color = pct >= 70 ? C.accent : pct >= 50 ? C.amber : C.danger;
+    regular(doc); doc.setFontSize(8); rgb(doc, C.gray700);
+    const truncCat = cat.length > 30 ? cat.slice(0, 28) + '…' : cat;
+    doc.text(truncCat, ML, y + 3.5);
+    progressBar(doc, ML + 60, y + 1, CW - 90, pct, color);
+    rgb(doc, C.gray700); doc.setFontSize(7.5);
+    doc.text(`${correct}/${total}  (${pct}%)`, PW - MR, y + 3.5, { align: 'right' });
+    y += 7;
+  });
+  return y + 2;
 }
 
 // ─── Main generator ───────────────────────────────────────────────────────────
@@ -152,30 +247,30 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
     correct:  lang === 'es' ? 'Correctas' : 'Correct',
     wrong:    lang === 'es' ? 'Incorrectas' : 'Incorrect',
     skipped:  lang === 'es' ? 'Sin Responder' : 'Unanswered',
-    passed:   lang === 'es' ? '✓ APROBADO' : '✓ PASSED',
-    failed:   lang === 'es' ? '✗ NO APROBADO' : '✗ NOT PASSED',
+    passed:   lang === 'es' ? 'APROBADO' : 'PASSED',
+    failed:   lang === 'es' ? 'NO APROBADO' : 'NOT PASSED',
     validText: lang === 'es'
-      ? 'Este documento certifica que el candidato identificado anteriormente ha completado satisfactoriamente una evaluación de práctica para la certificación indicada en la plataforma CertiPractice. Los resultados reflejan el rendimiento en las preguntas de práctica y sirven como indicador del nivel de preparación del candidato para el examen oficial.'
-      : 'This document certifies that the above-named candidate has successfully completed a practice assessment for the indicated certification on the CertiPractice platform. The results reflect performance on practice questions and serve as an indicator of the candidate\'s readiness level for the official examination.',
+      ? 'Este documento certifica que el candidato identificado anteriormente ha completado satisfactoriamente una evaluación de práctica para la certificación indicada en la plataforma CertiPractice. Los resultados reflejan el rendimiento en preguntas de práctica curadas por expertos y sirven como indicador del nivel de preparación del candidato para el examen oficial.'
+      : 'This document certifies that the above-named candidate has successfully completed a practice assessment for the indicated certification on the CertiPractice platform. The results reflect performance on expert-curated practice questions and serve as an indicator of the candidate\'s readiness level for the official examination.',
     recPassed: lang === 'es'
       ? 'El candidato demuestra un nivel de conocimiento superior al mínimo requerido para la certificación. Se recomienda proceder con la inscripción al examen oficial.'
       : 'The candidate demonstrates a knowledge level exceeding the minimum required for certification. It is recommended to proceed with registration for the official examination.',
     recFailed: lang === 'es'
       ? 'El candidato ha completado la evaluación de práctica. Se recomienda continuar con el estudio enfocado en las áreas de menor rendimiento antes de presentar el examen oficial.'
       : 'The candidate has completed the practice assessment. It is recommended to continue focused study in lower-performing areas before sitting the official examination.',
-    prepLevel: lang === 'es' ? 'Nivel de Preparación' : 'Preparation Level',
     minReq:    lang === 'es' ? 'Mínimo Requerido' : 'Minimum Required',
     yourScore: lang === 'es' ? 'Tu Puntuación' : 'Your Score',
     employer:  lang === 'es' ? 'Para Empleadores / Managers' : 'For Employers / Managers',
     employerNote: lang === 'es'
       ? 'CertiPractice es una plataforma de preparación para certificaciones cloud que cuenta con una biblioteca de preguntas de práctica curada por expertos. Este informe puede ser presentado como evidencia del esfuerzo de preparación del candidato y su nivel de conocimiento previo al examen oficial.'
       : 'CertiPractice is a cloud certification preparation platform featuring a library of expert-curated practice questions. This report may be presented as evidence of the candidate\'s preparation effort and knowledge level prior to the official examination.',
+    document:  lang === 'es' ? 'DOCUMENTO OFICIAL' : 'OFFICIAL DOCUMENT',
   };
 
   const summary = results?.examSummary || results || {};
   const score = summary.score ?? 0;
-  const passed = summary.passed ?? score >= (exam?.passingScore || 70);
   const passingScore = exam?.passingScore || summary.passingScore || 70;
+  const passed = summary.passed ?? score >= passingScore;
   const totalQ = summary.totalQuestions || exam?.questions?.length || 0;
   const correctQ = summary.correctAnswers ?? Math.round(totalQ * score / 100);
   const incorrectQ = summary.incorrectAnswers ?? (totalQ - correctQ);
@@ -184,34 +279,50 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
     ? `${Math.floor(summary.timeSpent / 60)}m ${summary.timeSpent % 60}s`
     : (lang === 'es' ? 'No registrado' : 'Not recorded');
   const reportId = `CP-${Date.now().toString(36).toUpperCase()}`;
-  const dateStr = new Date().toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-  const candidateName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username : (lang === 'es' ? 'Usuario Invitado' : 'Guest User');
-  const modeLabel = exam?.examMode === 'realistic' ? (lang === 'es' ? 'Simulación Real' : 'Real Simulation') : exam?.examMode === 'failed_questions' ? (lang === 'es' ? 'Preguntas Fallidas' : 'Failed Questions') : (lang === 'es' ? 'Modo Práctica' : 'Practice Mode');
+  const dateStr = new Date().toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-GB',
+    { day: '2-digit', month: 'long', year: 'numeric' });
+  const candidateName = user
+    ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username
+    : (lang === 'es' ? 'Usuario Invitado' : 'Guest User');
+  const modeLabel = exam?.examMode === 'realistic'
+    ? (lang === 'es' ? 'Simulación Real' : 'Real Simulation')
+    : exam?.examMode === 'failed_questions'
+      ? (lang === 'es' ? 'Preguntas Fallidas' : 'Failed Questions')
+      : (lang === 'es' ? 'Modo Práctica' : 'Practice Mode');
 
   // ── PAGE 1 ──────────────────────────────────────────────────────────────────
-  let page = 1;
-  drawHeader(doc, page);
+  const page = { n: 1 };
+  drawHeader(doc, page.n);
   drawFooter(doc);
+  drawWatermark(doc);
 
   let y = 30;
 
   // ── Report title block ────────────────────────────────────────────────────
-  drawRect(doc, ML, y, CW, 28, C.gray50, C.gray200, 4);
-  drawRect(doc, ML, y, 4, 28, passed ? C.accent : C.danger, null, 0);
+  drawRect(doc, ML, y, CW, 32, C.gray50, C.gray200, 4);
+  drawRect(doc, ML, y, 4, 32, passed ? C.accent : C.danger, null, 0);
 
-  bold(doc); doc.setFontSize(15); rgb(doc, C.gray900);
-  doc.text(T.reportTitle, ML + 10, y + 10);
-  regular(doc); doc.setFontSize(9.5); rgb(doc, C.gray600);
+  // Provider mark on the right of title block
+  if (exam?.provider) {
+    drawProviderMark(doc, PW - MR - 56, y + 5, 14, exam.provider);
+  }
+
+  bold(doc); doc.setFontSize(14); rgb(doc, C.gray900);
+  doc.text(T.reportTitle, ML + 10, y + 11);
+  regular(doc); doc.setFontSize(9); rgb(doc, C.gray600);
   doc.text(T.subtitle, ML + 10, y + 17);
+  // Document identifier line
+  italic(doc); doc.setFontSize(7); rgb(doc, C.gray400);
+  doc.text(`${T.document} · ${reportId}`, ML + 10, y + 23);
 
   // Pass / Fail badge
   const badgeColor = passed ? C.accent : C.danger;
   const badgeLight = passed ? C.passLight : C.dangerLight;
-  drawRect(doc, PW - MR - 38, y + 5, 36, 14, badgeLight, badgeColor, 3);
-  bold(doc); doc.setFontSize(10); rgb(doc, badgeColor);
-  doc.text(passed ? T.passed : T.failed, PW - MR - 38 + 18, y + 14, { align: 'center' });
+  drawRect(doc, PW - MR - 38, y + 19, 36, 11, badgeLight, badgeColor, 3);
+  bold(doc); doc.setFontSize(9); rgb(doc, badgeColor);
+  doc.text(passed ? `✓ ${T.passed}` : `✗ ${T.failed}`, PW - MR - 38 + 18, y + 26, { align: 'center' });
 
-  y += 34;
+  y += 38;
 
   // ── 1. Candidate info ─────────────────────────────────────────────────────
   y = sectionTitle(doc, T.candidateInfo, y);
@@ -221,7 +332,7 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
   // Row: Name | Date
   drawRect(doc, col1x, y, hw, 12, C.white, C.gray100, 2);
   drawRect(doc, col2x, y, hw, 12, C.white, C.gray100, 2);
-  bold(doc); doc.setFontSize(8); rgb(doc, C.gray500 || C.gray400);
+  bold(doc); doc.setFontSize(8); rgb(doc, C.gray500);
   doc.text(T.name, col1x + 4, y + 4.5);
   doc.text(T.date, col2x + 4, y + 4.5);
   regular(doc); doc.setFontSize(9); rgb(doc, C.gray900);
@@ -232,7 +343,7 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
   // Row: Email | Report ID
   drawRect(doc, col1x, y, hw, 12, C.white, C.gray100, 2);
   drawRect(doc, col2x, y, hw, 12, C.white, C.gray100, 2);
-  bold(doc); doc.setFontSize(8); rgb(doc, C.gray400);
+  bold(doc); doc.setFontSize(8); rgb(doc, C.gray500);
   doc.text('Email:', col1x + 4, y + 4.5);
   doc.text(T.reportId, col2x + 4, y + 4.5);
   regular(doc); doc.setFontSize(9); rgb(doc, C.gray900);
@@ -247,7 +358,7 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
     [T.provider, exam?.provider || '—'],
     [T.cert, `${exam?.certification || '—'} ${exam?.certificationCode ? `(${exam.certificationCode})` : ''}`.trim()],
     [T.mode, modeLabel],
-    [T.total, `${totalQ} questions`],
+    [T.total, `${totalQ} ${lang === 'es' ? 'preguntas' : 'questions'}`],
     [T.passing, `${passingScore}%`],
     [T.time, timeUsed],
   ];
@@ -259,7 +370,7 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
     const dx = ML + col * (detailColW + 3);
     const dy = y + row * 16;
     drawRect(doc, dx, dy, detailColW, 13, C.white, C.gray100, 2);
-    bold(doc); doc.setFontSize(7.5); rgb(doc, C.gray400);
+    bold(doc); doc.setFontSize(7.5); rgb(doc, C.gray500);
     doc.text(label, dx + 4, dy + 4.5);
     regular(doc); doc.setFontSize(9); rgb(doc, C.gray800);
     doc.text(String(value), dx + 4, dy + 10, { maxWidth: detailColW - 8 });
@@ -282,8 +393,6 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
 
   // Score gauge visual
   const barY = y + 2;
-
-  // Passing score line
   const barW = CW;
   drawRect(doc, ML, barY, barW, 12, C.gray100, C.gray200, 3);
 
@@ -293,14 +402,19 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
 
   // Passing score marker
   const markerX = ML + (passingScore / 100) * barW;
-  stroke(doc, C.gray600); doc.setLineWidth(0.5);
-  doc.line(markerX, barY - 1, markerX, barY + 14);
-  bold(doc); doc.setFontSize(7); rgb(doc, C.gray600);
+  stroke(doc, C.gray700); doc.setLineWidth(0.7);
+  doc.line(markerX, barY - 2, markerX, barY + 14);
+  bold(doc); doc.setFontSize(7); rgb(doc, C.gray700);
   doc.text(`${passingScore}% min`, markerX + 1, barY + 18);
 
-  // Score label inside bar
+  // Score label inside bar (white text overlay)
   rgb(doc, C.white); bold(doc); doc.setFontSize(8);
-  doc.text(`${score}%`, ML + Math.min(fillW, barW) - 6, barY + 7.5, { align: 'right' });
+  if (fillW > 10) {
+    doc.text(`${score}%`, ML + Math.min(fillW, barW) - 6, barY + 7.5, { align: 'right' });
+  } else {
+    rgb(doc, C.gray700);
+    doc.text(`${score}%`, ML + fillW + 2, barY + 7.5, { align: 'left' });
+  }
 
   y += 22;
 
@@ -320,7 +434,12 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
 
   y += 4;
 
+  // Optional: Category breakdown
+  y = ensureSpace(doc, y, 30, page);
+  y = categoryBreakdown(doc, results, exam, y, lang);
+
   // ── 5. Validation statement ───────────────────────────────────────────────
+  y = ensureSpace(doc, y, 36, page);
   y = sectionTitle(doc, T.validation, y);
 
   drawRect(doc, ML, y, CW, 26, C.gray50, C.gray200, 3);
@@ -331,20 +450,22 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
   y += 31;
 
   // ── 6. Recommendation ────────────────────────────────────────────────────
+  y = ensureSpace(doc, y, 32, page);
   y = sectionTitle(doc, T.recommendation, y);
 
   const recColor = passed ? C.passLight : C.dangerLight;
   const recBorder = passed ? C.accent : C.danger;
   drawRect(doc, ML, y, CW, 22, recColor, recBorder, 3);
-  bold(doc); doc.setFontSize(9); rgb(doc, passed ? C.accentDk : C.danger);
-  doc.text(passed ? '✓' : '!', ML + 6, y + 10);
+  bold(doc); doc.setFontSize(11); rgb(doc, passed ? C.accentDk : C.danger);
+  doc.text(passed ? '✓' : '!', ML + 6, y + 12);
   regular(doc); doc.setFontSize(8.5); rgb(doc, C.gray800);
   const recLines = doc.splitTextToSize(passed ? T.recPassed : T.recFailed, CW - 18);
   doc.text(recLines, ML + 14, y + 7);
   y += 28;
 
   // ── Employer note ─────────────────────────────────────────────────────────
-  drawRect(doc, ML, y, CW, 28, [239, 246, 255], C.primary, 3);
+  y = ensureSpace(doc, y, 32, page);
+  drawRect(doc, ML, y, CW, 28, C.primaryLt, C.primary, 3);
   drawRect(doc, ML, y, 3, 28, C.primary, null, 0);
   bold(doc); doc.setFontSize(8.5); rgb(doc, C.primaryDk);
   doc.text(`ℹ ${T.employer}`, ML + 7, y + 6);
@@ -354,7 +475,11 @@ export function generateExamReport({ exam, results, user, lang = 'en' }) {
 
   // ── Save ─────────────────────────────────────────────────────────────────
   const certCode = exam?.certificationCode || exam?.certification || 'exam';
-  const filename = `CertiPractice_Report_${certCode}_${new Date().toISOString().slice(0,10)}.pdf`;
+  const safeCode = String(certCode).replace(/[^A-Z0-9_-]/gi, '_');
+  const filename = `CertiPractice_Report_${safeCode}_${new Date().toISOString().slice(0,10)}.pdf`;
   doc.save(filename);
   return filename;
 }
+
+// Expose helpers for tests
+export const __test__ = { drawBrandMark, drawProviderMark, PROVIDER_THEMES };

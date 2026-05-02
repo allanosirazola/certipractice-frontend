@@ -71,6 +71,7 @@ function App() {
         <CookieConsentBanner
           forceOpen={cookiePanelOpen}
           onClose={() => setCookiePanelOpen(false)}
+          onOpenPrivacy={() => { setCookiePanelOpen(false); setView(VIEWS.PRIVACY); }}
         />
         <div className="app">
           {view === VIEWS.EXAM && examConfig && (

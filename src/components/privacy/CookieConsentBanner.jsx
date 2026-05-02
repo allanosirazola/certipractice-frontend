@@ -35,7 +35,7 @@ export function useCookieConsent() {
   return { consent, isLoaded: consent !== null, has: (cat) => consent?.[cat] === true };
 }
 
-export default function CookieConsentBanner({ forceOpen = false, onClose }) {
+export default function CookieConsentBanner({ forceOpen = false, onClose, onOpenPrivacy }) {
   const [visible, setVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [prefs, setPrefs] = useState({ necessary: true, functional: false, analytics: false, advertising: false });
@@ -60,6 +60,18 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
   const rejectAll = () => dismiss({ necessary: true, functional: false, analytics: false, advertising: false });
   const savePrefs = () => dismiss({ ...prefs, necessary: true });
 
+  const openPrivacy = (e) => {
+    e.preventDefault();
+    setVisible(false);
+    setShowDetails(false);
+    onClose?.();
+    if (onOpenPrivacy) {
+      onOpenPrivacy();
+    } else {
+      window.location.hash = 'privacy';
+    }
+  };
+
   if (!visible) return null;
 
   const CATEGORIES = [
@@ -80,29 +92,29 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
   return (
     <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      <div className="relative w-full sm:max-w-lg bg-white sm:rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      <div className="relative w-full sm:max-w-lg bg-white dark:bg-gray-800 sm:rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
         {!showDetails ? (
           <div className="p-6">
             <div className="flex items-start gap-3 mb-4">
               <span className="text-2xl mt-0.5">🍪</span>
               <div>
-                <h2 className="text-base font-bold text-gray-900">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white">
                   {lang === 'es' ? 'Cookies y anuncios' : 'Cookies and ads'}
                 </h2>
-                <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
                   {lang === 'es'
                     ? 'CertiPractice es gratuito gracias a los anuncios de Google AdSense. Usamos cookies necesarias para el funcionamiento y, si consientes, para mostrarte anuncios relevantes. '
                     : 'CertiPractice is free thanks to Google AdSense. We use necessary cookies for the site to work and, if you consent, to show you relevant ads. '}
-                  <button onClick={() => setShowDetails(true)} className="text-blue-600 underline underline-offset-2">
+                  <button onClick={() => setShowDetails(true)} className="text-blue-600 dark:text-blue-400 underline underline-offset-2">
                     {lang === 'es' ? 'Personalizar' : 'Customise'}
                   </button>
                 </p>
               </div>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-5 flex gap-2">
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl px-4 py-3 mb-5 flex gap-2">
               <span className="text-amber-500 flex-shrink-0 mt-0.5">ℹ️</span>
-              <p className="text-xs text-amber-800 leading-relaxed">
+              <p className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
                 {lang === 'es'
                   ? 'Los anuncios nos permiten ofrecerte miles de preguntas de examen sin coste. Al aceptar la publicidad, Google podrá personalizar los anuncios según tu historial de navegación.'
                   : 'Ads allow us to offer thousands of exam questions at no cost. By accepting advertising, Google may personalise ads based on your browsing history.'}
@@ -110,10 +122,10 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
-              <button onClick={rejectAll} className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+              <button onClick={rejectAll} className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 {lang === 'es' ? 'Solo necesarias' : 'Necessary only'}
               </button>
-              <button onClick={() => setShowDetails(true)} className="flex-1 px-4 py-2.5 border border-blue-300 rounded-xl text-sm font-medium text-blue-700 hover:bg-blue-50 transition-colors">
+              <button onClick={() => setShowDetails(true)} className="flex-1 px-4 py-2.5 border border-blue-300 dark:border-blue-700 rounded-xl text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors">
                 {lang === 'es' ? 'Personalizar' : 'Customise'}
               </button>
               <button onClick={acceptAll} className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 shadow transition-colors">
@@ -121,7 +133,7 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
               </button>
             </div>
 
-            <p className="text-xs text-gray-400 text-center mt-3">
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-3">
               {lang === 'es'
                 ? 'Sin elegir, solo se usarán cookies estrictamente necesarias. Cambia tus preferencias desde ⚙️ Ajustes en cualquier momento.'
                 : 'Without choosing, only strictly necessary cookies will be used. Change preferences anytime from ⚙️ Settings.'}
@@ -130,10 +142,14 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
         ) : (
           <div className="p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-bold text-gray-900">
+              <h2 className="font-bold text-gray-900 dark:text-white">
                 {lang === 'es' ? '⚙️ Preferencias de cookies' : '⚙️ Cookie preferences'}
               </h2>
-              <button onClick={() => setShowDetails(false)} className="text-gray-400 hover:text-gray-600 p-1">
+              <button
+                onClick={() => setShowDetails(false)}
+                aria-label={lang === 'es' ? 'Volver' : 'Back'}
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
@@ -142,31 +158,32 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
 
             <div className="space-y-3 mb-5 max-h-80 overflow-y-auto pr-1">
               {CATEGORIES.map(({ key, icon, name, desc, required, highlight }) => (
-                <div key={key} className={`flex items-start gap-3 p-3 rounded-xl border ${highlight ? 'border-amber-200 bg-amber-50' : 'border-gray-100 bg-gray-50'}`}>
+                <div key={key} className={`flex items-start gap-3 p-3 rounded-xl border ${highlight ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900'}`}>
                   <span className="text-lg flex-shrink-0 mt-0.5">{icon}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-sm font-semibold text-gray-800">{name}</span>
+                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{name}</span>
                       {required ? (
-                        <span className="text-xs text-gray-400 flex-shrink-0">{lang === 'es' ? 'Siempre activas' : 'Always on'}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">{lang === 'es' ? 'Siempre activas' : 'Always on'}</span>
                       ) : (
                         <button
                           role="switch" aria-checked={prefs[key]}
+                          aria-label={name}
                           onClick={() => setPrefs(p => ({ ...p, [key]: !p[key] }))}
-                          className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-colors ${prefs[key] ? 'bg-blue-600' : 'bg-gray-300'}`}
+                          className={`relative flex-shrink-0 w-10 h-5 rounded-full transition-colors ${prefs[key] ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'}`}
                         >
                           <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs[key] ? 'translate-x-5' : ''}`} />
                         </button>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
-              <button onClick={rejectAll} className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+              <button onClick={rejectAll} className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 {lang === 'es' ? 'Rechazar todo' : 'Reject all'}
               </button>
               <button onClick={savePrefs} className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 shadow transition-colors">
@@ -174,12 +191,12 @@ export default function CookieConsentBanner({ forceOpen = false, onClose }) {
               </button>
             </div>
 
-            <p className="text-xs text-gray-400 text-center mt-3">
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-3">
               <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline">
                 {lang === 'es' ? 'Privacidad de Google' : 'Google Privacy Policy'}
               </a>
               {' · '}
-              <a href="https://certipractice.vercel.app/privacy" target="_blank" rel="noopener noreferrer" className="underline">
+              <a href="#privacy" onClick={openPrivacy} className="underline cursor-pointer">
                 {lang === 'es' ? 'Nuestra política' : 'Our policy'}
               </a>
             </p>

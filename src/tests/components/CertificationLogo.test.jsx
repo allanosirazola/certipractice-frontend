@@ -1,112 +1,226 @@
 // src/tests/components/CertificationLogo.test.jsx
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import CertificationLogo, { CERTIFICATION_LOGOS, PROVIDER_COLORS } from '../../components/common/CertificationLogo';
+import CertificationLogo, {
+  resolveCertLogoUrl,
+  LOCAL_CERT_CODES,
+  PROVIDER_COLORS,
+  PROVIDER_LOGO_FILE,
+} from '../../components/common/CertificationLogo';
 
 describe('CertificationLogo', () => {
-  describe('Mapping de logos', () => {
-    it('exporta el mapa de logos', () => {
-      expect(CERTIFICATION_LOGOS).toBeDefined();
-      expect(typeof CERTIFICATION_LOGOS).toBe('object');
+  // ────────────────────────────────────────────────────────────
+  // Exports
+  // ────────────────────────────────────────────────────────────
+  describe('module exports', () => {
+    it('exports the local cert codes set', () => {
+      expect(LOCAL_CERT_CODES).toBeInstanceOf(Set);
+      expect(LOCAL_CERT_CODES.size).toBeGreaterThan(40);
     });
 
-    it('contiene logos AWS principales', () => {
-      expect(CERTIFICATION_LOGOS['SAA-C03']).toBeDefined();
-      expect(CERTIFICATION_LOGOS['DVA-C02']).toBeDefined();
-      expect(CERTIFICATION_LOGOS['CLF-C02']).toBeDefined();
+    it('contains key AWS certs', () => {
+      expect(LOCAL_CERT_CODES.has('SAA-C03')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('DVA-C02')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('CLF-C02')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('AIF-C01')).toBe(true);
     });
 
-    it('contiene logos Azure principales', () => {
-      expect(CERTIFICATION_LOGOS['AZ-900']).toBeDefined();
-      expect(CERTIFICATION_LOGOS['AZ-104']).toBeDefined();
+    it('contains key Azure certs', () => {
+      expect(LOCAL_CERT_CODES.has('AZ-900')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('AZ-104')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('AI-102')).toBe(true);
     });
 
-    it('contiene logos Google Cloud principales', () => {
-      expect(CERTIFICATION_LOGOS['GCP-ACE']).toBeDefined();
-      expect(CERTIFICATION_LOGOS['GCP-PCA']).toBeDefined();
+    it('contains key GCP certs', () => {
+      expect(LOCAL_CERT_CODES.has('GCP-ACE')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('GCP-PCA')).toBe(true);
     });
 
-    it('exporta colores por proveedor', () => {
-      expect(PROVIDER_COLORS['AWS']).toBeDefined();
-      expect(PROVIDER_COLORS['AWS'].gradient).toBeDefined();
+    it('contains Databricks/Snowflake/HashiCorp certs', () => {
+      expect(LOCAL_CERT_CODES.has('DATABRICKS-DE')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('SNOWPRO-CORE')).toBe(true);
+      expect(LOCAL_CERT_CODES.has('TERRAFORM')).toBe(true);
+    });
+
+    it('exports provider color tokens', () => {
+      expect(PROVIDER_COLORS.AWS).toBeDefined();
+      expect(PROVIDER_COLORS.AWS.gradient).toMatch(/orange/);
+      expect(PROVIDER_COLORS['Microsoft Azure'].gradient).toMatch(/sky/);
+    });
+
+    it('exports provider logo file map', () => {
+      expect(PROVIDER_LOGO_FILE.AWS).toBe('/images/aws-logo.png');
+      expect(PROVIDER_LOGO_FILE['Google Cloud']).toBe('/images/google-cloud-logo.png');
+      expect(PROVIDER_LOGO_FILE.Snowflake).toBe('/images/snowflake-logo.png');
     });
   });
 
-  describe('Renderizado con código válido', () => {
-    it('renderiza una imagen para un código conocido', () => {
+  // ────────────────────────────────────────────────────────────
+  // resolveCertLogoUrl
+  // ────────────────────────────────────────────────────────────
+  describe('resolveCertLogoUrl', () => {
+    it('returns the cert SVG path for known code', () => {
+      expect(resolveCertLogoUrl('SAA-C03')).toBe('/images/certifications/SAA-C03.svg');
+    });
+
+    it('normalises lowercase codes', () => {
+      expect(resolveCertLogoUrl('saa-c03')).toBe('/images/certifications/SAA-C03.svg');
+    });
+
+    it('falls back to provider PNG for unknown code', () => {
+      expect(resolveCertLogoUrl('UNKNOWN-XYZ', 'AWS')).toBe('/images/aws-logo.png');
+    });
+
+    it('returns null when neither code nor provider match', () => {
+      expect(resolveCertLogoUrl(null, null)).toBeNull();
+      expect(resolveCertLogoUrl('UNKNOWN', 'Unknown Provider')).toBeNull();
+    });
+
+    it('returns null when only an unknown code is given', () => {
+      expect(resolveCertLogoUrl('UNKNOWN-XYZ')).toBeNull();
+    });
+
+    it('handles whitespace in code', () => {
+      expect(resolveCertLogoUrl('  SAA-C03  ')).toBe('/images/certifications/SAA-C03.svg');
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────
+  // Rendering — known cert
+  // ────────────────────────────────────────────────────────────
+  describe('rendering with known cert code', () => {
+    it('renders an image pointing to the local SVG', () => {
       render(<CertificationLogo code="SAA-C03" name="Solutions Architect" provider="AWS" />);
       const img = document.querySelector('img');
       expect(img).toBeInTheDocument();
-      expect(img.src).toContain('awsstatic.com');
+      expect(img.src).toContain('/images/certifications/SAA-C03.svg');
     });
 
-    it('incluye alt text descriptivo', () => {
+    it('includes descriptive alt text', () => {
       render(<CertificationLogo code="SAA-C03" name="Solutions Architect" provider="AWS" />);
       const img = document.querySelector('img');
       expect(img.alt).toContain('Solutions Architect');
     });
 
-    it('aplica clase de tamaño md por defecto', () => {
+    it('uses md size by default', () => {
       render(<CertificationLogo code="SAA-C03" name="SAA" provider="AWS" />);
       const img = document.querySelector('img');
-      expect(img.className).toContain('w-12 h-12');
+      expect(img.className).toContain('w-12');
+      expect(img.className).toContain('h-12');
     });
 
-    it('aplica tamaño sm cuando se especifica', () => {
-      render(<CertificationLogo code="SAA-C03" name="SAA" provider="AWS" size="sm" />);
+    it('applies sm size', () => {
+      render(<CertificationLogo code="SAA-C03" size="sm" />);
       const img = document.querySelector('img');
-      expect(img.className).toContain('w-8 h-8');
+      expect(img.className).toContain('w-8');
     });
 
-    it('aplica tamaño lg cuando se especifica', () => {
-      render(<CertificationLogo code="SAA-C03" name="SAA" provider="AWS" size="lg" />);
+    it('applies lg size', () => {
+      render(<CertificationLogo code="SAA-C03" size="lg" />);
       const img = document.querySelector('img');
-      expect(img.className).toContain('w-16 h-16');
+      expect(img.className).toContain('w-16');
+    });
+
+    it('applies xl size', () => {
+      render(<CertificationLogo code="SAA-C03" size="xl" />);
+      const img = document.querySelector('img');
+      expect(img.className).toContain('w-24');
+    });
+
+    it('applies lazy loading', () => {
+      render(<CertificationLogo code="SAA-C03" />);
+      const img = document.querySelector('img');
+      expect(img.getAttribute('loading')).toBe('lazy');
+    });
+
+    it('applies custom className to wrapper', () => {
+      const { container } = render(<CertificationLogo code="SAA-C03" className="my-custom" />);
+      expect(container.firstChild.className).toContain('my-custom');
     });
   });
 
-  describe('Fallback con iniciales', () => {
-    it('usa iniciales cuando no hay código en el mapa', () => {
-      render(<CertificationLogo code="UNKNOWN-XYZ" name="Custom" provider="AWS" />);
-      expect(screen.getByText('UNK')).toBeInTheDocument();
+  // ────────────────────────────────────────────────────────────
+  // Rendering — provider fallback
+  // ────────────────────────────────────────────────────────────
+  describe('rendering with unknown code but known provider', () => {
+    it('falls back to provider PNG', () => {
+      render(<CertificationLogo code="UNKNOWN-XYZ" provider="AWS" />);
+      const img = document.querySelector('img');
+      expect(img.src).toContain('/images/aws-logo.png');
     });
 
-    it('usa "?" cuando no hay código', () => {
-      render(<CertificationLogo provider="AWS" />);
+    it('falls back to provider PNG for Snowflake', () => {
+      render(<CertificationLogo code="UNKNOWN" provider="Snowflake" />);
+      const img = document.querySelector('img');
+      expect(img.src).toContain('/images/snowflake-logo.png');
+    });
+  });
+
+  // ────────────────────────────────────────────────────────────
+  // Rendering — initials fallback
+  // ────────────────────────────────────────────────────────────
+  describe('initials fallback', () => {
+    it('renders initials when no logo is found', () => {
+      render(<CertificationLogo code="WEIRD" provider="Unknown Provider" />);
+      expect(screen.getByText('WEI')).toBeInTheDocument();
+    });
+
+    it('uses provider initials when no code', () => {
+      render(<CertificationLogo provider="Unknown Provider" />);
+      expect(screen.getByText('UN')).toBeInTheDocument();
+    });
+
+    it('uses "?" when neither code nor provider', () => {
+      render(<CertificationLogo />);
       expect(screen.getByText('?')).toBeInTheDocument();
     });
 
-    it('aplica color del proveedor al fallback', () => {
-      const { container } = render(<CertificationLogo code="UNKNOWN" provider="AWS" />);
-      const fallback = container.querySelector('div[title]');
-      expect(fallback?.className).toContain('from-orange-500');
-    });
-
-    it('aplica color por defecto si proveedor desconocido', () => {
-      const { container } = render(<CertificationLogo code="UNKNOWN" provider="Unknown Provider" />);
-      const fallback = container.querySelector('div[title]');
-      expect(fallback?.className).toContain('from-gray-500');
+    it('applies provider gradient to fallback', () => {
+      const { container } = render(<CertificationLogo code="WEIRD" provider="Unknown Provider" />);
+      const fallback = container.querySelector('[data-testid="cert-logo-fallback"]');
+      expect(fallback.className).toMatch(/from-gray-500/);
     });
   });
 
-  describe('Manejo de errores de carga', () => {
-    it('cambia a fallback al fallar la carga de la imagen', () => {
-      render(<CertificationLogo code="SAA-C03" name="SAA" provider="AWS" />);
+  // ────────────────────────────────────────────────────────────
+  // Image error handling
+  // ────────────────────────────────────────────────────────────
+  describe('image error handling', () => {
+    it('switches to fallback when image fails to load', () => {
+      render(<CertificationLogo code="SAA-C03" name="Solutions Architect" provider="AWS" />);
       const img = document.querySelector('img');
       fireEvent.error(img);
+      // After error, fallback shows the cert code initials
       expect(screen.getByText('SAA')).toBeInTheDocument();
+    });
+
+    it('reveals image when load succeeds', () => {
+      render(<CertificationLogo code="SAA-C03" />);
+      const img = document.querySelector('img');
+      // Pre-load: opacity-0 to hide flash
+      expect(img.className).toContain('opacity-0');
+      fireEvent.load(img);
+      expect(img.className).toContain('opacity-100');
     });
   });
 
-  describe('Modo con nombre visible', () => {
-    it('muestra el nombre cuando showName es true', () => {
+  // ────────────────────────────────────────────────────────────
+  // showName flag
+  // ────────────────────────────────────────────────────────────
+  describe('showName option', () => {
+    it('renders the name when showName=true', () => {
       render(<CertificationLogo code="SAA-C03" name="Solutions Architect" provider="AWS" showName />);
       expect(screen.getByText('Solutions Architect')).toBeInTheDocument();
     });
 
-    it('no muestra el nombre por defecto', () => {
+    it('does not render the name by default', () => {
       render(<CertificationLogo code="SAA-C03" name="Solutions Architect" provider="AWS" />);
       expect(screen.queryByText(/^Solutions Architect$/)).not.toBeInTheDocument();
+    });
+
+    it('renders name in fallback mode too', () => {
+      render(<CertificationLogo code="UNKNOWN" name="Custom Cert" provider="Unknown" showName />);
+      expect(screen.getByText('Custom Cert')).toBeInTheDocument();
     });
   });
 });

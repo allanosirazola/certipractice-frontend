@@ -14,6 +14,7 @@ const renderPanel = (props = {}) =>
 
 describe('SettingsPanel', () => {
   beforeEach(() => {
+    globalThis.__setTestLang?.('en');
     document.documentElement.classList.remove('dark');
     window.localStorage.getItem = vi.fn(() => null);
     window.localStorage.setItem = vi.fn();

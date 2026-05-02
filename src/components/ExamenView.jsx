@@ -779,7 +779,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     const stillStrugglingWith = exam.questions.length - improvedQuestions;
     
     return (
-      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded-lg p-6 mb-6">
+      <div className="bg-orange-50 dark:bg-orange-900 border border-orange-200 rounded-lg p-6 mb-6">
         <h3 className="font-semibold text-orange-800 mb-4 flex items-center gap-2">
           <span>🔄</span>
           {t('failedQuestionsResults.title')}
@@ -818,7 +818,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         </div>
         
         {improvedQuestions > stillStrugglingWith && (
-          <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 rounded text-green-800 text-sm">
+          <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 rounded text-green-800 dark:text-green-200 text-sm">
             <strong>{t('failedQuestionsResults.title')}</strong> {t('failedQuestionsResults.greatProgress')}
           </div>
         )}
@@ -852,8 +852,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             if (explanation && canShowVerification) {
               const ok = (userVal || '').trim().toLowerCase() === (correctVal || '').trim().toLowerCase();
               inputStyle = ok
-                ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800'
-                : 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-800';
+                ? 'border-green-500 bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-200'
+                : 'border-red-500 bg-red-50 dark:bg-red-900 text-red-800 dark:text-red-200';
             }
             return (
               <div key={i} className="flex flex-col gap-1">
@@ -899,11 +899,11 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             let itemStyle = 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-blue-400 cursor-grab';
             if (explanation && canShowVerification) {
               itemStyle = isCorrectPos
-                ? 'border-green-500 bg-green-50 dark:bg-green-900/20 cursor-not-allowed'
-                : 'border-red-400 bg-red-50 dark:bg-red-900/20 cursor-not-allowed';
+                ? 'border-green-500 bg-green-50 dark:bg-green-900 cursor-not-allowed'
+                : 'border-red-400 bg-red-50 dark:bg-red-900 cursor-not-allowed';
             }
             if (dragOverIndex === position && !isDisabled) {
-              itemStyle = 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 cursor-grab';
+              itemStyle = 'border-blue-500 bg-blue-50 dark:bg-blue-900 cursor-grab';
             }
 
             return (
@@ -920,7 +920,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                   {position + 1}
                 </span>
                 {!isDisabled && (
-                  <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M7 2a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4zM7 8a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4zM7 14a2 2 0 110 4 2 2 0 010-4zm6 0a2 2 0 110 4 2 2 0 010-4z" />
                   </svg>
                 )}
@@ -955,14 +955,14 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             const isCorrectOption = correctAnswer && (
               Array.isArray(correctAnswer) ? correctAnswer.includes(index) : correctAnswer === index
             );
-            let rowStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-25';
+            let rowStyle = 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:border-blue-700 hover:bg-blue-25';
             let checkStyle = 'border-gray-300 dark:border-gray-600';
             if (isSelected) {
               if (explanation && canShowVerification) {
-                rowStyle = isCorrectOption ? 'border-green-600 bg-green-50 dark:bg-green-900/20' : 'border-red-600 bg-red-50 dark:bg-red-900/20';
+                rowStyle = isCorrectOption ? 'border-green-600 bg-green-50 dark:bg-green-900' : 'border-red-600 bg-red-50 dark:bg-red-900';
                 checkStyle = isCorrectOption ? 'border-green-600 bg-green-600 text-white' : 'border-red-600 bg-red-600 text-white';
               } else {
-                rowStyle = 'border-blue-600 bg-blue-50 dark:bg-blue-950/30';
+                rowStyle = 'border-blue-600 bg-blue-50 dark:bg-blue-900';
                 checkStyle = 'border-blue-600 bg-blue-600 text-white';
               }
             } else if (isCorrectOption && explanation && canShowVerification) {
@@ -1026,13 +1026,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                   ? 'opacity-50 cursor-not-allowed border-gray-200 dark:border-gray-700'
                   : isSelected
                   ? isCorrectOption && canShowVerification
-                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
+                    ? 'border-green-600 bg-green-50 dark:bg-green-900'
                     : explanation && canShowVerification
-                    ? 'border-red-600 bg-red-50 dark:bg-red-900/20'
-                    : 'border-blue-600 bg-blue-50 dark:bg-blue-950/30'
+                    ? 'border-red-600 bg-red-50 dark:bg-red-900'
+                    : 'border-blue-600 bg-blue-50 dark:bg-blue-900'
                   : isCorrectOption && explanation && canShowVerification
                   ? 'border-green-400 bg-green-25'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-25'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:border-blue-700 hover:bg-blue-25'
               }`}
               onClick={() => handleAnswerSelect(index)}
               disabled={checkedQuestions.has(currentQuestion.id) || isPaused}
@@ -1107,7 +1107,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-blue-700 dark:text-blue-400 font-medium text-lg">
+          <p className="text-blue-700 dark:text-blue-300 font-medium text-lg">
             {exam ? t('exam.processingDots') : t('exam.creatingExam')}
           </p>
           {sessionId && (
@@ -1129,8 +1129,8 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-red-800 mb-4">{t('common.error')}</h3>
-          <p className="text-red-700 dark:text-red-400 mb-6">{error}</p>
+          <h3 className="text-xl font-semibold text-red-800 dark:text-red-200 mb-4">{t('common.error')}</h3>
+          <p className="text-red-700 dark:text-red-300 mb-6">{error}</p>
           <button 
             onClick={onVolver}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
@@ -1159,7 +1159,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         <header className="bg-white dark:bg-gray-800 shadow p-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-blue-700 dark:text-blue-400">{t('exam.completed')}</h1>
+              <h1 className="text-2xl font-bold text-blue-700 dark:text-blue-300">{t('exam.completed')}</h1>
               <p className="text-gray-600 dark:text-gray-300">{nombreCertificacion}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
@@ -1241,11 +1241,11 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                       key={questionId}
                       className={`p-3 rounded border-2 text-sm ${
                         !isAnswered 
-                          ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20'
+                          ? 'border-orange-300 bg-orange-50 dark:bg-orange-900'
                           : isCorrect === true
-                          ? 'border-green-300 bg-green-50 dark:bg-green-900/20'
+                          ? 'border-green-300 bg-green-50 dark:bg-green-900'
                           : isCorrect === false
-                          ? 'border-red-300 bg-red-50 dark:bg-red-900/20'
+                          ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900'
                           : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
                       }`}
                     >
@@ -1380,7 +1380,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             </p>
             
             {unansweredCount > 0 && (
-              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded p-3 mb-4">
+              <div className="bg-orange-50 dark:bg-orange-900 border border-orange-200 rounded p-3 mb-4">
                 <p className="text-orange-800 text-sm">
                   <strong>{t('common.confirm')}:</strong> {t('exam.unansweredWarning', { count: unansweredCount })}
                 </p>
@@ -1422,7 +1422,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
         <header className="bg-white dark:bg-gray-800 shadow p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold text-blue-700 dark:text-blue-400">{t('exam.summaryTitle')}</h1>
+              <h1 className="text-xl font-bold text-blue-700 dark:text-blue-300">{t('exam.summaryTitle')}</h1>
               <p className="text-gray-600 dark:text-gray-300 text-sm">{nombreCertificacion}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {t('exam.mode')}: {examMode === 'realistic' ? t('examModes.label.realistic') : 
@@ -1507,7 +1507,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                         isPaused 
                           ? 'opacity-50 cursor-not-allowed'
                           : isCurrent
-                          ? 'border-blue-600 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'
+                          ? 'border-blue-600 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
                           : !isAnswered
                           ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:bg-orange-900/30'
                           : isMarked
@@ -1573,7 +1573,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             {t('exam.pausedText')}
           </p>
           
-          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
             <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
               <p>{t('exam.currentQuestion')}: {currentQuestionIndex + 1}/{exam.questions.length}</p>
               <p>{t('exam.timeLeft')}: {formatTime(timeLeft)}</p>
@@ -1605,7 +1605,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-blue-700 dark:text-blue-400 font-medium">{t('exam.loadingQuestion')}</p>
+          <p className="text-blue-700 dark:text-blue-300 font-medium">{t('exam.loadingQuestion')}</p>
         </div>
       </div>
     );
@@ -1628,17 +1628,17 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
       <header className="bg-white dark:bg-gray-800 shadow p-4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold text-blue-700 dark:text-blue-400">{nombreCertificacion}</h1>
+            <h1 className="text-xl font-bold text-blue-700 dark:text-blue-300">{nombreCertificacion}</h1>
             <div className="flex items-center gap-4 text-sm">
               <p className="text-gray-600 dark:text-gray-300">
                 Pregunta {currentQuestionIndex + 1} de {exam.questions.length}
               </p>
               <span className={`px-2 py-1 rounded text-xs font-semibold ${
                 examMode === 'realistic' 
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' 
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' 
                   : examMode === 'failed_questions'
                   ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
-                  : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'
+                  : 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
               }`}>
                 {examMode === 'realistic' ? t('examModes.label.realistic') : 
                  examMode === 'failed_questions' ? t('examModes.label.failed_questions') : 
@@ -1647,7 +1647,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               
               {/* Información adicional para preguntas fallidas */}
               {isFailedQuestionsMode && (
-                <span className="text-xs text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">
+                <span className="text-xs text-orange-600 bg-orange-50 dark:bg-orange-900 px-2 py-1 rounded">
                   {t('exam.focusImprove')}
                 </span>
               )}
@@ -1724,7 +1724,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600 dark:text-gray-300">{t('exam.status')}:</span>
               {answers[currentQuestion.id] !== undefined ? (
-                <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded text-sm">{t('exam.statusAnswered')}</span>
+                <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-sm">{t('exam.statusAnswered')}</span>
               ) : (
                 <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-2 py-1 rounded text-sm">{t('exam.statusUnanswered')}</span>
               )}
@@ -1778,7 +1778,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
             {/* Metadatos de la pregunta (solo en modo práctica) */}
             {canShowQuestionMetadata && (
               <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
-                <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-2 py-1 rounded">
+                <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
                   {currentQuestion.category}
                 </span>
                 <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded">
@@ -1803,7 +1803,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* Instrucciones según tipo de pregunta */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && (
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded p-3 mb-4">
+              <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 rounded p-3 mb-4">
                 <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200 text-sm">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1821,7 +1821,7 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* {t('exam.explanation')} de la respuesta (solo en modo práctica) */}
           {showExplanation[currentQuestion.id] && canShowVerification && (
-            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded">
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -1829,19 +1829,19 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">{t('exam.explanation')}</h4>
-                  <p className="text-blue-700 dark:text-blue-400 text-sm leading-relaxed">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">{t('exam.explanation')}</h4>
+                  <p className="text-blue-700 dark:text-blue-300 text-sm leading-relaxed">
                     {showExplanation[currentQuestion.id].explanation}
                   </p>
                   
                   {/* Estado de la respuesta del usuario */}
                   <div className="mt-3 p-2 rounded text-sm">
                     {isAnswerCorrect(currentQuestion.id) ? (
-                      <div className="text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30 p-2 rounded">
+                      <div className="text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 p-2 rounded">
                         Correcto! Tu respuesta es correcta.
                       </div>
                     ) : (
-                      <div className="text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/30 p-2 rounded">
+                      <div className="text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/30 p-2 rounded">
                         {t('exam.answerIncorrect')}
                       </div>
                     )}
@@ -1919,28 +1919,28 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
 
           {/* Advertencia para preguntas incompletas */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && getSelectedCount() < currentQuestion.expectedAnswers && (
-            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded text-orange-800 text-sm">
+            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900 border border-orange-200 rounded text-orange-800 text-sm">
               {t('exam.selectMore', { count: currentQuestion.expectedAnswers - getSelectedCount() })}
             </div>
           )}
 
           {/* Advertencia de tiempo */}
           {timeLeft < 300 && timeLeft > 0 && !isPaused && (
-            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-yellow-800 dark:text-yellow-200 text-sm">
+            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 rounded text-yellow-800 dark:text-yellow-200 text-sm">
               {t('exam.timeLow')}
             </div>
           )}
 
           {/* Advertencia de modo realista */}
           {examMode === 'realistic' && (
-            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 rounded text-red-800 text-sm">
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded text-red-800 dark:text-red-200 text-sm">
               <strong>{t('examModes.label.realistic')}:</strong> {t('exam.realisticWarning')}
             </div>
           )}
 
           {/* Información adicional para preguntas fallidas */}
           {isFailedQuestionsMode && (
-            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded text-orange-800 text-sm">
+            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900 border border-orange-200 rounded text-orange-800 text-sm">
               <strong>{t('examModes.label.failed_questions')}:</strong> {t('exam.failedModeInfo')}
             </div>
           )}

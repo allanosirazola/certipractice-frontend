@@ -26,6 +26,7 @@ const renderPage = (props = {}) => render(
 
 describe('CommunityPage', () => {
   beforeEach(() => {
+    globalThis.__setTestLang?.('en');
     localStorage.getItem.mockReturnValue(null);
     window.matchMedia = vi.fn().mockReturnValue({ matches: false });
   });

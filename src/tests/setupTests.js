@@ -10,6 +10,7 @@ expect.extend(matchers);
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  if (typeof globalThis.__setTestLang === 'function') globalThis.__setTestLang('es');
 });
 
 // Mock de localStorage
@@ -45,17 +46,28 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
-// Global i18n mock — uses real EN translations so tests assert real strings
+// Global i18n mock — uses real ES translations so tests assert real strings
+import esTranslations from '../i18n/locales/es.json';
 import enTranslations from '../i18n/locales/en.json';
 
 function resolvePath(obj, path) {
   return path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj);
 }
 
+// Tests can switch language via __TEST_I18N_LANG__ if needed
+let __testLang = 'es';
+globalThis.__setTestLang = (lang) => { __testLang = lang; };
+globalThis.__getTestLang = () => __testLang;
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key, opts) => {
-      const val = resolvePath(enTranslations, key);
+      const dict = __testLang === 'en' ? enTranslations : esTranslations;
+      let val = resolvePath(dict, key);
+      if (val === undefined) {
+        // Fallback to the other language to avoid bare keys in tests
+        val = resolvePath(__testLang === 'en' ? esTranslations : enTranslations, key);
+      }
       if (val === undefined) return opts?.defaultValue || key;
       if (opts?.returnObjects && typeof val === 'object') return val;
       if (typeof val === 'string') {
@@ -70,8 +82,8 @@ vi.mock('react-i18next', () => ({
       return opts?.defaultValue || key;
     },
     i18n: {
-      language: 'en',
-      changeLanguage: vi.fn(),
+      get language() { return __testLang; },
+      changeLanguage: vi.fn((l) => { __testLang = l; }),
     },
   }),
   Trans: ({ children }) => children,

@@ -100,13 +100,13 @@ export default function UserProfile({ onClose }) {
           {activeTab === 'profile' && (
             <div>
               {error && (
-                <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+                <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
                   {error}
                 </div>
               )}
 
               {success && (
-                <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 text-green-700 dark:text-green-400 px-4 py-3 rounded mb-4">
+                <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4">
                   {success}
                 </div>
               )}
@@ -218,19 +218,19 @@ export default function UserProfile({ onClose }) {
               ) : stats ? (
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
-                      <h4 className="font-semibold text-blue-800 dark:text-blue-300">{t('profile.totalExamsLabel')}</h4>
+                    <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-200">{t('profile.totalExamsLabel')}</h4>
                       <p className="text-2xl font-bold text-blue-600">{stats.totalExams}</p>
                     </div>
-                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                      <h4 className="font-semibold text-green-800">{t('profile.passedLabel')}</h4>
+                    <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                      <h4 className="font-semibold text-green-800 dark:text-green-200">{t('profile.passedLabel')}</h4>
                       <p className="text-2xl font-bold text-green-600">{stats.passedExams}</p>
                     </div>
-                    <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                    <div className="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
                       <h4 className="font-semibold text-purple-800">{t('profile.avgScoreLabel')}</h4>
                       <p className="text-2xl font-bold text-purple-600">{stats.averageScore}%</p>
                     </div>
-                    <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                    <div className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
                       <h4 className="font-semibold text-orange-800">{t('profile.accuracyLabel')}</h4>
                       <p className="text-2xl font-bold text-orange-600">
                         {stats.totalQuestions > 0 

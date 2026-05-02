@@ -17,6 +17,7 @@ const renderPage = (props = {}) =>
 
 describe('PrivacyPolicy', () => {
   beforeEach(() => {
+    globalThis.__setTestLang?.('en');
     document.documentElement.classList.remove('dark');
     window.localStorage.getItem = vi.fn(() => null);
     window.localStorage.setItem = vi.fn();

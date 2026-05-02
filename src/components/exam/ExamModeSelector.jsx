@@ -47,8 +47,8 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
       features: t('examModes.realistic.features', { returnObjects: true }),
       restrictions: t('examModes.realistic.restrictions', { returnObjects: true }),
       color: 'from-red-500 to-red-600',
-      bgColor: 'bg-red-50 dark:bg-red-900/20',
-      borderColor: 'border-red-200',
+      bgColor: 'bg-red-50 dark:bg-red-900',
+      borderColor: 'border-red-200 dark:border-red-700',
       available: true
     },
     {
@@ -59,8 +59,8 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
       features: t('examModes.practice.features', { returnObjects: true }),
       restrictions: t('examModes.practice.restrictions', { returnObjects: true }),
       color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-950/30',
-      borderColor: 'border-blue-200 dark:border-blue-800',
+      bgColor: 'bg-blue-50 dark:bg-blue-900',
+      borderColor: 'border-blue-200 dark:border-blue-700',
       available: true
     },
     {
@@ -71,7 +71,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
       features: t('examModes.failed_questions.features', { returnObjects: true }),
       restrictions: t('examModes.failed_questions.restrictions', { returnObjects: true }),
       color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20',
+      bgColor: 'bg-orange-50 dark:bg-orange-900',
       borderColor: 'border-orange-200',
       available: isAuthenticated && failedQuestionsCount >= 5,
       requiresAuth: true,
@@ -155,7 +155,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
 
             {/* Información especial para preguntas fallidas */}
             {selectedMode.id === 'failed_questions' && (
-              <div className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 rounded-lg p-4">
+              <div className="bg-orange-50 dark:bg-orange-900 border-2 border-orange-200 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -179,14 +179,14 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
 
             {/* Características y restricciones (resto igual) */}
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-lg p-4">
-                <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+              <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2 flex items-center gap-2">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   {t('modeSelector.featuresTitle')}
                 </h4>
-                <ul className="text-sm text-green-700 dark:text-green-400 space-y-1">
+                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
                   {selectedMode.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="text-green-500 mt-0.5">•</span>
@@ -196,7 +196,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
                 </ul>
               </div>
 
-              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 rounded-lg p-4">
+              <div className="bg-orange-50 dark:bg-orange-900 border border-orange-200 rounded-lg p-4">
                 <h4 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -216,7 +216,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
 
             {/* Información sobre guardado para usuarios no autenticados */}
             {!isAuthenticated && (
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -262,7 +262,7 @@ export default function ExamModeSelector({ examConfig, nombreCertificacion, onSt
       <header className="bg-white dark:bg-gray-800 shadow p-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-blue-700 dark:text-blue-400">{t('modeSelector.pageTitle')}</h1>
+            <h1 className="text-2xl font-bold text-blue-700 dark:text-blue-300">{t('modeSelector.pageTitle')}</h1>
             <p className="text-gray-600 dark:text-gray-300">{nombreCertificacion}</p>
           </div>
           <div className="flex items-center gap-2">

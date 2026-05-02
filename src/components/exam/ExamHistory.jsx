@@ -83,11 +83,11 @@ export default function ExamHistory({ onClose, onResumeExam }) {
     const statusConfig = {
       'not_started': { text: 'No iniciado', color: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100' },
       'pending': { text: 'Pendiente', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200' },
-      'active': { text: 'En progreso', color: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300' },
+      'active': { text: 'En progreso', color: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200' },
       'in_progress': { text: 'En progreso', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200' },
       'paused': { text: 'Pausado', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-800' },
-      'completed': { text: 'Completado', color: 'bg-green-100 dark:bg-green-900/30 text-green-800' },
-      'cancelled': { text: 'Cancelado', color: 'bg-red-100 dark:bg-red-900/30 text-red-800' }
+      'completed': { text: 'Completado', color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' },
+      'cancelled': { text: 'Cancelado', color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' }
     };
 
     const config = statusConfig[status] || statusConfig['not_started'];
@@ -107,7 +107,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
     
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-        isPassed ? 'bg-green-100 dark:bg-green-900/30 text-green-800' : 'bg-red-100 dark:bg-red-900/30 text-red-800'
+        isPassed ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
       }`}>
         {scoreValue.toFixed(1)}% {isPassed ? '✓' : '✗'}
       </span>
@@ -236,12 +236,12 @@ export default function ExamHistory({ onClose, onResumeExam }) {
             </div>
 
             {error && (
-              <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
                 <div className="flex items-center justify-between">
                   <span>{error}</span>
                   <button 
                     onClick={() => setError('')}
-                    className="text-red-500 hover:text-red-700 dark:text-red-400 font-bold"
+                    className="text-red-500 hover:text-red-700 dark:text-red-300 font-bold"
                   >
                     ✕
                   </button>
@@ -263,7 +263,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
                       Math.round((exam.answeredQuestions || 0) / exam.questions.length * 100) : 0;
                     
                     return (
-                      <div key={exam.id} className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 border hover:border-blue-300 transition-colors">
+                      <div key={exam.id} className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 border hover:border-blue-300 dark:border-blue-700 transition-colors">
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -392,7 +392,7 @@ export default function ExamHistory({ onClose, onResumeExam }) {
               ) : (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>

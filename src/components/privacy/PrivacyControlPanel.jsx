@@ -96,9 +96,9 @@ export default function PrivacyControlPanel({ onClose }) {
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg p-8 max-w-md text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md text-center">
           <h2 className="text-xl font-bold mb-4">Acceso Requerido</h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Debes iniciar sesión para acceder a la configuración de privacidad.
           </p>
           <button
@@ -114,21 +114,21 @@ export default function PrivacyControlPanel({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b bg-gray-50">
+        <div className="flex justify-between items-center p-6 border-b bg-gray-50 dark:bg-gray-900">
           <div>
-            <h2 className="text-xl font-bold text-gray-800">🔐 Privacidad y Datos</h2>
-            <p className="text-gray-600 text-sm">Controla tus datos y preferencias de privacidad</p>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">🔐 Privacidad y Datos</h2>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">Controla tus datos y preferencias de privacidad</p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+          <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 text-2xl">✕</button>
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           {/* Información del usuario */}
-          <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-2">📧 Tu Información</h3>
-            <div className="text-sm text-blue-700 space-y-1">
+          <div className="mb-8 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">📧 Tu Información</h3>
+            <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
               <p><strong>Email:</strong> {user?.email}</p>
               <p><strong>Cuenta creada:</strong> {new Date(user?.createdAt).toLocaleDateString('es-ES')}</p>
               <p><strong>Último acceso:</strong> {user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}</p>
@@ -137,12 +137,12 @@ export default function PrivacyControlPanel({ onClose }) {
 
           {/* Preferencias de comunicación */}
           <div className="mb-8">
-            <h3 className="font-semibold text-gray-800 mb-4">📬 Comunicaciones</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">📬 Comunicaciones</h3>
             <div className="space-y-4">
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+              <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800">
                 <div>
-                  <span className="font-medium text-gray-800">Notificaciones por email</span>
-                  <p className="text-sm text-gray-600">Recibe actualizaciones sobre tus exámenes</p>
+                  <span className="font-medium text-gray-800 dark:text-gray-100">Notificaciones por email</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Recibe actualizaciones sobre tus exámenes</p>
                 </div>
                 <input
                   type="checkbox"
@@ -152,10 +152,10 @@ export default function PrivacyControlPanel({ onClose }) {
                 />
               </label>
 
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+              <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800">
                 <div>
-                  <span className="font-medium text-gray-800">Emails de marketing</span>
-                  <p className="text-sm text-gray-600">Ofertas, novedades y promociones</p>
+                  <span className="font-medium text-gray-800 dark:text-gray-100">Emails de marketing</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Ofertas, novedades y promociones</p>
                 </div>
                 <input
                   type="checkbox"
@@ -169,12 +169,12 @@ export default function PrivacyControlPanel({ onClose }) {
 
           {/* Privacidad de datos */}
           <div className="mb-8">
-            <h3 className="font-semibold text-gray-800 mb-4">🔒 Privacidad de Datos</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">🔒 Privacidad de Datos</h3>
             <div className="space-y-4">
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+              <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800">
                 <div>
-                  <span className="font-medium text-gray-800">Analíticas de uso</span>
-                  <p className="text-sm text-gray-600">Ayúdanos a mejorar el servicio</p>
+                  <span className="font-medium text-gray-800 dark:text-gray-100">Analíticas de uso</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Ayúdanos a mejorar el servicio</p>
                 </div>
                 <input
                   type="checkbox"
@@ -184,10 +184,10 @@ export default function PrivacyControlPanel({ onClose }) {
                 />
               </label>
 
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+              <label className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800">
                 <div>
-                  <span className="font-medium text-gray-800">Compartir datos anónimos</span>
-                  <p className="text-sm text-gray-600">Datos estadísticos para mejorar las preguntas</p>
+                  <span className="font-medium text-gray-800 dark:text-gray-100">Compartir datos anónimos</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Datos estadísticos para mejorar las preguntas</p>
                 </div>
                 <input
                   type="checkbox"
@@ -200,9 +200,9 @@ export default function PrivacyControlPanel({ onClose }) {
           </div>
 
           {/* Exportar datos */}
-          <div className="mb-8 p-4 bg-green-50 rounded-lg border border-green-200">
-            <h3 className="font-semibold text-green-800 mb-2">📥 Exportar tus Datos</h3>
-            <p className="text-sm text-green-700 mb-4">
+          <div className="mb-8 p-4 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700">
+            <h3 className="font-semibold text-green-800 dark:text-green-200 mb-2">📥 Exportar tus Datos</h3>
+            <p className="text-sm text-green-700 dark:text-green-300 mb-4">
               Descarga una copia de todos tus datos personales en formato JSON 
               (incluyendo historial de exámenes, estadísticas y preferencias).
             </p>
@@ -216,9 +216,9 @@ export default function PrivacyControlPanel({ onClose }) {
           </div>
 
           {/* Eliminar cuenta */}
-          <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-            <h3 className="font-semibold text-red-800 mb-2">⚠️ Eliminar Cuenta</h3>
-            <p className="text-sm text-red-700 mb-4">
+          <div className="p-4 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-700">
+            <h3 className="font-semibold text-red-800 dark:text-red-200 mb-2">⚠️ Eliminar Cuenta</h3>
+            <p className="text-sm text-red-700 dark:text-red-300 mb-4">
               Esta acción es <strong>permanente e irreversible</strong>. Se eliminarán todos 
               tus datos, historial de exámenes, estadísticas y preferencias.
             </p>
@@ -232,7 +232,7 @@ export default function PrivacyControlPanel({ onClose }) {
               </button>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-red-800 font-medium">
+                <p className="text-sm text-red-800 dark:text-red-200 font-medium">
                   Introduce tu contraseña para confirmar:
                 </p>
                 <input
@@ -240,7 +240,7 @@ export default function PrivacyControlPanel({ onClose }) {
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
                   placeholder="Tu contraseña"
-                  className="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 border border-red-300 dark:border-red-600 rounded-lg focus:ring-2 focus:ring-red-500"
                 />
                 <div className="flex gap-3">
                   <button
@@ -266,7 +266,7 @@ export default function PrivacyControlPanel({ onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center p-6 border-t bg-gray-50">
+        <div className="flex justify-between items-center p-6 border-t bg-gray-50 dark:bg-gray-900">
           <a href="/privacy-policy" target="_blank" className="text-sm text-blue-600 hover:underline">
             Política de Privacidad
           </a>

@@ -46,6 +46,7 @@ describe('ExamExitModal', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    globalThis.__setTestLang?.('en');
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
       user: { id: 'user-123', username: 'testuser' },
