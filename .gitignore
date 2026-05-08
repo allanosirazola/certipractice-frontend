@@ -92,3 +92,4 @@ Thumbs.db
 # Uploaded files
 uploads/
 dist/
+dist-admin/

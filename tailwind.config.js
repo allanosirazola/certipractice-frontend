@@ -2,7 +2,9 @@
 export default {
   content: [
     "./index.html",
+    "./admin/index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./admin/src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
   theme: {
