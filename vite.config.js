@@ -28,6 +28,12 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/setupTests.js',
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/dist-admin/**',
+      'admin/**',
+    ],
     css: true,
     coverage: {
       provider: 'v8',
@@ -38,6 +44,7 @@ export default defineConfig({
         'src/main.jsx',
         'src/i18n/**',
         'scripts/**',
+        'admin/**',
       ],
     },
   },
