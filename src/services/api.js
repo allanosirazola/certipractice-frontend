@@ -715,6 +715,103 @@ export const userAPI = {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────
+// Engagement API — bookmarks + personal notes
+// ─────────────────────────────────────────────────────────────────────────
+export const engagementAPI = {
+  // ── bookmarks ──
+  /**
+   * List bookmarked questions for the current user.
+   * @param {{ limit?: number, offset?: number }} [opts]
+   */
+  listBookmarks: async ({ limit, offset } = {}) => {
+    const qs = new URLSearchParams();
+    if (limit != null) qs.set('limit', String(limit));
+    if (offset != null) qs.set('offset', String(offset));
+    const suffix = qs.toString() ? `?${qs}` : '';
+    return await apiRequest(`/engagement/bookmarks${suffix}`);
+  },
+
+  /** Whether a question is bookmarked. Returns { bookmarked: boolean }. */
+  isBookmarked: async (questionId) => {
+    return await apiRequest(`/engagement/bookmarks/${questionId}`);
+  },
+
+  /** Toggle bookmark; returns { bookmarked: boolean, bookmark? }. */
+  toggleBookmark: async (questionId) => {
+    return await apiRequest(`/engagement/bookmarks/${questionId}/toggle`, {
+      method: 'POST',
+    });
+  },
+
+  /** Remove a bookmark. */
+  removeBookmark: async (questionId) => {
+    return await apiRequest(`/engagement/bookmarks/${questionId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // ── notes ──
+  /** List all of the user's notes. */
+  listNotes: async ({ limit, offset } = {}) => {
+    const qs = new URLSearchParams();
+    if (limit != null) qs.set('limit', String(limit));
+    if (offset != null) qs.set('offset', String(offset));
+    const suffix = qs.toString() ? `?${qs}` : '';
+    return await apiRequest(`/engagement/notes${suffix}`);
+  },
+
+  /** Get the user's note for a question, or null. */
+  getNote: async (questionId) => {
+    return await apiRequest(`/engagement/notes/${questionId}`);
+  },
+
+  /** Upsert (create or replace) a note. */
+  upsertNote: async (questionId, content) => {
+    return await apiRequest(`/engagement/notes/${questionId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ content }),
+    });
+  },
+
+  /** Delete a note. */
+  deleteNote: async (questionId) => {
+    return await apiRequest(`/engagement/notes/${questionId}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────
+// Search API — full-text search over the question bank
+// ─────────────────────────────────────────────────────────────────────────
+export const searchAPI = {
+  /**
+   * Search questions matching the query.
+   * @param {string} q
+   * @param {{
+   *   certificationId?: number, providerId?: number,
+   *   difficulty?: 'easy'|'medium'|'hard'|'expert',
+   *   limit?: number, offset?: number,
+   * }} [filters]
+   */
+  searchQuestions: async (q, filters = {}) => {
+    const qs = new URLSearchParams({ q });
+    if (filters.certificationId != null) qs.set('certificationId', String(filters.certificationId));
+    if (filters.providerId != null)      qs.set('providerId', String(filters.providerId));
+    if (filters.difficulty)              qs.set('difficulty', filters.difficulty);
+    if (filters.limit != null)           qs.set('limit', String(filters.limit));
+    if (filters.offset != null)          qs.set('offset', String(filters.offset));
+    return await apiRequest(`/search/questions?${qs}`);
+  },
+
+  /** Typeahead suggestions for a partial query. */
+  suggest: async (q) => {
+    if (!q) return { success: true, data: { suggestions: [] } };
+    return await apiRequest(`/search/suggest?q=${encodeURIComponent(q)}`);
+  },
+};
+
 // Analytics API
 export const analyticsAPI = {
   // Get user progress
@@ -910,6 +1007,8 @@ export default {
   userAPI,
   analyticsAPI,
   statsAPI,
+  engagementAPI,
+  searchAPI,
   checkBackendHealth,
   utils,
   config

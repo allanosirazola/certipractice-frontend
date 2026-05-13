@@ -32,7 +32,8 @@
     "retry": "Retry",
     "delete": "Delete",
     "edit": "Edit",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "clear": "Clear"
   },
   "lang": {
     "es": "Español",
@@ -665,5 +666,37 @@
     "darkMode": "Dark mode",
     "lightMode": "Light mode",
     "community": "Community forum"
+  },
+  "engagement": {
+    "bookmark": {
+      "add": "Bookmark question",
+      "remove": "Remove bookmark",
+      "bookmarked": "Bookmarked",
+      "signInRequired": "Sign in to bookmark questions"
+    },
+    "note": {
+      "titleEmpty": "Add a personal note",
+      "titleWithContent": "Your note",
+      "placeholder": "Write your reasoning, a mnemonic, anything that helps you remember…",
+      "has": "with note",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "unsaved": "Unsaved",
+      "signInToTakeNotes": "Sign in to take personal notes on each question"
+    },
+    "bookmarks": {
+      "title": "My bookmarks",
+      "menuLabel": "Bookmarks",
+      "count": "{{count}} question",
+      "count_other": "{{count}} questions",
+      "empty": "No bookmarks yet",
+      "emptyHint": "Tap the bookmark icon on any question to save it here.",
+      "signInRequired": "Sign in to view your bookmarks",
+      "signInDescription": "Your bookmarked questions will be available from any device."
+    },
+    "search": {
+      "placeholder": "Search questions (S3, VPC, IAM…)",
+      "noResults": "No questions matched your search"
+    }
   }
 }

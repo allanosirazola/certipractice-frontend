@@ -8,6 +8,8 @@ import SettingsPanel from './common/SettingsPanel';
 import SEOHead, { SITE_URL } from './seo/SEOHead';
 import AdBreak from './ads/AdBreak';
 import ExamReview from './exam/ExamReview';
+import BookmarkButton from './engagement/BookmarkButton';
+import QuestionNote from './engagement/QuestionNote';
 
 export default function ExamenView({ examConfig, nombreCertificacion, onVolver, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
   const { isAuthenticated } = useAuth();
@@ -1752,7 +1754,15 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              {/* Bookmark — saves question to user's favorites (cross-exam) */}
+              {isAuthenticated && (
+                <BookmarkButton
+                  questionId={currentQuestion.id}
+                  size="md"
+                />
+              )}
+
               {/* Botón marcar para revisar */}
               <button
                 onClick={toggleMarkForReview}
@@ -1930,6 +1940,13 @@ export default function ExamenView({ examConfig, nombreCertificacion, onVolver, 
               )}
             </div>
           </div>
+
+          {/* Personal note (only for authenticated users; non-realistic modes) */}
+          {isAuthenticated && examMode !== 'realistic' && (
+            <div className="mt-4">
+              <QuestionNote questionId={currentQuestion.id} />
+            </div>
+          )}
 
           {/* Advertencia para preguntas incompletas */}
           {(currentQuestion.isMultipleChoice || currentQuestion.questionType === 'multiple_answer') && getSelectedCount() < currentQuestion.expectedAnswers && (

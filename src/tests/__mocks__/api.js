@@ -129,12 +129,32 @@ export const utils = {
   formatApiError: vi.fn()((error) => error?.message || 'Error desconocido'),
 };
 
+// ── Engagement: bookmarks + notes ─────────────────────────────────────
+export const engagementAPI = {
+  listBookmarks: vi.fn().mockResolvedValue({ success: true, data: { bookmarks: [], total: 0 } }),
+  isBookmarked: vi.fn().mockResolvedValue({ success: true, data: { bookmarked: false } }),
+  toggleBookmark: vi.fn().mockResolvedValue({ success: true, data: { bookmarked: true } }),
+  removeBookmark: vi.fn().mockResolvedValue({ success: true, data: { removed: true } }),
+  listNotes: vi.fn().mockResolvedValue({ success: true, data: { notes: [], total: 0 } }),
+  getNote: vi.fn().mockResolvedValue({ success: true, data: { note: null } }),
+  upsertNote: vi.fn().mockResolvedValue({ success: true, data: { note: { content: '' } } }),
+  deleteNote: vi.fn().mockResolvedValue({ success: true, data: { deleted: true } }),
+};
+
+// ── Search ─────────────────────────────────────────────────────────────
+export const searchAPI = {
+  searchQuestions: vi.fn().mockResolvedValue({ success: true, data: { results: [] } }),
+  suggest: vi.fn().mockResolvedValue({ success: true, data: { suggestions: [] } }),
+};
+
 // Función helper para resetear todos los mocks
 export const resetAllMocks = () => {
   Object.values(examAPI).forEach(fn => fn.mockClear());
   Object.values(questionAPI).forEach(fn => fn.mockClear());
   Object.values(userAPI).forEach(fn => fn.mockClear());
   Object.values(reportAPI).forEach(fn => fn.mockClear());
+  Object.values(engagementAPI).forEach(fn => fn.mockClear());
+  Object.values(searchAPI).forEach(fn => fn.mockClear());
   checkBackendHealth.mockClear();
 };
 

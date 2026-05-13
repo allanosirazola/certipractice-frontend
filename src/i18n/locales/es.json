@@ -32,7 +32,8 @@
     "retry": "Reintentar",
     "delete": "Eliminar",
     "edit": "Editar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "clear": "Limpiar"
   },
   "lang": {
     "es": "Español",
@@ -665,5 +666,37 @@
     "darkMode": "Modo oscuro",
     "lightMode": "Modo claro",
     "community": "Foro de la comunidad"
+  },
+  "engagement": {
+    "bookmark": {
+      "add": "Marcar pregunta",
+      "remove": "Quitar marcador",
+      "bookmarked": "Marcada",
+      "signInRequired": "Inicia sesión para marcar preguntas"
+    },
+    "note": {
+      "titleEmpty": "Añadir nota personal",
+      "titleWithContent": "Tu nota",
+      "placeholder": "Escribe tu razonamiento, mnemotecnia o lo que te ayude a recordar…",
+      "has": "con nota",
+      "saving": "Guardando…",
+      "saved": "Guardada",
+      "unsaved": "Sin guardar",
+      "signInToTakeNotes": "Inicia sesión para tomar notas personales en cada pregunta"
+    },
+    "bookmarks": {
+      "title": "Mis preguntas marcadas",
+      "menuLabel": "Marcadores",
+      "count": "{{count}} pregunta",
+      "count_other": "{{count}} preguntas",
+      "empty": "Aún no has marcado ninguna pregunta",
+      "emptyHint": "Toca el icono de marcador en cualquier pregunta para guardarla aquí.",
+      "signInRequired": "Inicia sesión para ver tus marcadores",
+      "signInDescription": "Tus preguntas marcadas estarán disponibles desde cualquier dispositivo."
+    },
+    "search": {
+      "placeholder": "Buscar preguntas (S3, VPC, IAM…)",
+      "noResults": "No se encontraron preguntas para tu búsqueda"
+    }
   }
 }

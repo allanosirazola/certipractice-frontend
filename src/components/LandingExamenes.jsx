@@ -18,6 +18,8 @@ import FailedQuestionsStats from './exam/FailedQuestionsStats';
 import SettingsPanel from './common/SettingsPanel';
 import CertificationLogo from './common/CertificationLogo';
 import SEOHead, { SEO_CONFIGS, SITE_URL } from './seo/SEOHead';
+import BookmarksList from './engagement/BookmarksList';
+import SearchBar from './engagement/SearchBar';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
@@ -43,6 +45,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
   const [showHistory, setShowHistory] = useState(false);
   const [showFailedQuestions, setShowFailedQuestions] = useState(false);
   const [failedQuestionsData, setFailedQuestionsData] = useState(null);
+  const [showBookmarks, setShowBookmarks] = useState(false);
 
   // Verificar estado del backend y cargar datos iniciales
   useEffect(() => {
@@ -414,6 +417,18 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
                 <span>{t('landing.history')}</span>
+              </button>
+
+              {/* My Bookmarks */}
+              <button
+                onClick={() => setShowBookmarks(true)}
+                className="flex items-center space-x-2 px-3 py-2 text-amber-600 dark:text-amber-400 border border-amber-500 dark:border-amber-600 rounded hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+                title={t('engagement.bookmarks.title', 'Mis preguntas marcadas')}
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                <span>{t('engagement.bookmarks.menuLabel', 'Marcadores')}</span>
               </button>
               
               {/* Botón para preguntas fallidas */}
@@ -809,6 +824,28 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
           }}
           onStartFailedExam={handleStartFailedQuestionsExam}
         />
+      )}
+
+      {showBookmarks && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                {t('engagement.bookmarks.title', 'Mis preguntas marcadas')}
+              </h3>
+              <button
+                onClick={() => setShowBookmarks(false)}
+                className="p-1 rounded text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                aria-label={t('common.close', 'Close')}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <BookmarksList />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
