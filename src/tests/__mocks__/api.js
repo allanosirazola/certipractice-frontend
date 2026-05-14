@@ -159,6 +159,22 @@ export const progressAPI = {
   }),
 };
 
+// ── Reviews: SM-2 spaced repetition ───────────────────────────────────
+export const reviewsAPI = {
+  getDue: vi.fn().mockResolvedValue({
+    success: true,
+    data: { items: [], total: 0 },
+  }),
+  getStats: vi.fn().mockResolvedValue({
+    success: true,
+    data: { totalCards: 0, dueNow: 0, reviewed24h: 0, averageEase: null, totalLapses: 0 },
+  }),
+  gradeReview: vi.fn().mockResolvedValue({
+    success: true,
+    data: { questionId: 'q1', lastQuality: 2 },
+  }),
+};
+
 // Función helper para resetear todos los mocks
 export const resetAllMocks = () => {
   Object.values(examAPI).forEach(fn => fn.mockClear());
@@ -168,6 +184,7 @@ export const resetAllMocks = () => {
   Object.values(engagementAPI).forEach(fn => fn.mockClear());
   Object.values(searchAPI).forEach(fn => fn.mockClear());
   Object.values(progressAPI).forEach(fn => fn.mockClear());
+  Object.values(reviewsAPI).forEach(fn => fn.mockClear());
   checkBackendHealth.mockClear();
 };
 

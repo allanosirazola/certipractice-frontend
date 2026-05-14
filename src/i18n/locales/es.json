@@ -717,6 +717,37 @@
       "notEnoughData": "Practica al menos {{needed}} preguntas para ver tu predicción"
     }
   },
+  "reviews": {
+    "flashcard": {
+      "title": "Flashcards",
+      "menuLabel": "Flashcards",
+      "tooltip": "Repaso espaciado tipo Anki",
+      "loading": "Cargando cartas…",
+      "errorHint": "Inténtalo de nuevo en unos minutos.",
+      "showAnswer": "Mostrar respuesta",
+      "spaceHint": "(espacio)",
+      "howWell": "¿Qué tal lo recordaste?",
+      "explanation": "Explicación",
+      "again": "Otra vez",
+      "hard": "Difícil",
+      "good": "Bien",
+      "easy": "Fácil",
+      "empty": {
+        "title": "No hay nada que repasar",
+        "description": "Vuelve mañana o responde preguntas nuevas para crear tu cola de repaso."
+      },
+      "done": {
+        "title": "Sesión completada",
+        "summary_one": "{{count}} carta repasada",
+        "summary_other": "{{count}} cartas repasadas",
+        "close": "Cerrar"
+      }
+    },
+    "dueBadge": {
+      "tooltip_one": "Tienes {{count}} carta para repasar",
+      "tooltip_other": "Tienes {{count}} cartas para repasar"
+    }
+  },
   "verifyEmail": {
     "heading": "Verificación de correo",
     "loading": "Verificando tu correo…",

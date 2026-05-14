@@ -22,6 +22,8 @@ import BookmarksList from './engagement/BookmarksList';
 import SearchBar from './engagement/SearchBar';
 import StreakBadge from './progress/StreakBadge';
 import ReadinessGauge from './progress/ReadinessGauge';
+import FlashcardMode from './reviews/FlashcardMode';
+import DueBadge from './reviews/DueBadge';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
@@ -48,6 +50,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
   const [showFailedQuestions, setShowFailedQuestions] = useState(false);
   const [failedQuestionsData, setFailedQuestionsData] = useState(null);
   const [showBookmarks, setShowBookmarks] = useState(false);
+  const [showFlashcards, setShowFlashcards] = useState(false);
 
   // Verificar estado del backend y cargar datos iniciales
   useEffect(() => {
@@ -432,6 +435,17 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
                 <span>{t('engagement.bookmarks.menuLabel', 'Marcadores')}</span>
+              </button>
+
+              {/* Flashcards (SM-2 spaced repetition) */}
+              <button
+                onClick={() => setShowFlashcards(true)}
+                className="flex items-center space-x-2 px-3 py-2 text-purple-600 dark:text-purple-300 border border-purple-500 dark:border-purple-600 rounded hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                title={t('reviews.flashcard.tooltip', 'Repaso espaciado tipo Anki')}
+              >
+                <span aria-hidden="true">🃏</span>
+                <span>{t('reviews.flashcard.menuLabel', 'Flashcards')}</span>
+                <DueBadge />
               </button>
               
               {/* Botón para preguntas fallidas */}
@@ -856,6 +870,10 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
             </div>
           </div>
         </div>
+      )}
+
+      {showFlashcards && (
+        <FlashcardMode onClose={() => setShowFlashcards(false)} />
       )}
     </div>
   );

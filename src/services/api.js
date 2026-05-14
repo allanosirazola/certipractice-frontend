@@ -859,6 +859,44 @@ export const progressAPI = {
   },
 };
 
+// ─── Reviews API (SM-2 spaced repetition) ─────────────────────────────
+// Backed by /api/reviews/* — all endpoints require authentication.
+//
+// Quality grades for gradeReview() match the backend SM-2 enum:
+//   0 'again'  → reset interval, drop ease
+//   1 'hard'   → reduce ease, shorter interval
+//   2 'good'   → keep ease, normal interval
+//   3 'easy'   → bump ease, longer interval
+export const reviewsAPI = {
+  /**
+   * List cards due for review right now.
+   * @param {{ limit?: number, certificationId?: number }} [opts]
+   */
+  getDue: async (opts = {}) => {
+    const qs = new URLSearchParams();
+    if (opts.limit != null) qs.set('limit', String(opts.limit));
+    if (opts.certificationId != null) qs.set('certificationId', String(opts.certificationId));
+    const suffix = qs.toString() ? `?${qs}` : '';
+    return apiRequest(`/reviews/due${suffix}`);
+  },
+
+  /** Aggregate stats: totalCards / dueNow / reviewed24h / averageEase / totalLapses. */
+  getStats: async () => apiRequest('/reviews/stats'),
+
+  /**
+   * Grade a card from the flashcard UI.
+   * @param {string} questionId
+   * @param {0|1|2|3|'again'|'hard'|'good'|'easy'} quality
+   */
+  gradeReview: async (questionId, quality) => {
+    if (!questionId) throw new Error('questionId is required');
+    return apiRequest(`/reviews/${encodeURIComponent(questionId)}/grade`, {
+      method: 'POST',
+      body: JSON.stringify({ quality }),
+    });
+  },
+};
+
 // Analytics API
 export const analyticsAPI = {
   // Get user progress
@@ -1057,6 +1095,7 @@ export default {
   engagementAPI,
   searchAPI,
   progressAPI,
+  reviewsAPI,
   checkBackendHealth,
   utils,
   config

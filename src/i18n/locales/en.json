@@ -717,6 +717,37 @@
       "notEnoughData": "Answer at least {{needed}} questions to see your readiness"
     }
   },
+  "reviews": {
+    "flashcard": {
+      "title": "Flashcards",
+      "menuLabel": "Flashcards",
+      "tooltip": "Anki-style spaced repetition",
+      "loading": "Loading cards…",
+      "errorHint": "Try again in a few minutes.",
+      "showAnswer": "Show answer",
+      "spaceHint": "(space)",
+      "howWell": "How well did you remember it?",
+      "explanation": "Explanation",
+      "again": "Again",
+      "hard": "Hard",
+      "good": "Good",
+      "easy": "Easy",
+      "empty": {
+        "title": "Nothing to review",
+        "description": "Come back tomorrow or answer new questions to build up your review queue."
+      },
+      "done": {
+        "title": "Session complete",
+        "summary_one": "{{count}} card reviewed",
+        "summary_other": "{{count}} cards reviewed",
+        "close": "Close"
+      }
+    },
+    "dueBadge": {
+      "tooltip_one": "You have {{count}} card to review",
+      "tooltip_other": "You have {{count}} cards to review"
+    }
+  },
   "verifyEmail": {
     "heading": "Email verification",
     "loading": "Verifying your email…",
