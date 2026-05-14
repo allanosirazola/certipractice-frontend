@@ -812,6 +812,28 @@ export const searchAPI = {
   },
 };
 
+// ─── Progress API (streaks + readiness) ───────────────────────────────
+// Backed by GET /progress/streak and /progress/readiness/:certificationId
+// Both require authentication.
+export const progressAPI = {
+  /**
+   * Get the current authenticated user's daily streak.
+   * Returns { current: number, best: number, lastActiveDate: string }
+   * Anonymous users get a 401; callers should handle by hiding the badge.
+   */
+  getStreak: async () => apiRequest('/progress/streak'),
+
+  /**
+   * Get the readiness prediction for a specific certification.
+   * Returns { score: 0-100, samples: number, byTopic: [...], advice: string[] }
+   * @param {number|string} certificationId
+   */
+  getReadiness: async (certificationId) => {
+    if (certificationId == null) throw new Error('certificationId is required');
+    return apiRequest(`/progress/readiness/${encodeURIComponent(certificationId)}`);
+  },
+};
+
 // Analytics API
 export const analyticsAPI = {
   // Get user progress
@@ -1009,6 +1031,7 @@ export default {
   statsAPI,
   engagementAPI,
   searchAPI,
+  progressAPI,
   checkBackendHealth,
   utils,
   config

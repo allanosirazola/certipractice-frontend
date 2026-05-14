@@ -698,5 +698,23 @@
       "placeholder": "Search questions (S3, VPC, IAM…)",
       "noResults": "No questions matched your search"
     }
+  },
+  "progress": {
+    "streak": {
+      "dayOne": "{{count}} day",
+      "dayOther": "{{count}} days",
+      "ariaLabel": "{{count}}-day streak",
+      "tooltipStart": "Practice today to start your streak 🔥",
+      "tooltipActive": "{{count}} days in a row · best: {{best}}"
+    },
+    "readiness": {
+      "title": {
+        "ready": "Ready for the exam!",
+        "almost": "Almost there",
+        "keepStudying": "Keep studying"
+      },
+      "basedOn": "Based on your last {{samples}} answers",
+      "notEnoughData": "Answer at least {{needed}} questions to see your readiness"
+    }
   }
 }

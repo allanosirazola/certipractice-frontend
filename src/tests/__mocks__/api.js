@@ -147,6 +147,18 @@ export const searchAPI = {
   suggest: vi.fn().mockResolvedValue({ success: true, data: { suggestions: [] } }),
 };
 
+// ── Progress: streaks + readiness ─────────────────────────────────────
+export const progressAPI = {
+  getStreak: vi.fn().mockResolvedValue({
+    success: true,
+    data: { current: 0, best: 0, lastActiveDate: null },
+  }),
+  getReadiness: vi.fn().mockResolvedValue({
+    success: true,
+    data: { score: null, samples: 0, minSamples: 20, advice: [] },
+  }),
+};
+
 // Función helper para resetear todos los mocks
 export const resetAllMocks = () => {
   Object.values(examAPI).forEach(fn => fn.mockClear());
@@ -155,6 +167,7 @@ export const resetAllMocks = () => {
   Object.values(reportAPI).forEach(fn => fn.mockClear());
   Object.values(engagementAPI).forEach(fn => fn.mockClear());
   Object.values(searchAPI).forEach(fn => fn.mockClear());
+  Object.values(progressAPI).forEach(fn => fn.mockClear());
   checkBackendHealth.mockClear();
 };
 

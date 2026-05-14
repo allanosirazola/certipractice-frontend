@@ -20,6 +20,8 @@ import CertificationLogo from './common/CertificationLogo';
 import SEOHead, { SEO_CONFIGS, SITE_URL } from './seo/SEOHead';
 import BookmarksList from './engagement/BookmarksList';
 import SearchBar from './engagement/SearchBar';
+import StreakBadge from './progress/StreakBadge';
+import ReadinessGauge from './progress/ReadinessGauge';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
@@ -409,6 +411,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
 
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
+              <StreakBadge />
               <button
                 onClick={() => setShowHistory(true)}
                 className="flex items-center space-x-2 px-3 py-2 text-blue-600 dark:text-blue-300 border border-blue-600 dark:border-blue-700 rounded hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
@@ -680,6 +683,13 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
                 </p>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Readiness gauge — shown when authenticated AND a certification is picked */}
+        {isAuthenticated && certificacionSeleccionada?.id && (
+          <div className="mt-6 w-full max-w-md">
+            <ReadinessGauge certificationId={certificacionSeleccionada.id} />
           </div>
         )}
 

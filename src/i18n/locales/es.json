@@ -698,5 +698,23 @@
       "placeholder": "Buscar preguntas (S3, VPC, IAM…)",
       "noResults": "No se encontraron preguntas para tu búsqueda"
     }
+  },
+  "progress": {
+    "streak": {
+      "dayOne": "{{count}} día",
+      "dayOther": "{{count}} días",
+      "ariaLabel": "Racha de {{count}} días",
+      "tooltipStart": "Practica hoy para empezar tu racha 🔥",
+      "tooltipActive": "{{count}} días seguidos · mejor: {{best}}"
+    },
+    "readiness": {
+      "title": {
+        "ready": "¡Listo para el examen!",
+        "almost": "Casi listo",
+        "keepStudying": "Sigue practicando"
+      },
+      "basedOn": "Estimado a partir de {{samples}} respuestas recientes",
+      "notEnoughData": "Practica al menos {{needed}} preguntas para ver tu predicción"
+    }
   }
 }
