@@ -13,9 +13,16 @@ const LandingExamenes = lazy(() => import('./components/LandingExamenes'));
 const ExamenView      = lazy(() => import('./components/ExamenView'));
 const CommunityPage   = lazy(() => import('./components/community/CommunityPage'));
 const PrivacyPolicy   = lazy(() => import('./components/privacy/PrivacyPolicy'));
+const VerifyEmail     = lazy(() => import('./components/auth/VerifyEmail'));
 
 // View routes managed via state (no router needed)
-const VIEWS = { HOME: 'home', EXAM: 'exam', COMMUNITY: 'community', PRIVACY: 'privacy' };
+const VIEWS = {
+  HOME: 'home',
+  EXAM: 'exam',
+  COMMUNITY: 'community',
+  PRIVACY: 'privacy',
+  VERIFY_EMAIL: 'verify-email',
+};
 
 function ViewLoader() {
   return (
@@ -34,6 +41,9 @@ function ViewLoader() {
 
 function App() {
   const [view, setView] = useState(() => {
+    // /verify-email is reached via the email link — detect it via pathname
+    // before falling back to hash-based routing.
+    if (window.location.pathname === '/verify-email') return VIEWS.VERIFY_EMAIL;
     // Read URL hash for deep-linking
     const hash = window.location.hash.replace('#', '');
     if (hash === 'community') return VIEWS.COMMUNITY;
@@ -114,6 +124,9 @@ function App() {
               )}
               {view === VIEWS.PRIVACY && (
                 <PrivacyPolicy {...navProps} />
+              )}
+              {view === VIEWS.VERIFY_EMAIL && (
+                <VerifyEmail onBack={() => setView(VIEWS.HOME)} />
               )}
             </Suspense>
           </div>

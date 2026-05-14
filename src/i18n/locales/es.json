@@ -716,5 +716,40 @@
       "basedOn": "Estimado a partir de {{samples}} respuestas recientes",
       "notEnoughData": "Practica al menos {{needed}} preguntas para ver tu predicción"
     }
+  },
+  "verifyEmail": {
+    "heading": "Verificación de correo",
+    "loading": "Verificando tu correo…",
+    "resending": "Enviando…",
+    "resent": "Correo enviado",
+    "resend": "Enviar nuevo enlace",
+    "continueToApp": "Continuar a la app",
+    "back": "Volver al inicio",
+    "success": {
+      "title": "¡Correo verificado!",
+      "description": "Tu cuenta está completamente activada. Ya puedes empezar a practicar."
+    },
+    "already": {
+      "title": "Ya estaba verificado",
+      "description": "Tu correo ya fue verificado anteriormente. Puedes continuar a la app."
+    },
+    "expired": {
+      "title": "Enlace caducado",
+      "description": "Este enlace tiene más de 24 horas. Solicita uno nuevo y revisa tu bandeja de entrada."
+    },
+    "error": {
+      "title": "No pudimos verificar tu correo",
+      "description": "El enlace puede ser incorrecto o ya haber sido usado. Solicita uno nuevo si lo necesitas."
+    },
+    "missing": {
+      "title": "Enlace incompleto",
+      "description": "No encontramos un token de verificación en este enlace. Vuelve al correo que te enviamos y pulsa el botón."
+    },
+    "banner": {
+      "title": "Verifica tu correo",
+      "message": "Te hemos enviado un enlace de verificación a {{email}}. Búscalo en tu bandeja (o spam) y púlsalo.",
+      "resend": "Reenviar enlace",
+      "dismiss": "Más tarde"
+    }
   }
 }

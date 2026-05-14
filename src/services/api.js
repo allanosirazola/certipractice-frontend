@@ -573,7 +573,32 @@ export const authAPI = {
     return await apiRequest(`/auth/validate/${token}`, {
       method: 'POST',
     });
-  }
+  },
+
+  /**
+   * Confirm the verification token from the email link.
+   * Sent via POST body rather than URL path so the token isn't logged
+   * in webserver access logs.
+   */
+  verifyEmail: async (token) => {
+    return await apiRequest('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    });
+  },
+
+  /**
+   * Ask the backend to re-send the verification email.
+   * Works both for authenticated users (email taken from session) and
+   * anonymous (must pass `email`). Backend never reveals whether the
+   * address exists — UI should always show a generic confirmation.
+   */
+  resendVerification: async (email) => {
+    return await apiRequest('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify(email ? { email } : {}),
+    });
+  },
 };
 
 // User API - Enhanced

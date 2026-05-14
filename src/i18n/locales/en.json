@@ -716,5 +716,40 @@
       "basedOn": "Based on your last {{samples}} answers",
       "notEnoughData": "Answer at least {{needed}} questions to see your readiness"
     }
+  },
+  "verifyEmail": {
+    "heading": "Email verification",
+    "loading": "Verifying your email…",
+    "resending": "Sending…",
+    "resent": "Email sent",
+    "resend": "Send new link",
+    "continueToApp": "Continue to the app",
+    "back": "Back to home",
+    "success": {
+      "title": "Email verified!",
+      "description": "Your account is fully activated. You can start practicing now."
+    },
+    "already": {
+      "title": "Already verified",
+      "description": "This email was already verified. You can continue to the app."
+    },
+    "expired": {
+      "title": "Link expired",
+      "description": "This link is more than 24 hours old. Request a new one and check your inbox."
+    },
+    "error": {
+      "title": "We couldn't verify your email",
+      "description": "The link may be incorrect or already used. Request a new one if you need it."
+    },
+    "missing": {
+      "title": "Incomplete link",
+      "description": "No verification token was found in this link. Go back to the email we sent and click the button."
+    },
+    "banner": {
+      "title": "Verify your email",
+      "message": "We sent a verification link to {{email}}. Check your inbox (or spam folder) and click it.",
+      "resend": "Resend link",
+      "dismiss": "Later"
+    }
   }
 }
