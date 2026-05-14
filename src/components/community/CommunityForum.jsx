@@ -177,7 +177,7 @@ export default function CommunityForum({ onClose }) {
       <div className="flex flex-wrap gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
         <input
           type="text"
-          placeholder="{t('community.searchPlaceholder')}"
+          placeholder={t('community.searchPlaceholder')}
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg"
@@ -281,7 +281,7 @@ export default function CommunityForum({ onClose }) {
           className="w-full px-3 py-2 border rounded-lg"
           rows={4}
           required
-          placeholder="{t('community.questionTextPlaceholder')}"
+          placeholder={t('community.questionTextPlaceholder')}
         />
       </div>
 
@@ -351,7 +351,7 @@ export default function CommunityForum({ onClose }) {
           className="w-full px-3 py-2 border rounded-lg"
           rows={3}
           required
-          placeholder="{t('community.explanationPlaceholder')}"
+          placeholder={t('community.explanationPlaceholder')}
         />
       </div>
 
@@ -402,7 +402,7 @@ export default function CommunityForum({ onClose }) {
           value={newQuestion.references}
           onChange={(e) => setNewQuestion({ ...newQuestion, references: e.target.value })}
           className="w-full px-3 py-2 border rounded-lg"
-          placeholder="{t('community.referencesPlaceholder')}"
+          placeholder={t('community.referencesPlaceholder')}
         />
       </div>
 
@@ -499,7 +499,7 @@ export default function CommunityForum({ onClose }) {
                   type="text"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="{t('community.commentPlaceholder')}"
+                  placeholder={t('community.commentPlaceholder')}
                   className="flex-1 px-3 py-2 border rounded-lg"
                 />
                 <button
