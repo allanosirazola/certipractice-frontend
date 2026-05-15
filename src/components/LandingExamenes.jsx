@@ -24,6 +24,7 @@ import StreakBadge from './progress/StreakBadge';
 import ReadinessGauge from './progress/ReadinessGauge';
 import FlashcardMode from './reviews/FlashcardMode';
 import DueBadge from './reviews/DueBadge';
+import EmailVerifyBanner from './auth/EmailVerifyBanner';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
@@ -383,6 +384,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-950 flex flex-col">
       <SEOHead {...seoProps} />
+      <EmailVerifyBanner />
       <header className="bg-white dark:bg-gray-800 shadow p-6 flex flex-col md:flex-row items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-400 mb-2">CertiPractice</h1>
