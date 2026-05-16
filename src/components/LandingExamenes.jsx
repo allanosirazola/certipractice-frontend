@@ -20,6 +20,7 @@ import CertificationLogo from './common/CertificationLogo';
 import SEOHead, { SEO_CONFIGS, SITE_URL } from './seo/SEOHead';
 import BookmarksList from './engagement/BookmarksList';
 import SearchBar from './engagement/SearchBar';
+import SearchResultPreview from './engagement/SearchResultPreview';
 import StreakBadge from './progress/StreakBadge';
 import ReadinessGauge from './progress/ReadinessGauge';
 import FlashcardMode from './reviews/FlashcardMode';
@@ -52,6 +53,7 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
   const [failedQuestionsData, setFailedQuestionsData] = useState(null);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
+  const [previewQuestionId, setPreviewQuestionId] = useState(null);
 
   // Verificar estado del backend y cargar datos iniciales
   useEffect(() => {
@@ -491,6 +493,13 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
       </header>
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+        {/* Cross-content search bar — works for both anon and authed.
+            Hits /api/search/questions with full-text + typeahead.
+            Selecting a result opens a read-only preview modal. */}
+        <div className="w-full max-w-2xl mb-6">
+          <SearchBar onSelectResult={(id) => setPreviewQuestionId(id)} />
+        </div>
+
         {!isAuthenticated && (
           <div className="bg-gradient-to-r from-blue-100 to-green-100 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8 max-w-2xl text-center">
             <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">{t('landing.freeTitle')}</h3>
@@ -876,6 +885,13 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
 
       {showFlashcards && (
         <FlashcardMode onClose={() => setShowFlashcards(false)} />
+      )}
+
+      {previewQuestionId && (
+        <SearchResultPreview
+          questionId={previewQuestionId}
+          onClose={() => setPreviewQuestionId(null)}
+        />
       )}
     </div>
   );
