@@ -5,6 +5,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import SEOHead from './components/seo/SEOHead';
 import CookieConsentBanner from './components/privacy/CookieConsentBanner';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import InstallPrompt from './components/pwa/InstallPrompt';
+import OfflineIndicator from './components/pwa/OfflineIndicator';
 import './App.css';
 
 // Lazy-load route-level components to keep the initial bundle small.
@@ -103,6 +105,9 @@ function App() {
             onClose={() => setCookiePanelOpen(false)}
             onOpenPrivacy={() => { setCookiePanelOpen(false); setView(VIEWS.PRIVACY); }}
           />
+          {/* PWA: install hint + offline pill. Both self-hide when not needed. */}
+          <InstallPrompt />
+          <OfflineIndicator />
           <div className="app">
             <Suspense fallback={<ViewLoader />}>
               {view === VIEWS.EXAM && examConfig && (

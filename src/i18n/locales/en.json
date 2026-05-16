@@ -815,5 +815,14 @@
     "error": {
       "noQuestions": "No questions available today."
     }
+  },
+  "pwa": {
+    "install": {
+      "title": "Install the app",
+      "description": "Access offline and from your home screen.",
+      "cta": "Install",
+      "dismiss": "No thanks"
+    },
+    "offline": "Offline — using cached data"
   }
 }

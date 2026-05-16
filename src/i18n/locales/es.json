@@ -815,5 +815,14 @@
     "error": {
       "noQuestions": "No hay preguntas disponibles hoy."
     }
+  },
+  "pwa": {
+    "install": {
+      "title": "Instala la app",
+      "description": "Accede sin conexión y desde tu pantalla de inicio.",
+      "cta": "Instalar",
+      "dismiss": "No, gracias"
+    },
+    "offline": "Sin conexión — usando datos guardados"
   }
 }
