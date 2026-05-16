@@ -782,5 +782,38 @@
       "resend": "Resend link",
       "dismiss": "Later"
     }
+  },
+  "dailyQuiz": {
+    "title": "Daily quiz",
+    "confirm": "Confirm",
+    "next": "Next",
+    "finish": "Finish",
+    "explanation": "Explanation",
+    "card": {
+      "title": "Daily quiz · 5 questions",
+      "sub": "Keep your streak — under 3 minutes.",
+      "start": "Start →",
+      "completedTitle": "Daily quiz completed",
+      "completedSub": "Come back tomorrow for the next one.",
+      "review": "Review →"
+    },
+    "intro": {
+      "title": "5 questions today",
+      "descriptionAuth": "Includes pending reviews and new questions. Less than 3 minutes.",
+      "descriptionAnon": "5 randomly chosen questions. Less than 3 minutes.",
+      "start": "Start"
+    },
+    "finished": {
+      "great": "Excellent!",
+      "good": "Nice work!",
+      "fair": "Keep it up",
+      "keepGoing": "Keep practicing",
+      "signInHint": "Sign up to save your progress and keep your streak.",
+      "close": "Close",
+      "saving": "Saving…"
+    },
+    "error": {
+      "noQuestions": "No questions available today."
+    }
   }
 }

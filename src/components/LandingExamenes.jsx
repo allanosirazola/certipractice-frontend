@@ -26,6 +26,8 @@ import ReadinessGauge from './progress/ReadinessGauge';
 import FlashcardMode from './reviews/FlashcardMode';
 import DueBadge from './reviews/DueBadge';
 import EmailVerifyBanner from './auth/EmailVerifyBanner';
+import DailyQuiz from './dailyQuiz/DailyQuiz';
+import DailyQuizCard from './dailyQuiz/DailyQuizCard';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
@@ -53,6 +55,8 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
   const [failedQuestionsData, setFailedQuestionsData] = useState(null);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
+  const [showDailyQuiz, setShowDailyQuiz] = useState(false);
+  const [dailyQuizRefresh, setDailyQuizRefresh] = useState(0);
   const [previewQuestionId, setPreviewQuestionId] = useState(null);
 
   // Verificar estado del backend y cargar datos iniciales
@@ -493,6 +497,14 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
       </header>
       
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+        {/* Daily quiz CTA — top of the main column, visible to all */}
+        <div className="w-full max-w-2xl mb-4">
+          <DailyQuizCard
+            refreshSignal={dailyQuizRefresh}
+            onOpen={() => setShowDailyQuiz(true)}
+          />
+        </div>
+
         {/* Cross-content search bar — works for both anon and authed.
             Hits /api/search/questions with full-text + typeahead.
             Selecting a result opens a read-only preview modal. */}
@@ -891,6 +903,16 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
         <SearchResultPreview
           questionId={previewQuestionId}
           onClose={() => setPreviewQuestionId(null)}
+        />
+      )}
+
+      {showDailyQuiz && (
+        <DailyQuiz
+          onClose={() => {
+            setShowDailyQuiz(false);
+            setDailyQuizRefresh((n) => n + 1); // refresh card state
+          }}
+          onComplete={() => setDailyQuizRefresh((n) => n + 1)}
         />
       )}
     </div>

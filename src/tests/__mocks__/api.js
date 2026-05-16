@@ -175,6 +175,22 @@ export const reviewsAPI = {
   }),
 };
 
+// ── Daily Quiz ────────────────────────────────────────────────────────
+export const dailyQuizAPI = {
+  getDaily: vi.fn().mockResolvedValue({
+    success: true,
+    data: { date: '2026-05-20', questions: [], completed: false, previousScore: null },
+  }),
+  getStatus: vi.fn().mockResolvedValue({
+    success: true,
+    data: { completed: false, authenticated: false },
+  }),
+  submit: vi.fn().mockResolvedValue({
+    success: true,
+    data: { score: 0, total: 5, alreadyCompleted: false },
+  }),
+};
+
 // Función helper para resetear todos los mocks
 export const resetAllMocks = () => {
   Object.values(examAPI).forEach(fn => fn.mockClear());
@@ -185,6 +201,7 @@ export const resetAllMocks = () => {
   Object.values(searchAPI).forEach(fn => fn.mockClear());
   Object.values(progressAPI).forEach(fn => fn.mockClear());
   Object.values(reviewsAPI).forEach(fn => fn.mockClear());
+  Object.values(dailyQuizAPI).forEach(fn => fn.mockClear());
   checkBackendHealth.mockClear();
 };
 

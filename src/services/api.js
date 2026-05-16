@@ -897,6 +897,26 @@ export const reviewsAPI = {
   },
 };
 
+// ─── Daily Quiz API ───────────────────────────────────────────────────
+// /api/daily-quiz endpoints. Anonymous users can play but their state
+// lives in localStorage; authenticated users get server-side tracking.
+export const dailyQuizAPI = {
+  /** Today's quiz: { date, questions, completed, previousScore }. */
+  getDaily: async () => apiRequest('/daily-quiz'),
+
+  /** Tiny status check: { completed, authenticated }. */
+  getStatus: async () => apiRequest('/daily-quiz/status'),
+
+  /**
+   * Submit the completed answer set.
+   * @param {Array<{ questionId: string, isCorrect: boolean }>} answers
+   */
+  submit: async (answers) => apiRequest('/daily-quiz/submit', {
+    method: 'POST',
+    body: JSON.stringify({ answers }),
+  }),
+};
+
 // Analytics API
 export const analyticsAPI = {
   // Get user progress
@@ -1096,6 +1116,7 @@ export default {
   searchAPI,
   progressAPI,
   reviewsAPI,
+  dailyQuizAPI,
   checkBackendHealth,
   utils,
   config

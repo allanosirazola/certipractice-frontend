@@ -782,5 +782,38 @@
       "resend": "Reenviar enlace",
       "dismiss": "Más tarde"
     }
+  },
+  "dailyQuiz": {
+    "title": "Quiz diario",
+    "confirm": "Confirmar",
+    "next": "Siguiente",
+    "finish": "Terminar",
+    "explanation": "Explicación",
+    "card": {
+      "title": "Quiz diario · 5 preguntas",
+      "sub": "Mantén tu racha — menos de 3 minutos.",
+      "start": "Empezar →",
+      "completedTitle": "Quiz diario completado",
+      "completedSub": "Vuelve mañana para el siguiente.",
+      "review": "Revisar →"
+    },
+    "intro": {
+      "title": "5 preguntas hoy",
+      "descriptionAuth": "Incluye repasos pendientes y nuevas preguntas. Tarda menos de 3 minutos.",
+      "descriptionAnon": "5 preguntas elegidas al azar. Tarda menos de 3 minutos.",
+      "start": "Empezar"
+    },
+    "finished": {
+      "great": "¡Excelente!",
+      "good": "¡Buen trabajo!",
+      "fair": "Sigue así",
+      "keepGoing": "Sigue practicando",
+      "signInHint": "Regístrate para guardar tu progreso y conservar tu racha.",
+      "close": "Cerrar",
+      "saving": "Guardando…"
+    },
+    "error": {
+      "noQuestions": "No hay preguntas disponibles hoy."
+    }
   }
 }
