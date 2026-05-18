@@ -63,17 +63,32 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key, opts) => {
       const dict = __testLang === 'en' ? enTranslations : esTranslations;
+      const otherDict = __testLang === 'en' ? esTranslations : enTranslations;
       let val = resolvePath(dict, key);
       if (val === undefined) {
-        // Fallback to the other language to avoid bare keys in tests
-        val = resolvePath(__testLang === 'en' ? esTranslations : enTranslations, key);
+        // i18next-style pluralization: try {key}_one / {key}_other
+        const count = opts && typeof opts.count === 'number' ? opts.count : null;
+        if (count !== null) {
+          const suffix = count === 1 ? '_one' : '_other';
+          val = resolvePath(dict, key + suffix);
+          if (val === undefined) val = resolvePath(otherDict, key + suffix);
+        }
       }
-      if (val === undefined) return opts?.defaultValue || key;
+      if (val === undefined) {
+        // Fallback to the other language for the base key
+        val = resolvePath(otherDict, key);
+      }
+      // Final fallback: defaultValue. Still pass through interpolation
+      // below so {{count}}-style placeholders inside the default get
+      // substituted just like real i18next would.
+      if (val === undefined) val = opts?.defaultValue;
+      if (val === undefined) return key;
       if (opts?.returnObjects && typeof val === 'object') return val;
       if (typeof val === 'string') {
         let result = val;
         if (opts) {
           Object.entries(opts).forEach(([k, v]) => {
+            if (k === 'defaultValue' || k === 'returnObjects') return;
             result = result.replace(new RegExp(`\\{\\{${k}\\}}`, 'g'), String(v));
           });
         }

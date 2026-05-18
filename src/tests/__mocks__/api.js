@@ -191,6 +191,14 @@ export const dailyQuizAPI = {
   }),
 };
 
+// ── Study Plans ───────────────────────────────────────────────────────
+export const studyPlansAPI = {
+  create: vi.fn().mockResolvedValue({ success: true, data: null }),
+  listActive: vi.fn().mockResolvedValue({ success: true, data: [] }),
+  getForCertification: vi.fn().mockResolvedValue({ success: true, data: null }),
+  cancel: vi.fn().mockResolvedValue({ success: true }),
+};
+
 // Función helper para resetear todos los mocks
 export const resetAllMocks = () => {
   Object.values(examAPI).forEach(fn => fn.mockClear());

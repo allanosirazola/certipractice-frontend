@@ -917,6 +917,35 @@ export const dailyQuizAPI = {
   }),
 };
 
+// ─── Study Plans API ──────────────────────────────────────────────────
+// /api/study-plans. All endpoints require auth.
+export const studyPlansAPI = {
+  /**
+   * Create a new plan. Body fields:
+   * @param {{ certificationId: number, targetDate: string, dailyGoal?: number }} payload
+   * targetDate is YYYY-MM-DD. dailyGoal is optional — backend picks a
+   * sensible default based on days-remaining when omitted.
+   */
+  create: async (payload) => apiRequest('/study-plans', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+
+  /** All of the user's active plans, with progress fields enriched. */
+  listActive: async () => apiRequest('/study-plans/active'),
+
+  /** Single-cert helper: returns the active plan or null. */
+  getForCertification: async (certificationId) => {
+    if (certificationId == null) throw new Error('certificationId is required');
+    return apiRequest(`/study-plans/for-certification/${encodeURIComponent(certificationId)}`);
+  },
+
+  /** Soft-cancel a plan. */
+  cancel: async (planId) => apiRequest(`/study-plans/${encodeURIComponent(planId)}`, {
+    method: 'DELETE',
+  }),
+};
+
 // Analytics API
 export const analyticsAPI = {
   // Get user progress
@@ -1117,6 +1146,7 @@ export default {
   progressAPI,
   reviewsAPI,
   dailyQuizAPI,
+  studyPlansAPI,
   checkBackendHealth,
   utils,
   config

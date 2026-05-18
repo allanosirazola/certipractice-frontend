@@ -824,5 +824,38 @@
       "dismiss": "No, gracias"
     },
     "offline": "Sin conexión — usando datos guardados"
+  },
+  "studyPlan": {
+    "card": {
+      "noPlanTitle": "Crear plan de estudio",
+      "noPlanSub": "Pon una fecha de examen y nosotros te marcamos el ritmo.",
+      "create": "Crear →",
+      "daysLeft_one": "{{count}} día",
+      "daysLeft_other": "{{count}} días",
+      "examPast": "Examen pasado",
+      "todayProgress": "Hoy: {{done}}/{{goal}} preguntas",
+      "adjustHint": "Sube a {{goal}}/día para llegar a tiempo."
+    },
+    "status": {
+      "on_track": "En camino",
+      "ahead": "Por delante",
+      "behind": "Te has retrasado",
+      "overdue": "Fecha pasada"
+    },
+    "create": {
+      "title": "Crear plan de estudio",
+      "forCert": "Para: {{cert}}",
+      "targetDateLabel": "Fecha del examen",
+      "daysInfo_one": "{{count}} día desde hoy",
+      "daysInfo_other": "{{count}} días desde hoy",
+      "dailyGoalLabel": "Preguntas por día",
+      "submit": "Crear plan",
+      "submitting": "Creando…",
+      "errorNoCert": "Selecciona una certificación primero.",
+      "errorBadDate": "Fecha no válida.",
+      "errorPast": "La fecha debe ser al menos mañana.",
+      "errorGoal": "El objetivo diario debe estar entre 1 y 200.",
+      "errorGeneric": "No se pudo crear el plan."
+    }
   }
 }

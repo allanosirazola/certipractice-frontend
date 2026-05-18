@@ -28,6 +28,8 @@ import DueBadge from './reviews/DueBadge';
 import EmailVerifyBanner from './auth/EmailVerifyBanner';
 import DailyQuiz from './dailyQuiz/DailyQuiz';
 import DailyQuizCard from './dailyQuiz/DailyQuizCard';
+import StudyPlanCard from './studyPlans/StudyPlanCard';
+import CreateStudyPlanModal from './studyPlans/CreateStudyPlanModal';
 import { useTranslation } from 'react-i18next';
 
 export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivacy, onOpenCommunity }) {
@@ -57,6 +59,8 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
   const [showFlashcards, setShowFlashcards] = useState(false);
   const [showDailyQuiz, setShowDailyQuiz] = useState(false);
   const [dailyQuizRefresh, setDailyQuizRefresh] = useState(0);
+  const [showStudyPlanModal, setShowStudyPlanModal] = useState(false);
+  const [studyPlanRefresh, setStudyPlanRefresh] = useState(0);
   const [previewQuestionId, setPreviewQuestionId] = useState(null);
 
   // Verificar estado del backend y cargar datos iniciales
@@ -725,8 +729,13 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
 
         {/* Readiness gauge — shown when authenticated AND a certification is picked */}
         {isAuthenticated && certificacionSeleccionada?.id && (
-          <div className="mt-6 w-full max-w-md">
+          <div className="mt-6 w-full max-w-md space-y-3">
             <ReadinessGauge certificationId={certificacionSeleccionada.id} />
+            <StudyPlanCard
+              certificationId={certificacionSeleccionada.id}
+              refreshSignal={studyPlanRefresh}
+              onCreate={() => setShowStudyPlanModal(true)}
+            />
           </div>
         )}
 
@@ -913,6 +922,15 @@ export default function LandingExamenes({ onEmpezar, onOpenCookies, onOpenPrivac
             setDailyQuizRefresh((n) => n + 1); // refresh card state
           }}
           onComplete={() => setDailyQuizRefresh((n) => n + 1)}
+        />
+      )}
+
+      {showStudyPlanModal && certificacionSeleccionada?.id && (
+        <CreateStudyPlanModal
+          certificationId={certificacionSeleccionada.id}
+          certificationName={certificacionSeleccionada.nombre || certificacionSeleccionada.name}
+          onClose={() => setShowStudyPlanModal(false)}
+          onCreated={() => setStudyPlanRefresh((n) => n + 1)}
         />
       )}
     </div>

@@ -824,5 +824,38 @@
       "dismiss": "No thanks"
     },
     "offline": "Offline — using cached data"
+  },
+  "studyPlan": {
+    "card": {
+      "noPlanTitle": "Create study plan",
+      "noPlanSub": "Set an exam date and we'll pace you.",
+      "create": "Create →",
+      "daysLeft_one": "{{count}} day",
+      "daysLeft_other": "{{count}} days",
+      "examPast": "Exam date passed",
+      "todayProgress": "Today: {{done}}/{{goal}} questions",
+      "adjustHint": "Bump to {{goal}}/day to catch up."
+    },
+    "status": {
+      "on_track": "On track",
+      "ahead": "Ahead",
+      "behind": "Falling behind",
+      "overdue": "Past due"
+    },
+    "create": {
+      "title": "Create study plan",
+      "forCert": "For: {{cert}}",
+      "targetDateLabel": "Exam date",
+      "daysInfo_one": "{{count}} day from today",
+      "daysInfo_other": "{{count}} days from today",
+      "dailyGoalLabel": "Questions per day",
+      "submit": "Create plan",
+      "submitting": "Creating…",
+      "errorNoCert": "Pick a certification first.",
+      "errorBadDate": "Invalid date.",
+      "errorPast": "Date must be at least tomorrow.",
+      "errorGoal": "Daily goal must be between 1 and 200.",
+      "errorGeneric": "Could not create the plan."
+    }
   }
 }
