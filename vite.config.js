@@ -46,14 +46,22 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            // NetworkFirst for the JSON API
-            urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
+            // NetworkFirst for the JSON API — SAME-ORIGIN ONLY.
+            // The cross-origin backend on Railway must never be cached
+            // by the SW: opaque (status 0) responses end up poisoning
+            // the cache after CORS preflight failures, and a single
+            // bad response keeps serving "no-response" forever even
+            // after the server is fixed. Pattern previously was just
+            // `url.pathname.startsWith('/api/')`, which incorrectly
+            // intercepted both same-origin and cross-origin requests.
+            urlPattern: ({ url }) =>
+              url.origin === self.location.origin && url.pathname.startsWith('/api/'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
               networkTimeoutSeconds: 4,
               expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 },
-              cacheableResponse: { statuses: [0, 200] },
+              cacheableResponse: { statuses: [200] }, // only real successes
             },
           },
           {
